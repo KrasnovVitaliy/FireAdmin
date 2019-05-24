@@ -1,0 +1,92 @@
+{% extends 'lib/main.html' %}
+{% block header_nav %}
+{% endblock %}
+
+{% block content_header %}
+<h1>
+    Офферы
+</h1>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+
+<div class="box">
+    <div class="box-header">
+        <div class="btn-group">
+            <a href="/offers?offers_type={{offers_type_id}}" type="button"
+               {% if offers_state=="all" %}}
+               class="btn btn-info"
+               {% else %}
+               class="btn btn-default"
+               {% endif%}
+
+            >Все</a>
+            <a href="/offers?offers_type={{offers_type_id}}&state=active" type="button"
+               {% if offers_state=="active" %}}
+               class="btn btn-success"
+               {% else %}
+               class="btn btn-default"
+               {% endif%}
+            >Активные</a>
+            <a href="/offers?offers_type={{offers_type_id}}&state=inactive" type="button"
+               {% if offers_state=="inactive" %}}
+               class="btn btn-danger"
+               {% else %}
+               class="btn btn-default"
+               {% endif%}
+            >Неактивные</a>
+        </div>
+
+        <a href="/offers_create?offers_type={{offers_type_id}}" class="btn btn-info pull-right" type="button">Создать</a>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+        <table class="table table-bordered">
+            <tr>
+                <th style="width: 30px">Состояние</th>
+                <th>Название</th>
+                <th style="width: 30px">Действие</th>
+                <th style="width: 100px">Лого</th>
+                <th style="width: 30px"></th>
+            </tr>
+
+            {% for offer in offers %}
+            <tr>
+                <td>
+                    <h4>{% if offer.isActive %}
+                        <i class="fa fa-fw fa-play text-green"></i>
+                        {% else %}
+                        <i class="fa fa-fw fa-stop text-red"></i>
+                        {% endif %}
+                    </h4>
+                </td>
+                <td><a href="/offers_overview?id={{offer.id}}"><h4>{{ offer.name }}</h4></a></td>
+                <td>
+                    {% if offer.isActive %}
+                    <a href="/offers_actions?id={{offer.id}}&action=stop&offer_type={{offers_type_id}}" type="button" class="btn btn-block btn-danger">Остановить</a>
+                    {% else %}
+                    <a href="/offers_actions?id={{offer.id}}&action=run&offer_type={{offers_type_id}}" type="button" class="btn btn-block btn-success">Запустить</a>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if offer.screen %}
+                        <img class="img-responsive" width="100px" src="{{ offer.screen }}" alt="Photo">
+                    {% else %}
+                        <img class="img-responsive" width="36px" src="/static/img/no_image.png" alt="Photo">
+                    {% endif%}
+                </td>
+                <td>
+                    <a href="/offers_actions?id={{offer.id}}&action=delete&offer_type={{offers_type_id}}" type="button" class="btn btn-block btn-danger">Удалить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <!-- /.box-body -->
+</div>
+<!-- /.box -->
+{% endblock %}

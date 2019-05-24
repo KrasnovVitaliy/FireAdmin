@@ -1,0 +1,69 @@
+{% extends 'lib/main.html' %}
+{% block header_nav %}
+{% endblock %}
+
+{% block content_header %}
+<h1>
+    Создать приложение
+</h1>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+
+<form role="form" action="/apps_create" method="post">
+    <section class="content">
+        <div class="row">
+            <!-- left column -->
+            <section class="col-md-6">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Основная информация</h3>
+                    </div>
+                    <div class="box-body">
+                        <label for="name">Название приложения</label>
+                        <input required class="form-control" type="text" placeholder="Введите имя" id="name"
+                               name="name">
+
+                        <label for="description">Описание</label>
+                        <textarea class="form-control" rows="5" id="description" name="description"
+                                  placeholder="Описание"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section class="col-md-6">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Ссылки</h3>
+                    </div>
+                    <div class="box-body">
+                        <!--<label for="name">Название приложения</label>-->
+                        <!--<input required class="form-control" type="text" placeholder="Введите имя" id="name"-->
+                               <!--name="name">-->
+
+                        <!--<label for="description">Описание</label>-->
+                        <!--<textarea class="form-control" rows="5" id="description" name="description"-->
+                                  <!--placeholder="Описание"></textarea>-->
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box-footer">
+                    <button class="btn btn-default">Отмена</button>
+                    <button type="submit" class="btn btn-info pull-right">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+
+<!-- /.box-body -->
+</div>
+
+{% endblock %}

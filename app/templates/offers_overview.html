@@ -1,0 +1,264 @@
+{% extends 'lib/main.html' %}
+{% block header_nav %}
+{% endblock %}
+
+{% block content_header %}
+<h1>
+    Редактирование оффера - {{offer.name}}
+</h1>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+
+<form role="form" action="/offers_overview?id={{offer.id}}" method="post">
+    <section class="content">
+        <div class="row">
+            <!-- left column -->
+            <section class="col-md-6">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Основная информация</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="isActive"
+                                       {% if offer.isActive %}
+                                       checked
+                                       {% endif %}>
+                                Активен
+                            </label>
+                        </div>
+
+                        <label for="name">Название оффера</label>
+                        <input class="form-control" type="text" placeholder="Введите имя" id="name" name="name"
+                               value="{{offer.name}}">
+
+                        <div class="form-group">
+                            <label>Тип оффера</label>
+                            <select class="form-control" name="offer_type">
+                                {% for offer_type in offers_types%}
+                                <option
+                                        value="{{offer_type.id}}"
+                                        {% if offer_type.id== offer.offer_type%}
+                                        selected
+                                        {% endif %}
+                                >{{offer_type.description}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <label for="itemId">ID оффера</label>
+                        <input class="form-control" type="text" placeholder="Введите уникальный ID" id="itemId"
+                               name="itemId"
+                               {% if offer.itemId %}
+                               value="{{offer.itemId}}"
+                               {% endif %}
+                        >
+
+                        <label for="order">Ссылка ддя оформления</label>
+                        <input class="form-control" type="text" placeholder="Введите адрес" id="order" name="order"
+                               {% if offer.order %}
+                               value="{{offer.order}}"
+                               {% endif %}
+                        >
+
+                        <label for="screen">Ссылка на картинку</label>
+                        <input class="form-control" type="text" placeholder="Введите адрес" id="screen" name="screen"
+                               {% if offer.screen %}
+                               value="{{offer.screen}}"
+                               {% endif %}
+                        >
+
+                        <img class="img-responsive" width="100px" src="{{ offer.screen }}" alt="Photo">
+
+                        <label for="description">Описание</label>
+                        <textarea class="form-control" rows="5" id="description" name="description"
+                                  placeholder="HTML описание">{% if offer.description %}{{offer.description}}{% endif %}</textarea>
+                    </div>
+                </div>
+
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Способы выплат</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="mir"
+                                           {% if offer.mir %}
+                                           checked
+                                           {% endif %}
+                                    >
+                                    Карта МИР
+                                </label>
+                            </div>
+
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="visa"
+                                           {% if offer.visa %}
+                                           checked
+                                           {% endif %}
+                                    >
+                                    Карта VISA
+                                </label>
+                            </div>
+
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="mastercard"
+                                           {% if offer.mastercard %}
+                                           checked
+                                           {% endif %}
+                                    >
+                                    Карта Mastercard
+                                </label>
+                            </div>
+
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="qiwi"
+                                           {% if offer.qiwi %}
+                                           checked
+                                           {% endif %}
+                                    >
+                                    QIWI
+                                </label>
+                            </div>
+
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="yandex"
+                                           {% if offer.yandex %}
+                                           checked
+                                           {% endif %}
+                                    >
+                                    Yandex
+                                </label>
+                            </div>
+
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="cash"
+                                           {% if offer.cash %}
+                                           checked
+                                           {% endif %}
+                                    >
+                                    Наличные
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="col-md-6">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Отображаемые элементы</h3>
+                    </div>
+                    <div class="box-body">
+                        <label for="orderButtonText">Текст кнопки оформить</label>
+                        <input class="form-control" type="text" placeholder="Введите текст" id="orderButtonText"
+                               name="orderButtonText"
+                               {% if offer.orderButtonText %}
+                               value="{{offer.orderButtonText}}"
+                               {% endif %}
+                        >
+
+                        <label for="percentPrefix">Префикс процентов</label>
+                        <input class="form-control" type="text" placeholder="Префикс процентов" id="percentPrefix"
+                               name="percentPrefix"
+                               {% if offer.percentPrefix %}
+                               value="{{offer.percentPrefix}}"
+                               {% endif %}
+                        >
+
+                        <label for="percentPostfix">Постфикс процентов</label>
+                        <input class="form-control" type="text" placeholder="Введите Постфикс" id="percentPostfix"
+                               name="percentPostfix"
+                               {% if offer.percentPostfix %}
+                               value="{{offer.percentPostfix}}"
+                               {% endif %}
+                        >
+
+                        <label for="score">Рейтинг</label>
+                        <input class="form-control" type="text" placeholder="Введите имя" id="score" name="score"
+                               {% if offer.score %}
+                               value="{{offer.score}}"
+                               {% endif %}
+                        >
+
+                    </div>
+                </div>
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Ставки и сроки</h3>
+                    </div>
+                    <div class="box-body">
+
+                        <label for="percent">Процентная ставка</label>
+                        <input class="form-control" type="text" placeholder="Введите ставку" id="percent"
+                               name="percent"
+                               {% if offer.percent %}
+                               value="{{offer.percent}}"
+                               {% endif %}
+                        >
+
+                        <label for="summ">Сумма</label>
+                        <input class="form-control" type="text" placeholder="Введите сумму" id="summ" name="summ"
+                               {% if offer.summ %}
+                               value="{{offer.summ}}"
+                               {% endif %}
+                        >
+
+                        <label for="term">Срок</label>
+                        <input class="form-control" type="text" placeholder="Введите срок" id="term" name="term"
+                               {% if offer.term %}
+                               value="{{offer.term}}"
+                               {% endif %}
+                        >
+                    </div>
+                </div>
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Приложения</h3>
+                    </div>
+                    <div class="box-body">
+                        {% for app in apps %}
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="app_{{app.id}}"
+                                       {% if app.id in offers_apps %}
+                                       checked
+                                       {% endif %}
+                                >
+                                {{app.name}}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box-footer">
+                    <button type="submit" class="btn btn-default">Отмена</button>
+                    <button type="submit" class="btn btn-info pull-right">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+
+<!-- /.box-body -->
+</div>
+
+{% endblock %}

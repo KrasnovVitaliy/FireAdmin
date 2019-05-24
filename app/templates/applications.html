@@ -1,0 +1,47 @@
+{% extends 'lib/main.html' %}
+{% block header_nav %} {% endblock %}
+
+{% block content_header %}
+<h1>
+    Приложения
+</h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+<div class="box">
+    <div class="box-header">
+        <a href="/apps_create" class="btn btn-info pull-right" type="button">Создать</a>
+    </div>
+
+    <div class="box-body">
+        <table class="table table-bordered">
+            <tr>
+                <th>Название</th>
+                <!--<th>Firebase</th>-->
+                <!--<th>AppMetrica</th>-->
+                <!--<th>Fabrica</th>-->
+            </tr>
+
+            {% for app in applications %}
+            <tr>
+                <td><a href="/apps_overview?id={{app.id}}"><h4>{{ app.name }}</h4></a></td>
+                <!--<td>-->
+                    <!--<button type="button" class="btn btn-block btn-warning">Go to firebase</button>-->
+                <!--</td>-->
+                <!--<td>-->
+                    <!--<button type="button" class="btn btn-block btn-warning">Go to appmetrica</button>-->
+                <!--</td>-->
+                <!--<td>-->
+                    <!--<button type="button" class="btn btn-block btn-info">Go to fabrica</button>-->
+                <!--</td>-->
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <!-- /.box-body -->
+</div>
+<!-- /.box -->
+{% endblock %}

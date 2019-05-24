@@ -1,0 +1,34 @@
+{% extends 'lib/main.html' %}
+{% block header_nav %} {% endblock %}
+
+{% block content_header %}
+<h1>
+    Типы офферов
+</h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+<div class="box">
+    <!-- /.box-header -->
+    <div class="box-body">
+        <table class="table table-bordered">
+            <tr>
+                <th>Название</th>
+                <th>Описание</th>
+            </tr>
+
+            {% for offers_type in offers_types %}
+            <tr>
+                <td><h4>{{ offers_type.name }}</h4></td>
+                <td><h4>{{ offers_type.description }}</h4></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <!-- /.box-body -->
+</div>
+<!-- /.box -->
+{% endblock %}

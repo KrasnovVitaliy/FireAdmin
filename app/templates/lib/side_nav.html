@@ -1,0 +1,36 @@
+<aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+        <ul class="sidebar-menu" data-widget="tree">
+            <li class="header">MAIN NAVIGATION</li>
+            <li class="treeview
+                {% if active_menu_item == 'offers' %}
+                   menu-open
+                {% endif %}
+            ">
+                <a href="#">
+                    <i class="fa fa-circle-o"></i> <span>Офферы</span>
+                    <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+                </a>
+                <ul class="treeview-menu"
+                    {% if active_menu_item == 'offers' %}
+                   style="display: block;"
+                    {% endif %}
+                    >
+                    {% for offers_type in offers_types %}
+                    <li><a href="/offers?offers_type={{offers_type.id}}"><i class="fa fa-circle-o"></i>{{offers_type.description}}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li><a href="/offers_type"><i class="fa fa-circle-o"></i>Типы офферов</a></li>
+            <li><a href="/applications"><i class="fa fa-circle-o"></i>Приложения</a></li>
+            <li><a href="../../index2.html"><i class="fa fa-circle-o"></i>Глобальные </a></li>
+            <li><a href="../../index2.html"><i class="fa fa-circle-o"></i>Системные</a></li>
+        </ul>
+    </section>
+    <!-- /.sidebar -->
+</aside>

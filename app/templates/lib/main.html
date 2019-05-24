@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {% include 'lib/head.html' %}
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+    <header class="main-header">
+        {% include 'lib/header.html' %}
+        {% block header_nav %}
+        {% include 'lib/header_nav.html' %}
+        {% endblock %}
+    </header>
+
+
+    <!-- =============================================== -->
+
+    <!-- Left side column. contains the sidebar -->
+    {% include 'lib/side_nav.html' %}
+    <!-- =============================================== -->
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            {% block content_header %}
+            {% include 'lib/content_header.html'%}
+            {% endblock %}
+
+            {% block breadcrumbs %}
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li><a href="#">Examples</a></li>
+                <li class="active">Blank page</li>
+            </ol>
+            {% endblock %}
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            {% block content %}
+            {% include 'lib/content.html' %}
+            {% endblock %}
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer class="main-footer">
+        <div class="pull-right hidden-xs">
+            <b>Version</b> 1.0.0
+        </div>
+        <strong>Copyright &copy; 2019 <a href="#">Krasnov Vitaliy</a>.</strong> All rights
+        reserved.
+    </footer>
+
+
+    <!-- Add the sidebar's background. This div must be placed
+         immediately after the control sidebar -->
+    <div class="control-sidebar-bg"></div>
+</div>
+<!-- ./wrapper -->
+{% include 'lib/js_scripts.html' %}
+</body>
+</html>
