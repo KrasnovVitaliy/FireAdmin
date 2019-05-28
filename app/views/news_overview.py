@@ -5,6 +5,7 @@ from config import Config
 import views.all_view_methods as avm
 import db
 import datetime
+
 logger = logging.getLogger(__name__)
 config = Config()
 

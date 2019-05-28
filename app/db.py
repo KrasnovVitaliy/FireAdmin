@@ -29,12 +29,12 @@ class Applications(Base):
     fabrica_link = Column(String(200))
     appsflyer_link = Column(String(200))
     order_tracking_source = Column(String(50))
-    license_terms = Column(String(5000))
+    license_term = Column(String(5000))
     creator = Column(Integer)
     deleted = Column(DateTime)
 
     def __init__(self, name=None, description=None, fb_id=None, fb_url=None, appmetrica_link=None, fabrica_link=None,
-                 appsflyer_link=None, order_tracking_source=None, license_terms=None):
+                 appsflyer_link=None, order_tracking_source=None, license_term=None):
         self.name = name
         self.description = description
         self.fb_id = fb_id
@@ -43,7 +43,7 @@ class Applications(Base):
         self.fabrica_link = fabrica_link
         self.appsflyer_link = appsflyer_link
         self.order_tracking_source = order_tracking_source
-        self.license_terms = license_terms
+        self.license_term = license_term
 
     def serialize(self, to_serialize):
         d = {}
@@ -56,7 +56,7 @@ class Applications(Base):
 
     def to_json(self):
         to_serialize = ['id', 'create_date', 'update_date', 'name', 'description', 'fb_id', 'fb_url', 'appmetrica_link',
-                        'fabrica_link', 'appsflyer_link', 'order_tracking_source', 'license_terms', 'creator',
+                        'fabrica_link', 'appsflyer_link', 'order_tracking_source', 'license_term', 'creator',
                         'deleted']
         return self.serialize(to_serialize)
 

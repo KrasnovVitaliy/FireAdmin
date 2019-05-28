@@ -16,6 +16,17 @@
 
 <form role="form" action="/offers_create" method="post">
     <section class="content">
+        <div class="box box-info">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box-footer">
+                        <button class="btn btn-default">Отмена</button>
+                        <button type="submit" class="btn btn-info pull-right">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <!-- left column -->
             <section class="col-md-6">
@@ -62,8 +73,10 @@
                         <!--<img class="img-responsive" width="100px" src="{{ offer.screen }}" alt="Photo">-->
 
                         <label for="description">Описание</label>
-                        <textarea class="form-control" rows="5" id="description" name="description"
-                                  placeholder="HTML описание"></textarea>
+                        <!--<textarea class="form-control" rows="5" id="description" name="description"-->
+                                  <!--placeholder="HTML описание"></textarea>-->
+                        <textarea id="editor1" name="editor1" rows="5" cols="80" id="description" name="description"
+                        placeholder="HTML описание"></textarea>
                     </div>
                 </div>
 
@@ -188,11 +201,13 @@
                 </div>
             </section>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="box-footer">
-                    <button class="btn btn-default">Отмена</button>
-                    <button type="submit" class="btn btn-info pull-right">Сохранить</button>
+        <div class="box box-info">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box-footer">
+                        <button class="btn btn-default">Отмена</button>
+                        <button type="submit" class="btn btn-info pull-right">Сохранить</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -202,4 +217,18 @@
 <!-- /.box-body -->
 </div>
 
+{% endblock %}
+
+{% block page_scripts %}
+<script src="/static/bower_components/ckeditor/ckeditor.js"></script>
+<script src="/static/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        // Replace the <textarea id="editor1"> with a CKEditor
+        // instance, using default configuration.
+        CKEDITOR.replace('editor1')
+        //bootstrap WYSIHTML5 - text editor
+        $('.textarea').wysihtml5()
+    })
+</script>
 {% endblock %}

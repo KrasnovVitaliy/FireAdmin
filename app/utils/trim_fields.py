@@ -10,6 +10,4 @@ def trim_fields(data):
     print(data)
     for field in TRIMMED_FIELDS:
         del data[field]
-    print('!!!!!!!')
-    print('data')
     return data

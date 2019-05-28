@@ -22,6 +22,8 @@ def process_offer(offer_type, offer_data):
     for field in offer_data:
         if field in ['isActive', 'mir', 'visa', 'mastercard', 'qiwi', 'yandex', 'cash']:
             setattr(offer, field, 1)
+        elif field == 'order':
+            setattr(offer, field, offer_data[field].split("?")[0])
         else:
             setattr(offer, field, offer_data[field])
 
