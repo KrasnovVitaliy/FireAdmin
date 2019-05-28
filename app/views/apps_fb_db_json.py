@@ -3,8 +3,9 @@ import logging
 from config import Config
 import json
 import db
-from utils.trim_fields import trim_fields
+
 import utils.firebase_client as fb_client
+from utils.data_to_json import gen_app_json
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -43,15 +44,17 @@ class AppsFBDBLoadView(web.View):
         results = db.session.query(db.OffersAppsRelations, db.Offers).filter_by(**filters).filter(
             db.OffersAppsRelations.offer_id == db.Offers.id).all()
 
-        data = {}
-        for result in results:
-            offer_data = trim_fields(result[1].to_json())
-
-            offer_type = db.session.query(db.OffersTypes).filter_by(id=result[1].offer_type).first()
-
-            if offer_type.name not in data:
-                data[offer_type.name] = []
-            data[offer_type.name].append(offer_data)
+        app = db.session.query(db.Applications).filter_by(id=params['id']).first()
+        data = gen_app_json(app)
+        # data = {}
+        # for result in results:
+        #     offer_data = trim_fields(result[1].to_json())
+        #
+        #     offer_type = db.session.query(db.OffersTypes).filter_by(id=result[1].offer_type).first()
+        #
+        #     if offer_type.name not in data:
+        #         data[offer_type.name] = []
+        #     data[offer_type.name].append(offer_data)
 
         stuts_code, rsp_data = fb_client.load_all_data(app.fb_id, data)
         if stuts_code != 200:

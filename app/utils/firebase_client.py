@@ -16,9 +16,6 @@ def get_all(project_id):
 
 
 def load_all_data(project_id, data):
-
-    logger.debug('!!!!!')
-    logger.debug(data)
     rsp = requests.put('https://{}.firebaseio.com/.json'.format(project_id), data=json.dumps(data))
     if rsp.status_code != 200:
         logger.error("Can not load data to firebase for project: {}. Response: {}".format(
