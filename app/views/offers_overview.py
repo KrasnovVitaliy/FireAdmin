@@ -36,7 +36,8 @@ class OffersOverviewView(web.View):
             'offer': offer_data,
             'apps': apps_data,
             'offers_apps': offer_apps_data,
-            'active_menu_item': 'offers'
+            'active_menu_item': 'offers',
+            'offers_type_id': int(offer_data['offer_type']),
         }
 
     async def post(self, *args, **kwargs):
@@ -74,4 +75,5 @@ class OffersOverviewView(web.View):
 
         db.session.commit()
 
-        return web.HTTPFound('offers_overview?id={}'.format(params['id']))
+        # return web.HTTPFound('offers_overview?id={}'.format(params['id']))
+        return web.HTTPFound('/offers?offers_type={}'.format(offer.offer_type))

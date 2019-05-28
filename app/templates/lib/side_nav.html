@@ -16,20 +16,37 @@
             </span>
                 </a>
                 <ul class="treeview-menu"
-                    {% if active_menu_item == 'offers' %}
-                   style="display: block;"
-                    {% endif %}
-                    >
-                    {% for offers_type in offers_types %}
-                    <li><a href="/offers?offers_type={{offers_type.id}}"><i class="fa fa-circle-o"></i>{{offers_type.description}}</a>
-                    </li>
-                    {% endfor %}
-                </ul>
+                    {% if active_menu_item==
+                'offers' %}
+                style="display: block;"
+                {% endif %}
+                >
+                {% for offers_type in offers_types %}
+            <li class="{% if offers_type.id == offers_type_id %}
+                   active
+                {% endif %}"
+                ><a href="/offers?offers_type={{offers_type.id}}"><i class="fa fa-circle-o"></i>{{offers_type.description}}</a>
             </li>
-            <li><a href="/offers_type"><i class="fa fa-circle-o"></i>Типы офферов</a></li>
-            <li><a href="/applications"><i class="fa fa-circle-o"></i>Приложения</a></li>
-            <li><a href="../../index2.html"><i class="fa fa-circle-o"></i>Глобальные </a></li>
-            <li><a href="../../index2.html"><i class="fa fa-circle-o"></i>Системные</a></li>
+            {% endfor %}
+        </ul>
+        </li>
+        <li class="{% if active_menu_item == 'offers_types' %}
+                   active
+                {% endif %}"
+        ><a href="/offers_type"><i class="fa fa-circle-o"></i>Типы офферов</a></li>
+        <li class="{% if active_menu_item == 'news' %}
+                   active
+                {% endif %}"
+        ><a href="/news"><i class="fa fa-circle-o"></i>Новости</a></li>
+        <li class="{% if active_menu_item == 'applications' %}
+                   active
+                {% endif %}"
+        ><a href="/applications"><i class="fa fa-circle-o"></i>Приложения</a></li>
+        <!--<li><a href="../../index2.html"><i class="fa fa-circle-o"></i>Глобальные </a></li>-->
+        <li class="{% if active_menu_item == 'system' %}
+                   active
+                {% endif %}"
+        ><a href="/system"><i class="fa fa-circle-o"></i>Системные</a></li>
         </ul>
     </section>
     <!-- /.sidebar -->

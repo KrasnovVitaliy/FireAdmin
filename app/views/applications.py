@@ -16,10 +16,9 @@ class ApplicationsView(web.View):
 
         apps = db.session.query(db.Applications).all()
         apps_data = [obj.to_json() for obj in apps]
-        logger.debug("!!!!!!!")
-        logger.debug(apps_data)
 
         return {
             'applications': apps_data,
-            "offers_types": avm.offers_types()
+            "offers_types": avm.offers_types(),
+            'active_menu_item': 'applications'
         }

@@ -161,6 +161,26 @@
             <section class="col-md-6">
                 <div class="box box-info">
                     <div class="box-header with-border">
+                        <h3 class="box-title">Приложения</h3>
+                    </div>
+                    <div class="box-body">
+                        {% for app in apps %}
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="app_{{app.id}}"
+                                       {% if app.id in offers_apps %}
+                                       checked
+                                       {% endif %}
+                                >
+                                {{app.name}}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="box box-info">
+                    <div class="box-header with-border">
                         <h3 class="box-title">Отображаемые элементы</h3>
                     </div>
                     <div class="box-body">
@@ -189,9 +209,33 @@
                         >
 
                         <label for="score">Рейтинг</label>
-                        <input class="form-control" type="text" placeholder="Введите имя" id="score" name="score"
+                        <input class="form-control" type="text" placeholder="Введите рейтинг" id="score" name="score"
                                {% if offer.score %}
                                value="{{offer.score}}"
+                               {% endif %}
+                        >
+
+                        <label for="score">Зеленый маркер</label>
+                        <input class="form-control" type="text" placeholder="Введите текст маркера" id="greenStickerText"
+                               name="greenStickerText"
+                               {% if offer.greenStickerText %}
+                               value="{{offer.greenStickerText}}"
+                               {% endif %}
+                        >
+
+                        <label for="score">Синий маркер</label>
+                        <input class="form-control" type="text" placeholder="Введите текст маркера" id="blueStickerText"
+                               name="blueStickerText"
+                               {% if offer.blueStickerText %}
+                               value="{{offer.blueStickerText}}"
+                               {% endif %}
+                        >
+
+                        <label for="score">Красный маркер</label>
+                        <input class="form-control" type="text" placeholder="Введите текст маркера" id="redStickerText"
+                               name="redStickerText"
+                               {% if offer.redStickerText %}
+                               value="{{offer.redStickerText}}"
                                {% endif %}
                         >
 
@@ -224,25 +268,6 @@
                                value="{{offer.term}}"
                                {% endif %}
                         >
-                    </div>
-                </div>
-                <div class="box box-info">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Приложения</h3>
-                    </div>
-                    <div class="box-body">
-                        {% for app in apps %}
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" name="app_{{app.id}}"
-                                       {% if app.id in offers_apps %}
-                                       checked
-                                       {% endif %}
-                                >
-                                {{app.name}}
-                            </label>
-                        </div>
-                        {% endfor %}
                     </div>
                 </div>
             </section>

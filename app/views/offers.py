@@ -33,7 +33,7 @@ class OffersView(web.View):
         return {
             'offers': offers_data,
             'offers_types': avm.offers_types(),
-            'offers_type_id': params['offers_type'],
+            'offers_type_id': int(params['offers_type']),
             'offers_state': offers_state,
             'active_menu_item': 'offers'
         }

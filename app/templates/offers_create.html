@@ -121,6 +121,22 @@
             <section class="col-md-6">
                 <div class="box box-info">
                     <div class="box-header with-border">
+                        <h3 class="box-title">Приложения</h3>
+                    </div>
+                    <div class="box-body">
+                        {% for app in apps %}
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="app_{{app.id}}">
+                                    {{app.name}}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="box box-info">
+                    <div class="box-header with-border">
                         <h3 class="box-title">Отображаемые элементы</h3>
                     </div>
                     <div class="box-body">
@@ -139,6 +155,18 @@
                         <label for="score">Рейтинг</label>
                         <input class="form-control" type="text" placeholder="Введите имя" id="score" name="score">
 
+                        <label for="score">Зеленый маркер</label>
+                        <input class="form-control" type="text" placeholder="Введите текст маркера" id="greenStickerText"
+                               name="greenStickerText">
+
+                        <label for="score">Синий маркер</label>
+                        <input class="form-control" type="text" placeholder="Введите текст маркера" id="blueStickerText"
+                               name="blueStickerText">
+
+                        <label for="score">Красный маркер</label>
+                        <input class="form-control" type="text" placeholder="Введите текст маркера" id="redStickerText"
+                               name="redStickerText">
+
                     </div>
                 </div>
                 <div class="box box-info">
@@ -156,22 +184,6 @@
 
                         <label for="term">Срок</label>
                         <input class="form-control" type="text" placeholder="Введите срок" id="term" name="term">
-                    </div>
-                </div>
-
-                <div class="box box-info">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Приложения</h3>
-                    </div>
-                    <div class="box-body">
-                        {% for app in apps %}
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="app_{{app.id}}">
-                                    {{app.name}}
-                                </label>
-                            </div>
-                        {% endfor %}
                     </div>
                 </div>
             </section>

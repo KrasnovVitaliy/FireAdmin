@@ -1,0 +1,106 @@
+{% extends 'lib/main.html' %}
+{% block header_nav %}
+{% endblock %}
+
+{% block content_header %}
+<h1>
+    Создать новость
+</h1>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+
+<form role="form" action="/news_create" method="post">
+    <section class="content">
+        <div class="row">
+            <!-- left column -->
+            <section class="col-md-6">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Основная информация</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="isActive">
+                                Активен
+                            </label>
+                        </div>
+
+                        <label for="title">Заголовок новости</label>
+                        <input required class="form-control" type="text" placeholder="Введите заголовок" id="title"
+                               name="title">
+
+
+                        <div class="form-group">
+                            <label>Дата окончания</label>
+
+                            <div class="input-group date">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input type="text" class="form-control pull-right" id="expireDate" name="expireDate">
+                            </div>
+                            <!-- /.input group -->
+                        </div>
+
+                        <label for="itemId">ID новости</label>
+                        <input class="form-control" type="text" placeholder="Введите уникальный ID" id="itemId"
+                               name="itemId">
+
+                        <label for="link">Ссылка на новость</label>
+                        <input class="form-control" type="text" placeholder="Введите адрес" id="link" name="link">
+
+                        <label for="image">Ссылка на картинку</label>
+                        <input class="form-control" type="text" placeholder="Введите адрес" id="image" name="image">
+
+                        <label for="description">Описание</label>
+                        <textarea class="form-control" rows="5" id="description" name="description"
+                                  placeholder="Описание"></textarea>
+                    </div>
+                </div>
+            </section>
+            <section class="col-md-6">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Приложения</h3>
+                    </div>
+                    <div class="box-body">
+                        {% for app in apps %}
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="app_{{app.id}}">
+                                {{app.name}}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box-footer">
+                    <button class="btn btn-default">Отмена</button>
+                    <button type="submit" class="btn btn-info pull-right">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+
+<!-- /.box-body -->
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<script type="text/javascript">
+    $('#expireDate').datepicker({
+        autoclose: true
+    })
+</script>
+{% endblock %}

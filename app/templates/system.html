@@ -1,0 +1,47 @@
+{% extends 'lib/main.html' %}
+{% block header_nav %} {% endblock %}
+
+{% block content_header %}
+<h1>
+    Приложения
+</h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+<div class="box">
+    <div class="box-body">
+        <section class="content">
+            <div class="row">
+                <section class="col-md-6">
+                    <div class="box box-info">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Действия</h3>
+                        </div>
+                        <div class="box-body">
+                            <form action="/system" method="post" accept-charset="utf-8"
+                                  enctype="multipart/form-data">
+                                <label for="offers-json">JSON файл с офферами</label>
+                                <div class="input-group">
+                                    <input type="file" class="form-control" id="offers-json" name="offers-json">
+                                    <span class="input-group-addon"><i class="fa fa-folder-open"></i></span>
+                                </div>
+
+                                <div class="box-footer">
+                                    <button type="submit" class="btn btn-info pull-right">Загрузить</button>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </div>
+    <!-- /.box-body -->
+</div>
+<!-- /.box -->
+{% endblock %}

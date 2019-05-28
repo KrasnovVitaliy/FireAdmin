@@ -43,4 +43,4 @@ class AppsOverviewView(web.View):
         db.session.add(app)
         db.session.commit()
 
-        return web.HTTPFound('/apps_overview?id={}'.format(params['id']))
+        return web.HTTPFound('/applications?')

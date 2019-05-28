@@ -31,6 +31,10 @@
                         <label for="description">Описание</label>
                         <textarea class="form-control" rows="5" id="description" name="description"
                                   placeholder="Описание"></textarea>
+
+                        <label for="license_terms">Польательское соглашение</label>
+                        <textarea class="form-control" rows="10" id="license_terms" name="license_terms"
+                                  placeholder="Соглашение"></textarea>
                     </div>
                 </div>
             </section>
@@ -38,16 +42,20 @@
             <section class="col-md-6">
                 <div class="box box-info">
                     <div class="box-header with-border">
-                        <h3 class="box-title">Ссылки</h3>
+                        <h3 class="box-title">Интеграция</h3>
                     </div>
                     <div class="box-body">
-                        <!--<label for="name">Название приложения</label>-->
-                        <!--<input required class="form-control" type="text" placeholder="Введите имя" id="name"-->
-                               <!--name="name">-->
+                        <label for="name">Firebase ID</label>
+                        <input required class="form-control" type="text" placeholder="Введите ID" id="fb_id"
+                               name="fb_id">
 
-                        <!--<label for="description">Описание</label>-->
-                        <!--<textarea class="form-control" rows="5" id="description" name="description"-->
-                                  <!--placeholder="Описание"></textarea>-->
+                        <label for="name">Firebase URL</label>
+                        <input required class="form-control" type="text" placeholder="Введите url" id="fb_url"
+                               name="fb_url">
+
+                        <label for="name">Идентификатор ссылки заказа</label>
+                        <input required class="form-control" type="text" placeholder="Введите идентификатор" id="order_tracking_source"
+                               name="order_tracking_source">
                     </div>
                 </div>
             </section>

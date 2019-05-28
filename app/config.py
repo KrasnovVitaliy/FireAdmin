@@ -32,6 +32,7 @@ class Config(ConfigBase):
         'static'
     ]
 
+    FILE_UPLOAD_PATH = './'
     os.chdir(os.path.dirname(__file__))
     PROJECT_DIR = os.getcwd()
     sys.path.append(PROJECT_DIR)
