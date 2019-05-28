@@ -56,7 +56,8 @@ class Applications(Base):
 
     def to_json(self):
         to_serialize = ['id', 'create_date', 'update_date', 'name', 'description', 'fb_id', 'fb_url', 'appmetrica_link',
-                        'fabrica_link', 'appsflyer_link', 'order_tracking_source', 'license_terms', 'creator', 'deleted']
+                        'fabrica_link', 'appsflyer_link', 'order_tracking_source', 'license_terms', 'creator',
+                        'deleted']
         return self.serialize(to_serialize)
 
 
@@ -209,7 +210,8 @@ class News(Base):
     link = Column(String(500))
     deleted = Column(DateTime)
 
-    def __init__(self, title=None, description=None, expireDate=None, image=None, isActive=None, link=None, itemId=None):
+    def __init__(self, title=None, description=None, expireDate=None, image=None, isActive=None, link=None,
+                 itemId=None):
         self.title = title
         self.description = description
         self.expireDate = expireDate
@@ -261,42 +263,6 @@ def prepare_db():
     engine = create_engine(config.DB_URI)
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
-
-    # for item in [
-    # {'name': 'cards_credit', 'description': 'Кредитные карты'},
-    # {'name': 'cards_debit', 'description': 'Дебитовые карты'},
-    # {'name': 'cards_installment', 'description': 'Карты рассрочки'},
-    # {'name': 'credits', 'description': 'Кредиты'},
-    # {'name': 'history', 'description': 'Кредитная история'},
-    # {'name': 'loans', 'description': 'Займы'},
-    # {'name': 'news', 'description': 'Новости'}]:
-    # offer_type = OffersTypes(name=item['name'], description=item['description'])
-    # session.add(offer_type)
-    # session.commit()
-
-    # Just for test
-    # offer = Offers(name='Offer 1', offer_type=1, isActive=False,
-    #                screen='https://firebasestorage.googleapis.com/v0/b/ru-finance-credits.appspot.com/o/credit_cards%2Falfa-cash-back.png?alt=media&token=42bd01c6-a91e-4345-881b-5a9d1ff1c6fa')
-    # session.add(offer)
-    #
-    # offer = Offers(name='Offer 2', offer_type=1, isActive=True,
-    #                screen='https://firebasestorage.googleapis.com/v0/b/ru-finance-credits.appspot.com/o/credit_cards%2Falfa-cash-back.png?alt=media&token=42bd01c6-a91e-4345-881b-5a9d1ff1c6fa')
-    # session.add(offer)
-
-    app = Applications(name="Даем заем", description="Jgbcfybt", fb_id=None, appmetrica_link=None, fabrica_link=None,
-                       appsflyer_link=None)
-    session.add(app)
-    app = Applications(name="Займы под 0", description="Jgbcfybt", fb_id=None, appmetrica_link=None,
-                       fabrica_link=None,
-                       appsflyer_link=None)
-    session.add(app)
-
-    app = Applications(name="Выручайка", description="Jgbcfybt", fb_id=None, appmetrica_link=None,
-                       fabrica_link=None,
-                       appsflyer_link=None)
-    session.add(app)
-
-    session.commit()
 
 
 if __name__ == "__main__":

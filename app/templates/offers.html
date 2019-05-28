@@ -64,7 +64,7 @@
                         {% endif %}
                     </h4>
                 </td>
-                <td><a href="/news_overview?id={{offer.id}}"><h4>{{ offer.name }}</h4></a></td>
+                <td><a href="/offers_overview?id={{offer.id}}"><h4>{{ offer.name }}</h4></a></td>
                 <td>
                     {% if offer.isActive %}
                     <a href="/offers_actions?id={{offer.id}}&action=stop&offer_type={{offers_type_id}}" type="button" class="btn btn-block btn-danger">Остановить</a>

@@ -7,6 +7,7 @@ import db
 import os
 import uuid
 import json
+import datetime
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -32,6 +33,28 @@ def process_offer(offer_type, offer_data):
     pass
 
 
+def process_news(news_data):
+    logger.debug('Process offer news: {}'.format(news_data))
+
+    news = db.News()
+
+    for field in news_data:
+        if field in ['isActive', ]:
+            setattr(news, field, 1)
+        elif field == 'expireDate':
+            expire_date = datetime.datetime.strptime(news_data[field], "%d.%m.%y")
+            setattr(news, field, expire_date)
+        else:
+            setattr(news, field, news_data[field])
+
+    if 'isActive' not in news_data:
+        setattr(news, 'isActive', 0)
+
+    db.session.add(news)
+    db.session.commit()
+    pass
+
+
 def process_offer_type(offer_type_name):
     offer_type = db.session.query(db.OffersTypes).filter(db.OffersTypes.name == offer_type_name).first()
     if not offer_type:
@@ -46,12 +69,16 @@ def process_saved_file(file_path):
         offers_data = json.load(infile)
         logger.debug(offers_data)
 
+        for offer in offers_data['news']:
+            process_news(offer)
+
         for offer_type_name in offers_data.keys():
-            logger.debug("Offer type name: {}".format(offer_type_name))
-            offer_type = process_offer_type(offer_type_name=offer_type_name)
-            if isinstance(offers_data[offer_type_name], list):
-                for offer in offers_data[offer_type_name]:
-                    process_offer(offer_type, offer)
+            if offer_type_name != 'news':
+                logger.debug("Offer type name: {}".format(offer_type_name))
+                offer_type = process_offer_type(offer_type_name=offer_type_name)
+                if isinstance(offers_data[offer_type_name], list):
+                    for offer in offers_data[offer_type_name]:
+                        process_offer(offer_type, offer)
 
 
 class SystemView(web.View):

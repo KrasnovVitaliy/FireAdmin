@@ -13,6 +13,7 @@ class IndexView(web.View):
     async def get(self, *args, **kwargs):
         params = self.request.rel_url.query
 
-        return {
-            "offers_types": avm.offers_types()
-        }
+        return web.HTTPFound('/offers?offers_type=1')
+        # return {
+        #     "offers_types": avm.offers_types()
+        # }
