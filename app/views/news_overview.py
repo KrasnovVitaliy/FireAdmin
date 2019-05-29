@@ -53,15 +53,22 @@ class NewsOverviewView(web.View):
         }
         news_item = db.session.query(db.News).filter_by(**filters).first()
 
-        if 'isActive' not in post_data:
-            setattr(news_item, 'isActive', 0)
-
         for field in post_data:
             if field == "expireDate":
                 expire_date = datetime.datetime.strptime(post_data[field], "%m/%d/%Y")
+                logger.debug('!!!!!!')
+                logger.debug(expire_date)
+                logger.debug(type(expire_date))
                 setattr(news_item, field, expire_date)
+
+            elif field == 'isActive':
+                setattr(news_item, field, 1)
+
             else:
                 setattr(news_item, field, post_data[field])
+
+        if 'isActive' not in post_data:
+            setattr(news_item, 'isActive', 0)
 
         db.session.add(news_item)
         db.session.commit()
