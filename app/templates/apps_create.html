@@ -46,7 +46,7 @@
                         <label for="license_term">Польательское соглашение</label>
                         <!--<textarea class="form-control" rows="10" id="license_term" name="license_term"-->
                                   <!--placeholder="Соглашение"></textarea>-->
-                        <textarea id="editor1" name="editor1" rows="5" cols="80" id="license_term" name="license_term"
+                        <textarea id="license_term" name="license_term" rows="5" cols="80" id="license_term"
                         placeholder="Соглашение"></textarea>
                     </div>
                 </div>
@@ -98,7 +98,7 @@
     $(function () {
         // Replace the <textarea id="editor1"> with a CKEditor
         // instance, using default configuration.
-        CKEDITOR.replace('editor1')
+        CKEDITOR.replace('license_term')
         //bootstrap WYSIHTML5 - text editor
         $('.textarea').wysihtml5()
     })
