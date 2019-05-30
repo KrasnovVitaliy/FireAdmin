@@ -54,11 +54,11 @@ class NewsOverviewView(web.View):
         news_item = db.session.query(db.News).filter_by(**filters).first()
 
         for field in post_data:
+            if post_data[field].lower() == 'none':
+                continue
+
             if field == "expireDate":
                 expire_date = datetime.datetime.strptime(post_data[field], "%m/%d/%Y")
-                logger.debug('!!!!!!')
-                logger.debug(expire_date)
-                logger.debug(type(expire_date))
                 setattr(news_item, field, expire_date)
 
             elif field == 'isActive':

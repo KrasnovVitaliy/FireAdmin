@@ -49,6 +49,7 @@
             <tr>
                 <th style="width: 30px">Состояние</th>
                 <th>Заголовок</th>
+                <th style="width: 30px">Дата окончания</th>
                 <th style="width: 30px">Действие</th>
                 <th style="width: 100px">Лого</th>
                 <th style="width: 30px"></th>
@@ -65,6 +66,7 @@
                     </h4>
                 </td>
                 <td><a href="/news_overview?id={{news_item.id}}"><h4>{{ news_item.title }}</h4></a></td>
+                <td>{{news_item.expireDate}}</td>
                 <td>
                     {% if news_item.isActive %}
                     <a href="/news_actions?id={{news_item.id}}&action=stop" type="button" class="btn btn-block btn-danger">Остановить</a>

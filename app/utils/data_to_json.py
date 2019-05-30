@@ -1,5 +1,5 @@
 import db
-from utils.trim_fields import trim_fields, fields_to_str
+from utils.data_fields_utils import prepare_object_data
 
 
 def gen_app_json(app):
@@ -11,7 +11,7 @@ def gen_app_json(app):
 
     ret_data = {}
     for result in results:
-        offer_data = fields_to_str(trim_fields(result[1].to_json()))
+        offer_data = prepare_object_data(result[1].to_json()) # fields_to_str(trim_fields(result[1].to_json()))
         offer_data['order'] = offer_data['order'] + "?source={}".format(app.order_tracking_source)
 
         offer_type = db.session.query(db.OffersTypes).filter_by(id=result[1].offer_type).first()
@@ -28,7 +28,7 @@ def gen_app_json(app):
         db.NewsAppsRelations.news_id == db.News.id).all()
     ret_data['news'] = []
     for result in results:
-        news_data = fields_to_str(trim_fields(result[1].to_json()))
+        news_data = prepare_object_data(result[1].to_json()) # fields_to_str(trim_fields(result[1].to_json()))
         ret_data['news'].append(news_data)
 
     # Adding license terms
