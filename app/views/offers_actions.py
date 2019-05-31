@@ -27,3 +27,28 @@ class OffersActionsView(web.View):
         db.session.commit()
 
         return web.HTTPFound('offers?offers_type={}'.format(params['offer_type']))
+
+
+class OffersUpdateOrder(web.View):
+    async def post(self, *args, **kwargs):
+        data = await self.request.json()
+
+        for item in data:
+            logger.debug("Post data: {}".format(item))
+            offer = db.session.query(db.Offers).filter_by(id=item['item_id']).first()
+            offer.position = item['position']
+
+        db.session.commit()
+        return web.HTTPOk()
+
+
+class OffersUpdateComment(web.View):
+    async def post(self, *args, **kwargs):
+        data = await self.request.json()
+
+        logger.debug("Post data: {}".format(data))
+        offer = db.session.query(db.Offers).filter_by(id=data['item_id']).first()
+        offer.comment = data['comment']
+
+        db.session.commit()
+        return web.HTTPOk()

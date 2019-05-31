@@ -4,6 +4,7 @@ import logging
 from config import Config
 import views.all_view_methods as avm
 import db
+from sqlalchemy import asc
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -27,8 +28,21 @@ class OffersView(web.View):
         else:
             offers_state = 'all'
 
-        offers = db.session.query(db.Offers).filter_by(**filters).all()
+        offers = db.session.query(db.Offers).filter_by(**filters).order_by(asc(db.Offers.position)).all()
         offers_data = [obj.to_json() for obj in offers]
+
+        apps = db.session.query(db.Applications).all()
+        app_data = {}
+        for app in apps:
+            app_data[app.id] = app.to_json()
+
+        for offer in offers_data:
+            if 'related_apps' not in offer:
+                offer['related_apps'] = []
+
+            offer_apps = db.session.query(db.OffersAppsRelations).filter_by(offer_id=offer['id']).all()
+            for offer_app in offer_apps:
+                offer['related_apps'].append(app_data[offer_app.app_id])
 
         return {
             'offers': offers_data,

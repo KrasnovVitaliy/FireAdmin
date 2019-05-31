@@ -21,18 +21,21 @@ def fields_to_str(data):
     return data
 
 
-def remove_none_fields(data):
+def remove_none_and_bool_fields(data):
     ret_data = {}
     for field in data.keys():
         if data[field]:
-            ret_data[field] = data[field]
+            if isinstance(data[field], bool):
+                ret_data[field] = 1
+            else:
+                ret_data[field] = data[field]
 
     return ret_data
 
 
 def prepare_object_data(data):
     data = trim_fields(data)
-    data = remove_none_fields(data)
+    data = remove_none_and_bool_fields(data)
     data = fields_to_str(data)
 
     return data

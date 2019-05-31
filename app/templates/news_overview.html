@@ -49,6 +49,13 @@
                         <input required class="form-control" type="text" placeholder="Введите заголовок" id="title"
                                name="title" value="{{news.title}}">
 
+                        <label for="comment">Комментарий</label>
+                        <input class="form-control" type="text" placeholder="Введите комментарий" id="comment"
+                               name="comment"
+                               {% if news.comment %}
+                               value="{{news.comment}}"
+                               {% endif %}}
+                        >
 
                         <div class="form-group">
                             <label>Дата окончания</label>

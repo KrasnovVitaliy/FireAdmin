@@ -122,6 +122,9 @@ class Offers(Base):
     blueStickerText = Column(String(50))
     redStickerText = Column(String(50))
 
+    position = Column(Integer)
+    comment = Column(String(500))
+
     creator = Column(Integer)
     deleted = Column(DateTime)
 
@@ -129,7 +132,7 @@ class Offers(Base):
                  name=None, description=None, order=None, orderButtonText=None, percent=None, percentPostfix=None,
                  percentPrefix=None, score=None, screen=None, summ=None, term=None, mastercard=None, mir=None,
                  visa=None, qiwi=None, yandex=None, cash=None, greenStickerText=None, blueStickerText=None,
-                 redStickerText=None):
+                 redStickerText=None, position=None, comment=None):
         self.offer_type = offer_type
         self.isActive = isActive
         self.itemId = itemId
@@ -153,6 +156,8 @@ class Offers(Base):
         self.greenStickerText = greenStickerText
         self.blueStickerText = blueStickerText
         self.redStickerText = redStickerText
+        self.position = position
+        self.comment = comment
 
     def serialize(self, to_serialize):
         d = {}
@@ -168,7 +173,7 @@ class Offers(Base):
                         'name', 'description', 'order', 'orderButtonText', 'percent', 'percentPostfix',
                         'percentPrefix', 'score', 'screen', 'summ', 'term', 'mastercard', 'mir',
                         'visa', 'qiwi', 'yandex', 'cash', 'creator', 'greenStickerText', 'blueStickerText',
-                        'redStickerText', 'deleted']
+                        'redStickerText', 'deleted', 'position', 'comment']
         return self.serialize(to_serialize)
 
 
@@ -209,9 +214,11 @@ class News(Base):
     isActive = Column(Integer)
     link = Column(String(500))
     deleted = Column(DateTime)
+    position = Column(Integer)
+    comment = Column(String(500))
 
     def __init__(self, title=None, description=None, expireDate=None, image=None, isActive=None, link=None,
-                 itemId=None):
+                 itemId=None, position=None, comment=None):
         self.title = title
         self.description = description
         self.expireDate = expireDate
@@ -219,6 +226,8 @@ class News(Base):
         self.isActive = isActive
         self.link = link
         self.itemId = itemId
+        self.position = position
+        self.comment = comment
 
     def serialize(self, to_serialize):
         d = {}
@@ -231,7 +240,7 @@ class News(Base):
 
     def to_json(self):
         to_serialize = ['id', 'create_date', 'update_date', 'title', 'description', 'expireDate', 'image', 'isActive',
-                        'link', 'deleted', 'itemId']
+                        'link', 'deleted', 'itemId', 'position', 'comment']
         return self.serialize(to_serialize)
 
 

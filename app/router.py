@@ -33,6 +33,8 @@ routes = [
     web.view('/offers_overview', OffersOverviewView),
     web.view('/offers_actions', OffersActionsView),
     web.view('/offers_create', OffersCreateView),
+    web.view('/offers_update_order', OffersUpdateOrder),
+    web.view('/offers_update_comment', OffersUpdateComment),
 
     web.view('/applications', ApplicationsView),
     web.view('/apps_create', AppsCreateView),
@@ -48,6 +50,8 @@ routes = [
     web.view('/news_create', NewsCreateView),
     web.view('/news_overview', NewsOverviewView),
     web.view('/news_actions', NewsActionsView),
+    web.view('/news_update_order', NewsUpdateOrder),
+    web.view('/news_update_comment', NewsUpdateComment),
 
     web.view('/system', SystemView),
 

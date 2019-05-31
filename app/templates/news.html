@@ -46,17 +46,26 @@
     <!-- /.box-header -->
     <div class="box-body">
         <table class="table table-bordered">
+            <thead>
             <tr>
+                <th style="width: 30px">#</th>
                 <th style="width: 30px">Состояние</th>
                 <th>Заголовок</th>
                 <th style="width: 30px">Дата окончания</th>
+                <th>Приложения</th>
+                <th>Комментарий</th>
                 <th style="width: 30px">Действие</th>
                 <th style="width: 100px">Лого</th>
                 <th style="width: 30px"></th>
             </tr>
-
+            </thead>
+            <tbody id="offers-table-body">
             {% for news_item in news %}
             <tr>
+                <td class="offer_position">{{news_item.position}}</td>
+                <!-- Added for items position change-->
+                <td class="offer_id" style="display: none">{{news_item.id}}</td>
+                <!-- Added for items position change -->
                 <td>
                     <h4>{% if news_item.isActive %}
                         <i class="fa fa-fw fa-play text-green"></i>
@@ -68,27 +77,127 @@
                 <td><a href="/news_overview?id={{news_item.id}}"><h4>{{ news_item.title }}</h4></a></td>
                 <td>{{news_item.expireDate}}</td>
                 <td>
+                    <ul>
+                        {% for app in news_item.related_apps %}
+                        <li>{{ app.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <input class="form-control comment-input" type="text" id="comment"
+                           name="comment" item_id={{news_item.id}}
+                           {% if news_item.comment %}
+                           value={{ news_item.comment }}
+                           {% endif %}
+                    >
+                </td>
+                <td>
                     {% if news_item.isActive %}
-                    <a href="/news_actions?id={{news_item.id}}&action=stop" type="button" class="btn btn-block btn-danger">Остановить</a>
+                    <a href="/news_actions?id={{news_item.id}}&action=stop" type="button"
+                       class="btn btn-block btn-danger">Остановить</a>
                     {% else %}
-                    <a href="/news_actions?id={{news_item.id}}&action=run" type="button" class="btn btn-block btn-success">Запустить</a>
+                    <a href="/news_actions?id={{news_item.id}}&action=run" type="button"
+                       class="btn btn-block btn-success">Запустить</a>
                     {% endif %}
                 </td>
                 <td>
                     {% if news_item.image %}
-                        <img class="img-responsive" width="100px" src="{{ news_item.image }}" alt="Photo">
+                    <img class="img-responsive" width="100px" src="{{ news_item.image }}" alt="Photo">
                     {% else %}
-                        <img class="img-responsive" width="36px" src="/static/img/no_image.png" alt="Photo">
+                    <img class="img-responsive" width="36px" src="/static/img/no_image.png" alt="Photo">
                     {% endif%}
                 </td>
                 <td>
-                    <a href="/news_actions?id={{news_item.id}}&action=delete"><h4><i class="fa fa-remove text-red"></i> </h4></a>
+                    <a href="/news_actions?id={{news_item.id}}&action=delete"><h4><i class="fa fa-remove text-red"></i>
+                    </h4></a>
                 </td>
             </tr>
             {% endfor %}
+            </tbody>
         </table>
     </div>
     <!-- /.box-body -->
 </div>
 <!-- /.box -->
+{% endblock %}
+
+{% block page_scripts %}
+<!-- Items position change -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        let offers_table_body = document.getElementById('offers-table-body');
+        Sortable.create(offers_table_body, {
+            onEnd: function () {
+                recountElements();
+            }
+        });
+
+        $(".comment-input").keyup(function (event) {
+            if (event.keyCode === 13) {
+                var $input = $(event.target);
+                let item_id = $input.attr('item_id');
+                let comment = $input.val();
+                updateNewsComment({item_id: item_id, comment: comment});
+            }
+        });
+    });
+
+    function updateNewsComment(updated_comment_data) {
+        var xhr = new XMLHttpRequest();
+        var url = "/news_update_comment";
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function () {
+            console.log(xhr.readyState);
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log('Updated');
+            } else {
+                console.error(xhr.responseText);
+            }
+        };
+        var data = JSON.stringify(updated_comment_data);
+        xhr.send(data);
+
+    }
+
+    function uploadUpdatedOrder(updated_position_data) {
+        console.log(updated_position_data);
+
+        var xhr = new XMLHttpRequest();
+        var url = "/news_update_order";
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function () {
+            console.log(xhr.readyState);
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log('Updated');
+            } else {
+                console.error(xhr.responseText);
+            }
+        };
+        var data = JSON.stringify(updated_position_data);
+        xhr.send(data);
+
+    }
+
+    function recountElements() {
+        let offers_table_body = document.getElementById('offers-table-body');
+        let offers_lines = offers_table_body.children;
+        console.log(offers_lines);
+        updated_position_data = [];
+
+        for (let i = 0; i < offers_lines.length; i++) {
+            offers_lines[i].children[0].innerHTML = (i).toString();
+            item_data = {
+                position: i,
+                item_id: offers_lines[i].children[1].innerHTML
+            };
+            updated_position_data.push(item_data);
+        }
+
+        uploadUpdatedOrder(updated_position_data);
+    }
+</script>
+<!-- End Items position change -->
 {% endblock %}

@@ -48,6 +48,14 @@
                         <input class="form-control" type="text" placeholder="Введите имя" id="name" name="name"
                                value="{{offer.name}}">
 
+                        <label for="comment">Комментарий</label>
+                        <input class="form-control" type="text" placeholder="Введите комментарий" id="comment"
+                               name="comment"
+                               {% if offer.comment %}
+                               value="{{offer.comment}}"
+                               {% endif %}}
+                        >
+
                         <div class="form-group">
                             <label>Тип оффера</label>
                             <select class="form-control" name="offer_type">

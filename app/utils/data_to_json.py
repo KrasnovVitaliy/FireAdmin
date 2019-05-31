@@ -1,5 +1,6 @@
 import db
 from utils.data_fields_utils import prepare_object_data
+from sqlalchemy import asc, desc
 
 
 def gen_app_json(app):
@@ -7,12 +8,12 @@ def gen_app_json(app):
         'app_id': app.id,
     }
     results = db.session.query(db.OffersAppsRelations, db.Offers).filter_by(**filters).filter(
-        db.OffersAppsRelations.offer_id == db.Offers.id).all()
+        db.OffersAppsRelations.offer_id == db.Offers.id).order_by(asc(db.Offers.position)).all()
 
     ret_data = {}
     for result in results:
         if result[1].isActive:
-            offer_data = prepare_object_data(result[1].to_json()) # fields_to_str(trim_fields(result[1].to_json()))
+            offer_data = prepare_object_data(result[1].to_json())  # fields_to_str(trim_fields(result[1].to_json()))
             offer_data['order'] = offer_data['order'] + "?source={}".format(app.order_tracking_source)
 
             offer_type = db.session.query(db.OffersTypes).filter_by(id=result[1].offer_type).first()
@@ -26,11 +27,11 @@ def gen_app_json(app):
         'app_id': app.id,
     }
     results = db.session.query(db.NewsAppsRelations, db.News).filter_by(**filters).filter(
-        db.NewsAppsRelations.news_id == db.News.id).all()
+        db.NewsAppsRelations.news_id == db.News.id).order_by(asc(db.News.position)).all()
     ret_data['news'] = []
     for result in results:
         if result[1].isActive:
-            news_data = prepare_object_data(result[1].to_json()) # fields_to_str(trim_fields(result[1].to_json()))
+            news_data = prepare_object_data(result[1].to_json())  # fields_to_str(trim_fields(result[1].to_json()))
             ret_data['news'].append(news_data)
 
     # Adding license terms
