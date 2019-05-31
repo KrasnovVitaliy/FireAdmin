@@ -1,0 +1,238 @@
+{% extends 'lib/main.html' %}
+{% block header_nav %}
+{% endblock %}
+
+{% block content_header %}
+<h1>
+    Создать оффер
+</h1>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+
+<form role="form" action="/offers_create" method="post">
+    <section class="content">
+        <div class="box box-info">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box-footer">
+                        <button class="btn btn-default" onclick="goBack()">Отмена</button>
+                        <button type="submit" class="btn btn-info pull-right">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- left column -->
+            <section class="col-md-6">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Основная информация</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="isActive">
+                                Активен
+                            </label>
+                        </div>
+
+                        <label for="comment">Комментарий</label>
+                        <input class="form-control" type="text" placeholder="Введите комментарий" id="comment"
+                               name="comment">
+
+                        <label for="name">Название оффера</label>
+                        <input required class="form-control" type="text" placeholder="Введите имя" id="name"
+                               name="name">
+                        <div class="form-group">
+                            <label>Тип оффера</label>
+                            <select class="form-control" name="offer_type">
+                                {% for offer_type in offers_types%}
+                                <option
+                                        value="{{offer_type.id}}"
+                                        {% if offer_type.id== offer.offer_type%}
+                                        selected
+                                        {% endif %}
+                                >{{offer_type.description}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <label for="itemId">ID оффера</label>
+                        <input class="form-control" type="text" placeholder="Введите уникальный ID" id="itemId"
+                               name="itemId">
+
+                        <label for="order">Ссылка ддя оформления</label>
+                        <input class="form-control" type="text" placeholder="Введите адрес" id="order" name="order">
+
+                        <label for="screen">Ссылка на картинку</label>
+                        <input class="form-control" type="text" placeholder="Введите адрес" id="screen" name="screen">
+
+                        <!--<img class="img-responsive" width="100px" src="{{ offer.screen }}" alt="Photo">-->
+
+                        <label for="description">Описание</label>
+                        <!--<textarea class="form-control" rows="5" id="description" name="description"-->
+                                  <!--placeholder="HTML описание"></textarea>-->
+                        <textarea id="editor1" name="editor1" rows="5" cols="80" id="description" name="description"
+                        placeholder="HTML описание"></textarea>
+                    </div>
+                </div>
+
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Способы выплат</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="mir">
+                                    Карта МИР
+                                </label>
+                            </div>
+
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="visa">
+                                    Карта VISA
+                                </label>
+                            </div>
+
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="mastercard">
+                                    Карта Mastercard
+                                </label>
+                            </div>
+
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="qiwi">
+                                    QIWI
+                                </label>
+                            </div>
+
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="yandex">
+                                    Yandex
+                                </label>
+                            </div>
+
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="cash">
+                                    Наличные
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="col-md-6">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Приложения</h3>
+                    </div>
+                    <div class="box-body">
+                        {% for app in apps %}
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="app_{{app.id}}">
+                                    {{app.name}}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Отображаемые элементы</h3>
+                    </div>
+                    <div class="box-body">
+                        <label for="orderButtonText">Текст кнопки оформить</label>
+                        <input class="form-control" type="text" placeholder="Введите текст" id="orderButtonText"
+                               name="orderButtonText">
+
+                        <label for="percentPrefix">Префикс процентов</label>
+                        <input class="form-control" type="text" placeholder="Префикс процентов" id="percentPrefix"
+                               name="percentPrefix">
+
+                        <label for="percentPostfix">Постфикс процентов</label>
+                        <input class="form-control" type="text" placeholder="Введите Постфикс" id="percentPostfix"
+                               name="percentPostfix">
+
+                        <label for="score">Рейтинг</label>
+                        <input class="form-control" type="text" placeholder="Введите имя" id="score" name="score">
+
+                        <label for="score">Зеленый маркер</label>
+                        <input class="form-control" type="text" placeholder="Введите текст маркера" id="greenStickerText"
+                               name="greenStickerText">
+
+                        <label for="score">Синий маркер</label>
+                        <input class="form-control" type="text" placeholder="Введите текст маркера" id="blueStickerText"
+                               name="blueStickerText">
+
+                        <label for="score">Красный маркер</label>
+                        <input class="form-control" type="text" placeholder="Введите текст маркера" id="redStickerText"
+                               name="redStickerText">
+
+                    </div>
+                </div>
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Ставки и сроки</h3>
+                    </div>
+                    <div class="box-body">
+
+                        <label for="percent">Процентная ставка</label>
+                        <input class="form-control" type="text" placeholder="Введите ставку" id="percent"
+                               name="percent">
+
+                        <label for="summ">Сумма</label>
+                        <input class="form-control" type="text" placeholder="Введите сумму" id="summ" name="summ">
+
+                        <label for="term">Срок</label>
+                        <input class="form-control" type="text" placeholder="Введите срок" id="term" name="term">
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="box box-info">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box-footer">
+                        <button class="btn btn-default" onclick="goBack()">Отмена</button>
+                        <button type="submit" class="btn btn-info pull-right">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+
+<!-- /.box-body -->
+</div>
+
+{% endblock %}
+
+{% block page_scripts %}
+<script src="/static/bower_components/ckeditor/ckeditor.js"></script>
+<script src="/static/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        // Replace the <textarea id="editor1"> with a CKEditor
+        // instance, using default configuration.
+        CKEDITOR.replace('editor1')
+        //bootstrap WYSIHTML5 - text editor
+        $('.textarea').wysihtml5()
+    })
+</script>
+{% endblock %}

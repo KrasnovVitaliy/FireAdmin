@@ -1,0 +1,106 @@
+{% extends 'lib/main.html' %}
+{% block header_nav %}
+{% endblock %}
+
+{% block content_header %}
+<h1>
+    Создать приложение
+</h1>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+
+<form role="form" action="/apps_create" method="post">
+    <section class="content">
+        <div class="box box-info">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box-footer">
+                        <button class="btn btn-default" onclick="goBack()">Отмена</button>
+                        <button type="submit" class="btn btn-info pull-right">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- left column -->
+            <section class="col-md-6">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Основная информация</h3>
+                    </div>
+                    <div class="box-body">
+                        <label for="name">Название приложения</label>
+                        <input required class="form-control" type="text" placeholder="Введите имя" id="name"
+                               name="name">
+
+                        <label for="description">Описание</label>
+                        <textarea class="form-control" rows="5" id="description" name="description"
+                                  placeholder="Описание"></textarea>
+
+                        <label for="license_term">Польательское соглашение</label>
+                        <!--<textarea class="form-control" rows="10" id="license_term" name="license_term"-->
+                                  <!--placeholder="Соглашение"></textarea>-->
+                        <textarea id="license_term" name="license_term" rows="5" cols="80" id="license_term"
+                        placeholder="Соглашение"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section class="col-md-6">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Интеграция</h3>
+                    </div>
+                    <div class="box-body">
+                        <label for="name">Firebase ID</label>
+                        <input required class="form-control" type="text" placeholder="Введите ID" id="fb_id"
+                               name="fb_id">
+
+                        <label for="name">Firebase URL</label>
+                        <input required class="form-control" type="text" placeholder="Введите url" id="fb_url"
+                               name="fb_url">
+
+                        <label for="name">Идентификатор ссылки заказа</label>
+                        <input required class="form-control" type="text" placeholder="Введите идентификатор" id="order_tracking_source"
+                               name="order_tracking_source">
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="box box-info">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box-footer">
+                        <button class="btn btn-default" onclick="goBack()">Отмена</button>
+                        <button type="submit" class="btn btn-info pull-right">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+
+<!-- /.box-body -->
+</div>
+
+{% endblock %}
+
+{% block page_scripts %}
+<script src="/static/bower_components/ckeditor/ckeditor.js"></script>
+<script src="/static/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        // Replace the <textarea id="editor1"> with a CKEditor
+        // instance, using default configuration.
+        CKEDITOR.replace('license_term')
+        //bootstrap WYSIHTML5 - text editor
+        $('.textarea').wysihtml5()
+    })
+</script>
+{% endblock %}
