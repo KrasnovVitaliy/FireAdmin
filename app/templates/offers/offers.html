@@ -13,36 +13,44 @@
 {% endblock %}
 
 {% block content %}
-
 <div class="box">
     <div class="box-header">
-        <div class="btn-group">
-            <a href="/offers?offers_type={{offers_type_id}}" type="button"
-               {% if offers_state=="all" %}}
-               class="btn btn-info"
-               {% else %}
-               class="btn btn-default"
-               {% endif%}
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="btn-group">
+                    <a href="/offers?offers_type={{offers_type_id}}" type="button"
+                       {% if offers_state=="all" %}}
+                       class="btn btn-info"
+                       {% else %}
+                       class="btn btn-default"
+                       {% endif%}
 
-            >Все</a>
-            <a href="/offers?offers_type={{offers_type_id}}&state=active" type="button"
-               {% if offers_state=="active" %}}
-               class="btn btn-success"
-               {% else %}
-               class="btn btn-default"
-               {% endif%}
-            >Активные</a>
-            <a href="/offers?offers_type={{offers_type_id}}&state=inactive" type="button"
-               {% if offers_state=="inactive" %}}
-               class="btn btn-danger"
-               {% else %}
-               class="btn btn-default"
-               {% endif%}
-            >Неактивные</a>
+                    >Все</a>
+                    <a href="/offers?offers_type={{offers_type_id}}&state=active" type="button"
+                       {% if offers_state=="active" %}}
+                       class="btn btn-success"
+                       {% else %}
+                       class="btn btn-default"
+                       {% endif%}
+                    >Активные</a>
+                    <a href="/offers?offers_type={{offers_type_id}}&state=inactive" type="button"
+                       {% if offers_state=="inactive" %}}
+                       class="btn btn-danger"
+                       {% else %}
+                       class="btn btn-default"
+                       {% endif%}
+                    >Неактивные</a>
+                </div>
+            </div>
+            <div class="col-xs-3">
+                <input type="text" name="search-input" id="search-input" onkeyup="filterItems()" class="form-control"
+                       placeholder="Поиск по офферам...">
+            </div>
+            <div class="col-xs-5">
+                <a href="/offers_create?offers_type={{offers_type_id}}" class="btn btn-info pull-right"
+                   type="button">Создать</a>
+            </div>
         </div>
-
-        <a href="/offers_create?offers_type={{offers_type_id}}" class="btn btn-info pull-right"
-           type="button">Создать</a>
     </div>
     <!-- /.box-header -->
     <div class="box-body">
@@ -106,8 +114,10 @@
                     {% endif%}
                 </td>
                 <td>
-                    <a href="/offers_actions?id={{offer.id}}&action=delete&offer_type={{offers_type_id}}"><h4><i
-                            class="fa fa-remove text-red"></i></h4></a>
+                    <a class="text-danger" href="#"><h4><i class="fa fa-remove text-red" data-offer_id={{offer.id}}
+                                                           data-offer_name="{{offer.name}}"
+                                                           data-toggle="modal"
+                                                           data-target="#deleteConfirmationModal"></i></h4></a>
                 </td>
             </tr>
             {% endfor %}
@@ -117,12 +127,33 @@
     <!-- /.box-body -->
 </div>
 <!-- /.box -->
+
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog"
+     aria-labelledby="deleteConfirmationModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h3>Удалить оффер <span id="modal-offer_name"></span>?</h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal" id="cancel-delete-button">Cancel
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirm-delete-button">Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block page_scripts %}
 <!-- Items position change -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script type="text/javascript">
+    pass_arguments_to_modal();
+    set_confirmation_modal_handlers();
+
     $(document).ready(function () {
         let offers_table_body = document.getElementById('offers-table-body');
         Sortable.create(offers_table_body, {
@@ -193,6 +224,59 @@
         }
 
         uploadUpdatedOrder(updated_position_data);
+    }
+
+    function pass_arguments_to_modal() {
+        let ATTRIBUTES = ['offer_name'];
+        $('[data-toggle="modal"]').on('click', function (e) {
+            // convert target (e.g. the button) to jquery object
+            var $target = $(e.target);
+            // modal targeted by the button
+            var modalSelector = $target.data('target');
+
+            // iterate over each possible data-* attribute
+            ATTRIBUTES.forEach(function (attributeName) {
+                // retrieve the dom element corresponding to current attribute
+                var $modalAttribute = $(modalSelector + ' #modal-' + attributeName);
+                var dataValue = $target.data(attributeName);
+                $modalAttribute.text(dataValue || '');
+            });
+            window.removing_id = $target.data('offer_id');
+            console.log("Selected id: " + window.removing_id);
+        });
+    }
+
+    function set_confirmation_modal_handlers() {
+        $('#deleteConfirmationModal .modal-footer button').on('click', function (event) {
+            var $button = $(event.target); // The clicked button
+
+            $(this).closest('.modal').one('hidden.bs.modal', function () {
+                if ($button.attr("id") == 'confirm-delete-button') {
+                    window.location.href = '/offers_actions?&action=delete&offer_type={{offers_type_id}}&id=' + window.removing_id;
+                }
+            });
+        });
+    }
+
+    function filterItems() {
+        // Declare variables
+        let input, filter, spletRow, i;
+        input = document.getElementById('search-input');
+        filter = input.value.toLowerCase();
+        offers_table_body = document.getElementById("offers-table-body");
+        sorting_items = offers_table_body.children;
+
+        // Loop through all list items, and hide those who don't match the search query
+        for (i = 0; i < sorting_items.length; i++) {
+            spletRow = sorting_items[i].children;
+            offerName = spletRow[3].getElementsByTagName("a")[0].textContent;
+
+            if (offerName.toLowerCase().indexOf(filter) > -1) {
+                sorting_items[i].style.display = "";
+            } else {
+                sorting_items[i].style.display = "none";
+            }
+        }
     }
 </script>
 <!-- End Items position change -->

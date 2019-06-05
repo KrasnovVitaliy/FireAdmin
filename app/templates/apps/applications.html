@@ -62,6 +62,12 @@
                     </div>
                 </td>
                 </td>
+                <td>
+                    <a class="text-danger" href="#"><h4><i class="fa fa-remove text-red" data-app_id={{app.id}}
+                                                           data-app_name="{{app.name}}"
+                                                           data-toggle="modal"
+                                                           data-target="#deleteConfirmationModal"></i></h4></a>
+                </td>
             </tr>
             {% endfor %}
         </table>
@@ -69,4 +75,61 @@
     <!-- /.box-body -->
 </div>
 <!-- /.box -->
+
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog"
+     aria-labelledby="deleteConfirmationModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h3>Удалить приложение <span id="modal-app_name"></span>?</h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal" id="cancel-delete-button">Cancel
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirm-delete-button">Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<script type="text/javascript">
+    pass_arguments_to_modal();
+    set_confirmation_modal_handlers();
+
+    function pass_arguments_to_modal() {
+        let ATTRIBUTES = ['app_name'];
+        $('[data-toggle="modal"]').on('click', function (e) {
+            // convert target (e.g. the button) to jquery object
+            var $target = $(e.target);
+            // modal targeted by the button
+            var modalSelector = $target.data('target');
+
+            // iterate over each possible data-* attribute
+            ATTRIBUTES.forEach(function (attributeName) {
+                // retrieve the dom element corresponding to current attribute
+                var $modalAttribute = $(modalSelector + ' #modal-' + attributeName);
+                var dataValue = $target.data(attributeName);
+                $modalAttribute.text(dataValue || '');
+            });
+            window.removing_id = $target.data('app_id');
+            console.log("Selected id: " + window.removing_id);
+        });
+    }
+
+    function set_confirmation_modal_handlers() {
+        $('#deleteConfirmationModal .modal-footer button').on('click', function (event) {
+            var $button = $(event.target); // The clicked button
+
+            $(this).closest('.modal').one('hidden.bs.modal', function () {
+                if ($button.attr("id") == 'confirm-delete-button') {
+                    window.location.href = '/apps_actions?&action=delete&id=' + window.removing_id;
+                }
+            });
+        });
+    }
+</script>
 {% endblock %}

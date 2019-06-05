@@ -14,7 +14,10 @@ class ApplicationsView(web.View):
     async def get(self, *args, **kwargs):
         params = self.request.rel_url.query
 
-        apps = db.session.query(db.Applications).all()
+        filters = {
+            'deleted': None,
+        }
+        apps = db.session.query(db.Applications).filter_by(**filters).all()
         apps_data = [obj.to_json() for obj in apps]
 
         return {

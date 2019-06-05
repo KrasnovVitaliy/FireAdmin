@@ -16,188 +16,278 @@
 
 <div class="box">
     <div class="box-header">
-        <div class="btn-group">
-            <a href="/news" type="button"
-               {% if news_state=="all" %}}
-               class="btn btn-info"
-               {% else %}
-               class="btn btn-default"
-               {% endif%}
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="btn-group">
+                    <a href="/news" type="button"
+                       {% if news_state=="all" %}}
+                       class="btn btn-info"
+                       {% else %}
+                       class="btn btn-default"
+                       {% endif%}
 
-            >Все</a>
-            <a href="/news?state=active" type="button"
-               {% if news_state=="active" %}}
-               class="btn btn-success"
-               {% else %}
-               class="btn btn-default"
-               {% endif%}
-            >Активные</a>
-            <a href="/news?state=inactive" type="button"
-               {% if news_state=="inactive" %}}
-               class="btn btn-danger"
-               {% else %}
-               class="btn btn-default"
-               {% endif%}
-            >Неактивные</a>
+                    >Все</a>
+                    <a href="/news?state=active" type="button"
+                       {% if news_state=="active" %}}
+                       class="btn btn-success"
+                       {% else %}
+                       class="btn btn-default"
+                       {% endif%}
+                    >Активные</a>
+                    <a href="/news?state=inactive" type="button"
+                       {% if news_state=="inactive" %}}
+                       class="btn btn-danger"
+                       {% else %}
+                       class="btn btn-default"
+                       {% endif%}
+                    >Неактивные</a>
+                </div>
+            </div>
+            <div class="col-xs-3">
+                <input type="text" name="search-input" id="search-input" onkeyup="filterItems()"
+                           class="form-control"
+                           placeholder="Поиск по новостям...">
+            </div>
+            <div class="col-xs-5">
+                <a href="/news_create" class="btn btn-info pull-right" type="button">Создать</a>
+            </div>
         </div>
 
-        <a href="/news_create" class="btn btn-info pull-right" type="button">Создать</a>
-    </div>
-    <!-- /.box-header -->
-    <div class="box-body">
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th style="width: 30px">#</th>
-                <th style="width: 30px">Состояние</th>
-                <th>Заголовок</th>
-                <th style="width: 30px">Дата окончания</th>
-                <th>Приложения</th>
-                <th>Комментарий</th>
-                <th style="width: 30px">Действие</th>
-                <th style="width: 100px">Лого</th>
-                <th style="width: 30px"></th>
-            </tr>
-            </thead>
-            <tbody id="offers-table-body">
-            {% for news_item in news %}
-            <tr>
-                <td class="offer_position">{{news_item.position}}</td>
-                <!-- Added for items position change-->
-                <td class="offer_id" style="display: none">{{news_item.id}}</td>
-                <!-- Added for items position change -->
-                <td>
-                    <h4>{% if news_item.isActive %}
-                        <i class="fa fa-fw fa-play text-green"></i>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th style="width: 30px">#</th>
+                    <th style="width: 30px">Состояние</th>
+                    <th>Заголовок</th>
+                    <th style="width: 30px">Дата окончания</th>
+                    <th>Приложения</th>
+                    <th>Комментарий</th>
+                    <th style="width: 30px">Действие</th>
+                    <th style="width: 100px">Лого</th>
+                    <th style="width: 30px"></th>
+                </tr>
+                </thead>
+                <tbody id="news-table-body">
+                {% for news_item in news %}
+                <tr>
+                    <td class="offer_position">{{news_item.position}}</td>
+                    <!-- Added for items position change-->
+                    <td class="offer_id" style="display: none">{{news_item.id}}</td>
+                    <!-- Added for items position change -->
+                    <td>
+                        <h4>{% if news_item.isActive %}
+                            <i class="fa fa-fw fa-play text-green"></i>
+                            {% else %}
+                            <i class="fa fa-fw fa-stop text-red"></i>
+                            {% endif %}
+                        </h4>
+                    </td>
+                    <td><a href="/news_overview?id={{news_item.id}}"><h4>{{ news_item.title }}</h4></a></td>
+                    <td>{{news_item.expireDate}}</td>
+                    <td>
+                        <ul>
+                            {% for app in news_item.related_apps %}
+                            <li>{{ app.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>
+                        <input class="form-control comment-input" type="text" id="comment"
+                               name="comment" item_id={{news_item.id}}
+                               {% if news_item.comment %}
+                               value={{ news_item.comment }}
+                               {% endif %}
+                        >
+                    </td>
+                    <td>
+                        {% if news_item.isActive %}
+                        <a href="/news_actions?id={{news_item.id}}&action=stop" type="button"
+                           class="btn btn-block btn-danger">Остановить</a>
                         {% else %}
-                        <i class="fa fa-fw fa-stop text-red"></i>
+                        <a href="/news_actions?id={{news_item.id}}&action=run" type="button"
+                           class="btn btn-block btn-success">Запустить</a>
                         {% endif %}
-                    </h4>
-                </td>
-                <td><a href="/news_overview?id={{news_item.id}}"><h4>{{ news_item.title }}</h4></a></td>
-                <td>{{news_item.expireDate}}</td>
-                <td>
-                    <ul>
-                        {% for app in news_item.related_apps %}
-                        <li>{{ app.name }}</li>
-                        {% endfor %}
-                    </ul>
-                </td>
-                <td>
-                    <input class="form-control comment-input" type="text" id="comment"
-                           name="comment" item_id={{news_item.id}}
-                           {% if news_item.comment %}
-                           value={{ news_item.comment }}
-                           {% endif %}
-                    >
-                </td>
-                <td>
-                    {% if news_item.isActive %}
-                    <a href="/news_actions?id={{news_item.id}}&action=stop" type="button"
-                       class="btn btn-block btn-danger">Остановить</a>
-                    {% else %}
-                    <a href="/news_actions?id={{news_item.id}}&action=run" type="button"
-                       class="btn btn-block btn-success">Запустить</a>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if news_item.image %}
-                    <img class="img-responsive" width="100px" src="{{ news_item.image }}" alt="Photo">
-                    {% else %}
-                    <img class="img-responsive" width="36px" src="/static/img/no_image.png" alt="Photo">
-                    {% endif%}
-                </td>
-                <td>
-                    <a href="/news_actions?id={{news_item.id}}&action=delete"><h4><i class="fa fa-remove text-red"></i>
-                    </h4></a>
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                    </td>
+                    <td>
+                        {% if news_item.image %}
+                        <img class="img-responsive" width="100px" src="{{ news_item.image }}" alt="Photo">
+                        {% else %}
+                        <img class="img-responsive" width="36px" src="/static/img/no_image.png" alt="Photo">
+                        {% endif%}
+                    </td>
+                    <td>
+                        <!--<a href="/news_actions?id={{news_item.id}}&action=delete"><h4><i class="fa fa-remove text-red"></i>-->
+                        <!--</h4></a>-->
+                        <a class="text-danger" href="#"><h4><i class="fa fa-remove text-red"
+                                                               data-news_item_id={{news_item.id}}
+                                                               data-news_item_name="{{news_item.title}}"
+                                                               data-toggle="modal"
+                                                               data-target="#deleteConfirmationModal"></i></h4></a>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- /.box-body -->
     </div>
-    <!-- /.box-body -->
-</div>
-<!-- /.box -->
-{% endblock %}
+    <!-- /.box -->
 
-{% block page_scripts %}
-<!-- Items position change -->
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        let offers_table_body = document.getElementById('offers-table-body');
-        Sortable.create(offers_table_body, {
-            onEnd: function () {
-                recountElements();
-            }
+
+    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog"
+         aria-labelledby="deleteConfirmationModal"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h3>Удалить новость <span id="modal-news_item_name"></span>?</h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal" id="cancel-delete-button">Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirm-delete-button">Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    {% block page_scripts %}
+    <!-- Items position change -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script type="text/javascript">
+        pass_arguments_to_modal();
+        set_confirmation_modal_handlers();
+
+        $(document).ready(function () {
+            let news_table_body = document.getElementById('news-table-body');
+            Sortable.create(news_table_body, {
+                onEnd: function () {
+                    recountElements();
+                }
+            });
+
+            $(".comment-input").keyup(function (event) {
+                if (event.keyCode === 13) {
+                    var $input = $(event.target);
+                    let item_id = $input.attr('item_id');
+                    let comment = $input.val();
+                    updateNewsComment({item_id: item_id, comment: comment});
+                }
+            });
         });
 
-        $(".comment-input").keyup(function (event) {
-            if (event.keyCode === 13) {
-                var $input = $(event.target);
-                let item_id = $input.attr('item_id');
-                let comment = $input.val();
-                updateNewsComment({item_id: item_id, comment: comment});
-            }
-        });
-    });
-
-    function updateNewsComment(updated_comment_data) {
-        var xhr = new XMLHttpRequest();
-        var url = "/news_update_comment";
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onreadystatechange = function () {
-            console.log(xhr.readyState);
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                console.log('Updated');
-            } else {
-                console.error(xhr.responseText);
-            }
-        };
-        var data = JSON.stringify(updated_comment_data);
-        xhr.send(data);
-
-    }
-
-    function uploadUpdatedOrder(updated_position_data) {
-        console.log(updated_position_data);
-
-        var xhr = new XMLHttpRequest();
-        var url = "/news_update_order";
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onreadystatechange = function () {
-            console.log(xhr.readyState);
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                console.log('Updated');
-            } else {
-                console.error(xhr.responseText);
-            }
-        };
-        var data = JSON.stringify(updated_position_data);
-        xhr.send(data);
-
-    }
-
-    function recountElements() {
-        let offers_table_body = document.getElementById('offers-table-body');
-        let offers_lines = offers_table_body.children;
-        console.log(offers_lines);
-        updated_position_data = [];
-
-        for (let i = 0; i < offers_lines.length; i++) {
-            offers_lines[i].children[0].innerHTML = (i).toString();
-            item_data = {
-                position: i,
-                item_id: offers_lines[i].children[1].innerHTML
+        function updateNewsComment(updated_comment_data) {
+            var xhr = new XMLHttpRequest();
+            var url = "/news_update_comment";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                console.log(xhr.readyState);
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log('Updated');
+                } else {
+                    console.error(xhr.responseText);
+                }
             };
-            updated_position_data.push(item_data);
+            var data = JSON.stringify(updated_comment_data);
+            xhr.send(data);
+
         }
 
-        uploadUpdatedOrder(updated_position_data);
-    }
-</script>
-<!-- End Items position change -->
-{% endblock %}
+        function uploadUpdatedOrder(updated_position_data) {
+            console.log(updated_position_data);
+
+            var xhr = new XMLHttpRequest();
+            var url = "/news_update_order";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                console.log(xhr.readyState);
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log('Updated');
+                } else {
+                    console.error(xhr.responseText);
+                }
+            };
+            var data = JSON.stringify(updated_position_data);
+            xhr.send(data);
+
+        }
+
+        function recountElements() {
+            let news_table_body = document.getElementById('news-table-body');
+            let news_lines = news_table_body.children;
+            console.log(news_lines);
+            updated_position_data = [];
+
+            for (let i = 0; i < news_lines.length; i++) {
+                news_lines[i].children[0].innerHTML = (i).toString();
+                item_data = {
+                    position: i,
+                    item_id: news_lines[i].children[1].innerHTML
+                };
+                updated_position_data.push(item_data);
+            }
+
+            uploadUpdatedOrder(updated_position_data);
+        }
+
+        function pass_arguments_to_modal() {
+            let ATTRIBUTES = ['news_item_name'];
+            $('[data-toggle="modal"]').on('click', function (e) {
+                // convert target (e.g. the button) to jquery object
+                var $target = $(e.target);
+                // modal targeted by the button
+                var modalSelector = $target.data('target');
+
+                // iterate over each possible data-* attribute
+                ATTRIBUTES.forEach(function (attributeName) {
+                    // retrieve the dom element corresponding to current attribute
+                    var $modalAttribute = $(modalSelector + ' #modal-' + attributeName);
+                    var dataValue = $target.data(attributeName);
+                    $modalAttribute.text(dataValue || '');
+                });
+                window.removing_id = $target.data('news_item_id');
+                console.log("Selected id: " + window.removing_id);
+            });
+        }
+
+        function set_confirmation_modal_handlers() {
+            $('#deleteConfirmationModal .modal-footer button').on('click', function (event) {
+                var $button = $(event.target); // The clicked button
+
+                $(this).closest('.modal').one('hidden.bs.modal', function () {
+                    if ($button.attr("id") == 'confirm-delete-button') {
+                        window.location.href = '/news_actions?&action=delete&id=' + window.removing_id
+                    }
+                });
+            });
+        }
+
+        function filterItems() {
+            // Declare variables
+            let input, filter, spletRow, i;
+            input = document.getElementById('search-input');
+            filter = input.value.toLowerCase();
+            news_table_body = document.getElementById("news-table-body");
+            sorting_items = news_table_body.children;
+
+            // Loop through all list items, and hide those who don't match the search query
+            for (i = 0; i < sorting_items.length; i++) {
+                spletRow = sorting_items[i].children;
+                offerName = spletRow[3].getElementsByTagName("a")[0].textContent;
+
+                if (offerName.toLowerCase().indexOf(filter) > -1) {
+                    sorting_items[i].style.display = "";
+                } else {
+                    sorting_items[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+    <!-- End Items position change -->
+    {% endblock %}
