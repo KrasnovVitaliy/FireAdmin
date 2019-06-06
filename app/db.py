@@ -109,7 +109,14 @@ class Offers(Base):
     score = Column(Integer)
     screen = Column(String(200))
     summ = Column(String(200))
-    term = Column(String(200))
+    summPostfix = Column(String(50))
+    summPrefix = Column(String(50))
+
+    termMin = Column(String(50))
+    termMax = Column(String(50))
+    termMid = Column(String(50))
+    termPrefix = Column(String(50))
+    termPostfix = Column(String(50))
 
     mastercard = Column(Boolean)
     mir = Column(Boolean)
@@ -130,9 +137,10 @@ class Offers(Base):
 
     def __init__(self, offer_type=None, isActive=None, itemId=None,
                  name=None, description=None, order=None, orderButtonText=None, percent=None, percentPostfix=None,
-                 percentPrefix=None, score=None, screen=None, summ=None, term=None, mastercard=None, mir=None,
+                 percentPrefix=None, score=None, screen=None, summ=None, mastercard=None, mir=None,
                  visa=None, qiwi=None, yandex=None, cash=None, greenStickerText=None, blueStickerText=None,
-                 redStickerText=None, position=None, comment=None):
+                 redStickerText=None, position=None, comment=None, termPostfix=None, termMax=None, termMid=None,
+                 termMin=None, termPrefix=None, summPostfix=None, summPrefix=None):
         self.offer_type = offer_type
         self.isActive = isActive
         self.itemId = itemId
@@ -146,7 +154,6 @@ class Offers(Base):
         self.score = score
         self.screen = screen
         self.summ = summ
-        self.term = term
         self.mastercard = mastercard
         self.mir = mir
         self.visa = visa
@@ -158,6 +165,13 @@ class Offers(Base):
         self.redStickerText = redStickerText
         self.position = position
         self.comment = comment
+        self.termPostfix = termPostfix
+        self.termMax = termMax
+        self.termMid = termMid
+        self.termMin = termMin
+        self.termPrefix = termPrefix
+        self.summPostfix = summPostfix
+        self.summPrefix = summPrefix
 
     def serialize(self, to_serialize):
         d = {}
@@ -171,9 +185,10 @@ class Offers(Base):
     def to_json(self):
         to_serialize = ['id', 'create_date', 'update_date', 'offer_type', 'isActive', 'itemId',
                         'name', 'description', 'order', 'orderButtonText', 'percent', 'percentPostfix',
-                        'percentPrefix', 'score', 'screen', 'summ', 'term', 'mastercard', 'mir',
+                        'percentPrefix', 'score', 'screen', 'summ', 'mastercard', 'mir',
                         'visa', 'qiwi', 'yandex', 'cash', 'creator', 'greenStickerText', 'blueStickerText',
-                        'redStickerText', 'deleted', 'position', 'comment']
+                        'redStickerText', 'deleted', 'position', 'comment', 'termPostfix', 'termMax', 'termMid',
+                        'termMin', 'termPrefix', 'summPostfix', 'summPrefix',]
         return self.serialize(to_serialize)
 
 

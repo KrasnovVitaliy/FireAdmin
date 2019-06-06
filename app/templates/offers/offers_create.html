@@ -78,9 +78,9 @@
 
                         <label for="description">Описание</label>
                         <!--<textarea class="form-control" rows="5" id="description" name="description"-->
-                                  <!--placeholder="HTML описание"></textarea>-->
+                        <!--placeholder="HTML описание"></textarea>-->
                         <textarea id="editor1" name="editor1" rows="5" cols="80" id="description" name="description"
-                        placeholder="HTML описание"></textarea>
+                                  placeholder="HTML описание"></textarea>
                     </div>
                 </div>
 
@@ -142,12 +142,12 @@
                     </div>
                     <div class="box-body">
                         {% for app in apps %}
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" name="app_{{app.id}}">
-                                    {{app.name}}
-                                </label>
-                            </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="app_{{app.id}}">
+                                {{app.name}}
+                            </label>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
@@ -161,19 +161,12 @@
                         <input class="form-control" type="text" placeholder="Введите текст" id="orderButtonText"
                                name="orderButtonText">
 
-                        <label for="percentPrefix">Префикс процентов</label>
-                        <input class="form-control" type="text" placeholder="Префикс процентов" id="percentPrefix"
-                               name="percentPrefix">
-
-                        <label for="percentPostfix">Постфикс процентов</label>
-                        <input class="form-control" type="text" placeholder="Введите Постфикс" id="percentPostfix"
-                               name="percentPostfix">
-
                         <label for="score">Рейтинг</label>
                         <input class="form-control" type="text" placeholder="Введите имя" id="score" name="score">
 
                         <label for="score">Зеленый маркер</label>
-                        <input class="form-control" type="text" placeholder="Введите текст маркера" id="greenStickerText"
+                        <input class="form-control" type="text" placeholder="Введите текст маркера"
+                               id="greenStickerText"
                                name="greenStickerText">
 
                         <label for="score">Синий маркер</label>
@@ -188,19 +181,63 @@
                 </div>
                 <div class="box box-info">
                     <div class="box-header with-border">
-                        <h3 class="box-title">Ставки и сроки</h3>
+                        <h3 class="box-title">Ставки</h3>
                     </div>
                     <div class="box-body">
+
+                        <label for="percentPrefix">Префикс процентов</label>
+                        <input class="form-control" type="text" placeholder="Префикс процентов" id="percentPrefix"
+                               name="percentPrefix">
 
                         <label for="percent">Процентная ставка</label>
                         <input class="form-control" type="text" placeholder="Введите ставку" id="percent"
                                name="percent">
 
+                        <label for="percentPostfix">Постфикс процентов</label>
+                        <input class="form-control" type="text" placeholder="Введите Постфикс" id="percentPostfix"
+                               name="percentPostfix">
+                    </div>
+                </div>
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Суммы</h3>
+                    </div>
+                    <div class="box-body">
+                        <label for="summPrefix">Префикс суммы</label>
+                        <input class="form-control" type="text" placeholder="Префикс суммы" id="summPrefix"
+                               name="summPrefix">
+
                         <label for="summ">Сумма</label>
                         <input class="form-control" type="text" placeholder="Введите сумму" id="summ" name="summ">
 
-                        <label for="term">Срок</label>
-                        <input class="form-control" type="text" placeholder="Введите срок" id="term" name="term">
+                        <label for="summPostfix">Постфикс суммы</label>
+                        <input class="form-control" type="text" placeholder="Постфикс суммы" id="summPostfix"
+                               name="summPostfix">
+                    </div>
+                </div>
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Сроки</h3>
+                    </div>
+                    <div class="box-body">
+                        <label for="termPrefix">Префикс сроков</label>
+                        <input class="form-control" type="text" placeholder="Префикс сроков" id="termPrefix"
+                               name="termPrefix">
+
+                        <label for="termMin">Срок от</label>
+                        <input class="form-control" type="text" placeholder="Введите срок" id="termMin" name="termMin">
+
+                        <label for="termMid">Разделитель сроков</label>
+                        <input class="form-control" type="text" placeholder="Разделитель сроков" id="termMid"
+                               name="termMid">
+
+                        <label for="termMax">Срок до</label>
+                        <input class="form-control" type="text" placeholder="Введите срок" id="termMax" name="termMax">
+
+                        <label for="termPostfix">Постфикс сроков</label>
+                        <input class="form-control" type="text" placeholder="Постфикс сроков" id="termPostfix"
+                               name="termPostfix">
+
                     </div>
                 </div>
             </section>

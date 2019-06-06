@@ -24,11 +24,16 @@ def fields_to_str(data):
 def remove_none_and_bool_fields(data):
     ret_data = {}
     for field in data.keys():
+
         if data[field]:
             if isinstance(data[field], bool):
                 ret_data[field] = 1
             else:
                 ret_data[field] = data[field]
+
+        #  If field is none we set it to empty string, to avoid None text in apps
+        else:
+            ret_data[field] = ""
 
     return ret_data
 

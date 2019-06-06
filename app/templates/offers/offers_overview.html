@@ -97,10 +97,10 @@
 
                         <label for="description">Описание</label>
                         <!--<textarea class="form-control" rows="5" id="description" name="description"-->
-                                  <!--placeholder="HTML описание">{% if offer.description %}{{offer.description}}{% endif %}</textarea>-->
+                        <!--placeholder="HTML описание">{% if offer.description %}{{offer.description}}{% endif %}</textarea>-->
 
                         <textarea id="editor1" name="editor1" rows="5" cols="80" id="description" name="description"
-                        placeholder="HTML описание">{% if offer.description %}{{offer.description}}{% endif %}</textarea>
+                                  placeholder="HTML описание">{% if offer.description %}{{offer.description}}{% endif %}</textarea>
 
                     </div>
                 </div>
@@ -215,22 +215,6 @@
                                {% endif %}
                         >
 
-                        <label for="percentPrefix">Префикс процентов</label>
-                        <input class="form-control" type="text" placeholder="Префикс процентов" id="percentPrefix"
-                               name="percentPrefix"
-                               {% if offer.percentPrefix %}
-                               value="{{offer.percentPrefix}}"
-                               {% endif %}
-                        >
-
-                        <label for="percentPostfix">Постфикс процентов</label>
-                        <input class="form-control" type="text" placeholder="Введите Постфикс" id="percentPostfix"
-                               name="percentPostfix"
-                               {% if offer.percentPostfix %}
-                               value="{{offer.percentPostfix}}"
-                               {% endif %}
-                        >
-
                         <label for="score">Рейтинг</label>
                         <input class="form-control" type="text" placeholder="Введите рейтинг" id="score" name="score"
                                {% if offer.score %}
@@ -267,15 +251,45 @@
                 </div>
                 <div class="box box-info">
                     <div class="box-header with-border">
-                        <h3 class="box-title">Ставки и сроки</h3>
+                        <h3 class="box-title">Ставки</h3>
                     </div>
                     <div class="box-body">
+
+                        <label for="percentPrefix">Префикс процентов</label>
+                        <input class="form-control" type="text" placeholder="Префикс процентов" id="percentPrefix"
+                               name="percentPrefix"
+                               {% if offer.percentPrefix %}
+                               value="{{offer.percentPrefix}}"
+                               {% endif %}
+                        >
 
                         <label for="percent">Процентная ставка</label>
                         <input class="form-control" type="text" placeholder="Введите ставку" id="percent"
                                name="percent"
                                {% if offer.percent %}
                                value="{{offer.percent}}"
+                               {% endif %}
+                        >
+
+                        <label for="percentPostfix">Постфикс процентов</label>
+                        <input class="form-control" type="text" placeholder="Введите Постфикс" id="percentPostfix"
+                               name="percentPostfix"
+                               {% if offer.percentPostfix %}
+                               value="{{offer.percentPostfix}}"
+                               {% endif %}
+                        >
+                    </div>
+                </div>
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Суммы</h3>
+                    </div>
+                    <div class="box-body">
+                        <label for="summPrefix">Префикс суммы</label>
+                        <input class="form-control" type="text" placeholder="Префикс суммы" id="summPrefix"
+                               name="summPrefix"
+                               {% if offer.summPrefix %}
+                               value="{{offer.summPrefix}}"
                                {% endif %}
                         >
 
@@ -286,12 +300,58 @@
                                {% endif %}
                         >
 
-                        <label for="term">Срок</label>
-                        <input class="form-control" type="text" placeholder="Введите срок" id="term" name="term"
-                               {% if offer.term %}
-                               value="{{offer.term}}"
+                        <label for="summPostfix">Постфикс суммы</label>
+                        <input class="form-control" type="text" placeholder="Постфикс суммы" id="summPostfix"
+                               name="summPostfix"
+                               {% if offer.summPostfix %}
+                               value="{{offer.summPostfix}}"
                                {% endif %}
                         >
+                    </div>
+                </div>
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Сроки</h3>
+                    </div>
+                    <div class="box-body">
+                        <label for="termPrefix">Префикс сроков</label>
+                        <input class="form-control" type="text" placeholder="Префикс сроков" id="termPrefix"
+                               name="termPrefix"
+                               {% if offer.termPrefix %}
+                               value="{{offer.termPrefix}}"
+                               {% endif %}
+                        >
+
+                        <label for="termMin">Срок от</label>
+                        <input class="form-control" type="text" placeholder="Введите срок" id="termMin" name="termMin"
+                               {% if offer.termMin %}
+                               value="{{offer.termMin}}"
+                               {% endif %}
+                        >
+
+                        <label for="termMid">Разделитель сроков</label>
+                        <input class="form-control" type="text" placeholder="Разделитель сроков" id="termMid"
+                               name="termMid"
+                               {% if offer.termMid %}
+                               value="{{offer.termMid}}"
+                               {% endif %}
+                        >
+
+                        <label for="termMax">Срок до</label>
+                        <input class="form-control" type="text" placeholder="Введите срок" id="termMax" name="termMax"
+                               {% if offer.termMax %}
+                               value="{{offer.termMax}}"
+                               {% endif %}
+                        >
+
+                        <label for="termPostfix">Постфикс сроков</label>
+                        <input class="form-control" type="text" placeholder="Постфикс сроков" id="termPostfix"
+                               name="termPostfix"
+                               {% if offer.termPostfix %}
+                               value="{{offer.termPostfix}}"
+                               {% endif %}
+                        >
+
                     </div>
                 </div>
             </section>
