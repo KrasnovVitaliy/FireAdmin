@@ -99,7 +99,7 @@
                         <!--<textarea class="form-control" rows="5" id="description" name="description"-->
                         <!--placeholder="HTML описание">{% if offer.description %}{{offer.description}}{% endif %}</textarea>-->
 
-                        <textarea id="editor1" name="editor1" rows="5" cols="80" id="description" name="description"
+                        <textarea rows="5" cols="80" id="description" name="description"
                                   placeholder="HTML описание">{% if offer.description %}{{offer.description}}{% endif %}</textarea>
 
                     </div>
@@ -293,10 +293,24 @@
                                {% endif %}
                         >
 
-                        <label for="summ">Сумма</label>
-                        <input class="form-control" type="text" placeholder="Введите сумму" id="summ" name="summ"
-                               {% if offer.summ %}
-                               value="{{offer.summ}}"
+                        <label for="summMin">Сумма от</label>
+                        <input class="form-control" type="text" placeholder="Введите сумму" id="summMin" name="summMin"
+                               {% if offer.summMin %}
+                               value="{{offer.summMin}}"
+                               {% endif %}
+                        >
+
+                        <label for="summMid">Разделитель суммы</label>
+                        <input class="form-control" type="text" placeholder="Введите разделитель" id="summMid" name="summMid"
+                               {% if offer.summMid %}
+                               value="{{offer.summMid}}"
+                               {% endif %}
+                        >
+
+                        <label for="summMax">Сумма до</label>
+                        <input class="form-control" type="text" placeholder="Введите сумму" id="summMax" name="summMax"
+                               {% if offer.summMax %}
+                               value="{{offer.summMax}}"
                                {% endif %}
                         >
 
@@ -379,9 +393,9 @@
 <script src="/static/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
 <script type="text/javascript">
     $(function () {
-        // Replace the <textarea id="editor1"> with a CKEditor
+        // Replace the <textarea id="description"> with a CKEditor
         // instance, using default configuration.
-        CKEDITOR.replace('editor1')
+        CKEDITOR.replace('description')
         //bootstrap WYSIHTML5 - text editor
         $('.textarea').wysihtml5()
     })

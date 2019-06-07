@@ -21,7 +21,10 @@ class OffersOverviewView(web.View):
         offer = db.session.query(db.Offers).filter_by(**filters).first()
         offer_data = offer.to_json()
 
-        apps = db.session.query(db.Applications).all()
+        filters = {
+            'deleted': None,
+        }
+        apps = db.session.query(db.Applications).filter_by(**filters).all()
         apps_data = [obj.to_json() for obj in apps]
 
         filters = {
@@ -68,6 +71,10 @@ class OffersOverviewView(web.View):
             'offer_id': params['id']
         }
         db.session.query(db.OffersAppsRelations).filter_by(**filters).delete()
+
+        logger.debug('!!!!!!')
+        logger.debug(post_data)
+        logger.debug('!!!!!!')
         for field in post_data:
             if "app_" in field:
                 offer_app_relation = db.OffersAppsRelations(app_id=field.replace('app_', ''), offer_id=params['id'])

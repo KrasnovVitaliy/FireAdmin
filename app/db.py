@@ -108,9 +108,12 @@ class Offers(Base):
 
     score = Column(Integer)
     screen = Column(String(200))
-    summ = Column(String(200))
-    summPostfix = Column(String(50))
+
     summPrefix = Column(String(50))
+    summMin = Column(String(50))
+    summMid = Column(String(50))
+    summMax = Column(String(50))
+    summPostfix = Column(String(50))
 
     termMin = Column(String(50))
     termMax = Column(String(50))
@@ -137,10 +140,11 @@ class Offers(Base):
 
     def __init__(self, offer_type=None, isActive=None, itemId=None,
                  name=None, description=None, order=None, orderButtonText=None, percent=None, percentPostfix=None,
-                 percentPrefix=None, score=None, screen=None, summ=None, mastercard=None, mir=None,
+                 percentPrefix=None, score=None, screen=None, mastercard=None, mir=None,
                  visa=None, qiwi=None, yandex=None, cash=None, greenStickerText=None, blueStickerText=None,
                  redStickerText=None, position=None, comment=None, termPostfix=None, termMax=None, termMid=None,
-                 termMin=None, termPrefix=None, summPostfix=None, summPrefix=None):
+                 termMin=None, termPrefix=None, summPostfix=None, summPrefix=None, summMin=None, summMax=None,
+                 summMid=None):
         self.offer_type = offer_type
         self.isActive = isActive
         self.itemId = itemId
@@ -153,7 +157,6 @@ class Offers(Base):
         self.percentPrefix = percentPrefix
         self.score = score
         self.screen = screen
-        self.summ = summ
         self.mastercard = mastercard
         self.mir = mir
         self.visa = visa
@@ -170,8 +173,11 @@ class Offers(Base):
         self.termMid = termMid
         self.termMin = termMin
         self.termPrefix = termPrefix
-        self.summPostfix = summPostfix
         self.summPrefix = summPrefix
+        self.summMin = summMin
+        self.summMid = summMid
+        self.summMax = summMax
+        self.summPostfix = summPostfix
 
     def serialize(self, to_serialize):
         d = {}
@@ -185,10 +191,10 @@ class Offers(Base):
     def to_json(self):
         to_serialize = ['id', 'create_date', 'update_date', 'offer_type', 'isActive', 'itemId',
                         'name', 'description', 'order', 'orderButtonText', 'percent', 'percentPostfix',
-                        'percentPrefix', 'score', 'screen', 'summ', 'mastercard', 'mir',
+                        'percentPrefix', 'score', 'screen', 'mastercard', 'mir',
                         'visa', 'qiwi', 'yandex', 'cash', 'creator', 'greenStickerText', 'blueStickerText',
                         'redStickerText', 'deleted', 'position', 'comment', 'termPostfix', 'termMax', 'termMid',
-                        'termMin', 'termPrefix', 'summPostfix', 'summPrefix',]
+                        'termMin', 'termPrefix', 'summPostfix', 'summPrefix', 'summMin', 'summMax', 'summMid']
         return self.serialize(to_serialize)
 
 

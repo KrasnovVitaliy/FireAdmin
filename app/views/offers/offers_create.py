@@ -17,7 +17,10 @@ class OffersCreateView(web.View):
         if 'offers_type' in params:
             offer_data['offer_type'] = int(params['offers_type'])
 
-        apps = db.session.query(db.Applications).all()
+        filters = {
+            'deleted': None,
+        }
+        apps = db.session.query(db.Applications).filter_by(**filters).all()
         apps_data = [obj.to_json() for obj in apps]
 
         return {
