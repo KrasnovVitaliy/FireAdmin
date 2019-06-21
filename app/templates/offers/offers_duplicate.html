@@ -4,7 +4,7 @@
 
 {% block content_header %}
 <h1>
-    Создать оффер
+    Копирование оффера
 </h1>
 
 {% endblock %}
@@ -14,7 +14,7 @@
 
 {% block content %}
 
-<form role="form" action="/offers_create" method="post">
+<form role="form" action="/offers_duplicate?id={{offer.id}}&state={{offers_state}}&current_app={{current_app}}" method="post">
     <section class="content">
         <div class="box box-info">
             <div class="row">
@@ -26,7 +26,6 @@
                 </div>
             </div>
         </div>
-
         <div class="row">
             <!-- left column -->
             <section class="col-md-6">
@@ -37,18 +36,25 @@
                     <div class="box-body">
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" name="isActive">
+                                <input type="checkbox" name="isActive"
+                                       {% if offer.isActive %}
+                                       checked
+                                       {% endif %}>
                                 Активен
                             </label>
                         </div>
 
+                        <label for="name">Название оффера</label>
+                        <input class="form-control" type="text" placeholder="Введите имя" id="name" name="name">
+
                         <label for="comment">Комментарий</label>
                         <input class="form-control" type="text" placeholder="Введите комментарий" id="comment"
-                               name="comment">
+                               name="comment"
+                               {% if offer.comment %}
+                               value="{{offer.comment}}"
+                               {% endif %}}
+                        >
 
-                        <label for="name">Название оффера</label>
-                        <input required class="form-control" type="text" placeholder="Введите имя" id="name"
-                               name="name">
                         <div class="form-group">
                             <label>Тип оффера</label>
                             <select class="form-control" name="offer_type">
@@ -66,21 +72,34 @@
 
                         <label for="itemId">ID оффера</label>
                         <input class="form-control" type="text" placeholder="Введите уникальный ID" id="itemId"
-                               name="itemId">
+                               name="itemId"
+                               {% if offer.itemId %}
+                               value="{{offer.itemId}}"
+                               {% endif %}
+                        >
 
                         <label for="order">Ссылка ддя оформления</label>
-                        <input class="form-control" type="text" placeholder="Введите адрес" id="order" name="order">
+                        <input class="form-control" type="text" placeholder="Введите адрес" id="order" name="order"
+                               {% if offer.order %}
+                               value="{{offer.order}}"
+                               {% endif %}
+                        >
 
-                        <label for="screen">Ссылка на картинку</label>
-                        <input class="form-control" type="text" placeholder="Введите адрес" id="screen" name="screen">
-
-                        <!--<img class="img-responsive" width="100px" src="{{ offer.screen }}" alt="Photo">-->
+                        <label for="screen">Ссылка на картинку по умолчанию</label>
+                        <input class="form-control" type="text" placeholder="Введите адрес" id="screen" name="screen"
+                               {% if offer.screen %}
+                               value="{{offer.screen}}"
+                               {% endif %}
+                        >
+                        <img class="img-responsive" width="100px" src="{{ offer.screen }}" alt="Photo">
 
                         <label for="description">Описание</label>
                         <!--<textarea class="form-control" rows="5" id="description" name="description"-->
-                        <!--placeholder="HTML описание"></textarea>-->
+                        <!--placeholder="HTML описание">{% if offer.description %}{{offer.description}}{% endif %}</textarea>-->
+
                         <textarea rows="5" cols="80" id="description" name="description"
-                                  placeholder="HTML описание"></textarea>
+                                  placeholder="HTML описание">{% if offer.description %}{{offer.description}}{% endif %}</textarea>
+
                     </div>
                 </div>
 
@@ -92,42 +111,66 @@
                         <div class="form-group">
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="mir">
+                                    <input type="checkbox" name="mir"
+                                           {% if offer.mir %}
+                                           checked
+                                           {% endif %}
+                                    >
                                     Карта МИР
                                 </label>
                             </div>
 
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="visa">
+                                    <input type="checkbox" name="visa"
+                                           {% if offer.visa %}
+                                           checked
+                                           {% endif %}
+                                    >
                                     Карта VISA
                                 </label>
                             </div>
 
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="mastercard">
+                                    <input type="checkbox" name="mastercard"
+                                           {% if offer.mastercard %}
+                                           checked
+                                           {% endif %}
+                                    >
                                     Карта Mastercard
                                 </label>
                             </div>
 
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="qiwi">
+                                    <input type="checkbox" name="qiwi"
+                                           {% if offer.qiwi %}
+                                           checked
+                                           {% endif %}
+                                    >
                                     QIWI
                                 </label>
                             </div>
 
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="yandex">
+                                    <input type="checkbox" name="yandex"
+                                           {% if offer.yandex %}
+                                           checked
+                                           {% endif %}
+                                    >
                                     Yandex
                                 </label>
                             </div>
 
                             <div class="checkbox">
                                 <label>
-                                    <input type="checkbox" name="cash">
+                                    <input type="checkbox" name="cash"
+                                           {% if offer.cash %}
+                                           checked
+                                           {% endif %}
+                                    >
                                     Наличные
                                 </label>
                             </div>
@@ -144,7 +187,11 @@
                         {% for app in apps %}
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" name="app_{{app.id}}">
+                                <input type="checkbox" name="app_{{app.id}}"
+                                       {% if app.id in offer_apps %}
+                                       checked
+                                       {% endif %}
+                                >
                                 {{app.name}}
                             </label>
                         </div>
@@ -159,23 +206,43 @@
                     <div class="box-body">
                         <label for="orderButtonText">Текст кнопки оформить</label>
                         <input class="form-control" type="text" placeholder="Введите текст" id="orderButtonText"
-                               name="orderButtonText">
+                               name="orderButtonText"
+                               {% if offer.orderButtonText %}
+                               value="{{offer.orderButtonText}}"
+                               {% endif %}
+                        >
 
                         <label for="score">Рейтинг</label>
-                        <input class="form-control" type="text" placeholder="Введите имя" id="score" name="score">
+                        <input class="form-control" type="text" placeholder="Введите рейтинг" id="score" name="score"
+                               {% if offer.score %}
+                               value="{{offer.score}}"
+                               {% endif %}
+                        >
 
                         <label for="score">Зеленый маркер</label>
                         <input class="form-control" type="text" placeholder="Введите текст маркера"
                                id="greenStickerText"
-                               name="greenStickerText">
+                               name="greenStickerText"
+                               {% if offer.greenStickerText %}
+                               value="{{offer.greenStickerText}}"
+                               {% endif %}
+                        >
 
                         <label for="score">Синий маркер</label>
                         <input class="form-control" type="text" placeholder="Введите текст маркера" id="blueStickerText"
-                               name="blueStickerText">
+                               name="blueStickerText"
+                               {% if offer.blueStickerText %}
+                               value="{{offer.blueStickerText}}"
+                               {% endif %}
+                        >
 
                         <label for="score">Красный маркер</label>
                         <input class="form-control" type="text" placeholder="Введите текст маркера" id="redStickerText"
-                               name="redStickerText">
+                               name="redStickerText"
+                               {% if offer.redStickerText %}
+                               value="{{offer.redStickerText}}"
+                               {% endif %}
+                        >
 
                     </div>
                 </div>
@@ -187,15 +254,27 @@
 
                         <label for="percentPrefix">Префикс процентов</label>
                         <input class="form-control" type="text" placeholder="Префикс процентов" id="percentPrefix"
-                               name="percentPrefix">
+                               name="percentPrefix"
+                               {% if offer.percentPrefix %}
+                               value="{{offer.percentPrefix}}"
+                               {% endif %}
+                        >
 
                         <label for="percent">Процентная ставка</label>
                         <input class="form-control" type="text" placeholder="Введите ставку" id="percent"
-                               name="percent">
+                               name="percent"
+                               {% if offer.percent %}
+                               value="{{offer.percent}}"
+                               {% endif %}
+                        >
 
                         <label for="percentPostfix">Постфикс процентов</label>
                         <input class="form-control" type="text" placeholder="Введите Постфикс" id="percentPostfix"
-                               name="percentPostfix">
+                               name="percentPostfix"
+                               {% if offer.percentPostfix %}
+                               value="{{offer.percentPostfix}}"
+                               {% endif %}
+                        >
                     </div>
                 </div>
                 <div class="box box-info">
@@ -205,21 +284,41 @@
                     <div class="box-body">
                         <label for="summPrefix">Префикс суммы</label>
                         <input class="form-control" type="text" placeholder="Префикс суммы" id="summPrefix"
-                               name="summPrefix">
+                               name="summPrefix"
+                               {% if offer.summPrefix %}
+                               value="{{offer.summPrefix}}"
+                               {% endif %}
+                        >
 
                         <label for="summMin">Сумма от</label>
-                        <input class="form-control" type="text" placeholder="Введите сумму" id="summMin" name="summMin">
+                        <input class="form-control" type="text" placeholder="Введите сумму" id="summMin" name="summMin"
+                               {% if offer.summMin %}
+                               value="{{offer.summMin}}"
+                               {% endif %}
+                        >
 
                         <label for="summMid">Разделитель суммы</label>
                         <input class="form-control" type="text" placeholder="Введите разделитель" id="summMid"
-                               name="summMid">
+                               name="summMid"
+                               {% if offer.summMid %}
+                               value="{{offer.summMid}}"
+                               {% endif %}
+                        >
 
                         <label for="summMax">Сумма до</label>
-                        <input class="form-control" type="text" placeholder="Введите сумму" id="summMax" name="summMax">
+                        <input class="form-control" type="text" placeholder="Введите сумму" id="summMax" name="summMax"
+                               {% if offer.summMax %}
+                               value="{{offer.summMax}}"
+                               {% endif %}
+                        >
 
                         <label for="summPostfix">Постфикс суммы</label>
                         <input class="form-control" type="text" placeholder="Постфикс суммы" id="summPostfix"
-                               name="summPostfix">
+                               name="summPostfix"
+                               {% if offer.summPostfix %}
+                               value="{{offer.summPostfix}}"
+                               {% endif %}
+                        >
                     </div>
                 </div>
                 <div class="box box-info">
@@ -229,21 +328,41 @@
                     <div class="box-body">
                         <label for="termPrefix">Префикс сроков</label>
                         <input class="form-control" type="text" placeholder="Префикс сроков" id="termPrefix"
-                               name="termPrefix">
+                               name="termPrefix"
+                               {% if offer.termPrefix %}
+                               value="{{offer.termPrefix}}"
+                               {% endif %}
+                        >
 
                         <label for="termMin">Срок от</label>
-                        <input class="form-control" type="text" placeholder="Введите срок" id="termMin" name="termMin">
+                        <input class="form-control" type="text" placeholder="Введите срок" id="termMin" name="termMin"
+                               {% if offer.termMin %}
+                               value="{{offer.termMin}}"
+                               {% endif %}
+                        >
 
                         <label for="termMid">Разделитель сроков</label>
                         <input class="form-control" type="text" placeholder="Разделитель сроков" id="termMid"
-                               name="termMid">
+                               name="termMid"
+                               {% if offer.termMid %}
+                               value="{{offer.termMid}}"
+                               {% endif %}
+                        >
 
                         <label for="termMax">Срок до</label>
-                        <input class="form-control" type="text" placeholder="Введите срок" id="termMax" name="termMax">
+                        <input class="form-control" type="text" placeholder="Введите срок" id="termMax" name="termMax"
+                               {% if offer.termMax %}
+                               value="{{offer.termMax}}"
+                               {% endif %}
+                        >
 
                         <label for="termPostfix">Постфикс сроков</label>
                         <input class="form-control" type="text" placeholder="Постфикс сроков" id="termPostfix"
-                               name="termPostfix">
+                               name="termPostfix"
+                               {% if offer.termPostfix %}
+                               value="{{offer.termPostfix}}"
+                               {% endif %}
+                        >
 
                     </div>
                 </div>
@@ -265,7 +384,11 @@
                 <label for="order_app_{{app.id}}">Ссылка на заказ {{app.name}}</label>
                 <input class="form-control" type="text" placeholder="Введите адрес"
                        name="order_app_{{app.id}}"
-                       id="order_app_{{app.id}}">
+                       id="order_app_{{app.id}}"
+                       {% if app.id in offer_apps_orders %}
+                       value="{{offer_apps_orders[app.id]}}"
+                       {% endif %}
+                >
                 {% endfor %}
             </div>
         </div>
@@ -285,7 +408,11 @@
                 <label for="name_app_{{app.id}}">Название оффера для {{app.name}}</label>
                 <input class="form-control" type="text" placeholder="Введите имя"
                        name="name_app_{{app.id}}"
-                       id="name_app_{{app.id}}">
+                       id="name_app_{{app.id}}"
+                       {% if app.id in offer_apps_names %}
+                       value="{{offer_apps_names[app.id]}}"
+                       {% endif %}
+                >
                 {% endfor %}
             </div>
         </div>
@@ -300,11 +427,21 @@
                 </div>
             </div>
             <div class="box-body">
+
                 {% for app in apps %}
                 <label for="screen_app_{{app.id}}">Ссылка на картинку {{app.name}}</label>
                 <input class="form-control" type="text" placeholder="Введите адрес"
                        name="screen_app_{{app.id}}"
-                       id="screen_app_{{app.id}}">
+                       id="screen_app_{{app.id}}"
+                       {% if app.id in offer_apps_creatives %}
+                       value="{{offer_apps_creatives[app.id]}}"
+                       {% endif %}
+                >
+                {% if app.id in offer_apps_creatives %}
+                <img class="img-responsive" width="100px" src="{{offer_apps_creatives[app.id]}}"
+                     alt="Photo">
+                {% endif %}
+
                 {% endfor %}
             </div>
         </div>
@@ -330,16 +467,28 @@
                         <label for="percentPrefix_app_{{app.id}}">Префикс процентов</label>
                         <input class="form-control" type="text" placeholder="Префикс процентов"
                                id="percentPrefix_app_{{app.id}}"
-                               name="percentPrefix_app_{{app.id}}">
+                               name="percentPrefix_app_{{app.id}}"
+                               {% if app.id in offer_apps_percents %}
+                               value="{{offer_apps_percents[app.id].percentPrefix}}"
+                               {% endif %}
+                        >
 
                         <label for="percent_app_{{app.id}}">Процентная ставка</label>
                         <input class="form-control" type="text" placeholder="Введите ставку" id="percent_app_{{app.id}}"
-                               name="percent_app_{{app.id}}">
+                               name="percent_app_{{app.id}}"
+                               {% if app.id in offer_apps_percents %}
+                               value="{{offer_apps_percents[app.id].percent}}"
+                               {% endif %}
+                        >
 
                         <label for="percentPostfix_app_{{app.id}}">Постфикс процентов</label>
                         <input class="form-control" type="text" placeholder="Введите Постфикс"
                                id="percentPostfix_app_{{app.id}}"
-                               name="percentPostfix_app_{{app.id}}">
+                               name="percentPostfix_app_{{app.id}}"
+                               {% if app.id in offer_apps_percents %}
+                               value="{{offer_apps_percents[app.id].percentPostfix}}"
+                               {% endif %}
+                        >
                     </div>
                 </div>
 
@@ -366,27 +515,44 @@
                     </div>
                     <div class="box-body">
                         <label for="summPrefix_app_{{app.id}}">Префикс суммы</label>
-                        <input class="form-control" type="text" placeholder="Префикс суммы"
-                               id="summPrefix_app_{{app.id}}"
-                               name="summPrefix_app_{{app.id}}">
+                        <input class="form-control" type="text" placeholder="Префикс суммы" id="summPrefix_app_{{app.id}}"
+                               name="summPrefix_app_{{app.id}}"
+                               {% if app.id in offer_apps_summs %}
+                               value="{{offer_apps_summs[app.id].summPrefix}}"
+                               {% endif %}
+                        >
 
                         <label for="summMin_app_{{app.id}}">Сумма от</label>
                         <input class="form-control" type="text" placeholder="Введите сумму" id="summMin_app_{{app.id}}"
-                               name="summMin_app_{{app.id}}">
+                               name="summMin_app_{{app.id}}"
+                               {% if app.id in offer_apps_summs %}
+                               value="{{offer_apps_summs[app.id].summMin}}"
+                               {% endif %}
+                        >
 
                         <label for="summMid_app_{{app.id}}">Разделитель суммы</label>
-                        <input class="form-control" type="text" placeholder="Введите разделитель"
-                               id="summMid_app_{{app.id}}"
-                               name="summMid_app_{{app.id}}">
+                        <input class="form-control" type="text" placeholder="Введите разделитель" id="summMid_app_{{app.id}}"
+                               name="summMid_app_{{app.id}}"
+                               {% if app.id in offer_apps_summs %}
+                               value="{{offer_apps_summs[app.id].summMid}}"
+                               {% endif %}
+                        >
 
                         <label for="summMax_app_{{app.id}}">Сумма до</label>
                         <input class="form-control" type="text" placeholder="Введите сумму" id="summMax_app_{{app.id}}"
-                               name="summMax_app_{{app.id}}">
+                               name="summMax_app_{{app.id}}"
+                               {% if app.id in offer_apps_summs %}
+                               value="{{offer_apps_summs[app.id].summMax}}"
+                               {% endif %}
+                        >
 
                         <label for="summPostfix_app_{{app.id}}">Постфикс суммы</label>
-                        <input class="form-control" type="text" placeholder="Постфикс суммы"
-                               id="summPostfix_app_{{app.id}}"
-                               name="summPostfix_app_{{app.id}}">
+                        <input class="form-control" type="text" placeholder="Постфикс суммы" id="summPostfix_app_{{app.id}}"
+                               name="summPostfix_app_{{app.id}}"
+                               {% if app.id in offer_apps_summs %}
+                               value="{{offer_apps_summs[app.id].summPostfix}}"
+                               {% endif %}
+                        >
                     </div>
                 </div>
 
@@ -413,27 +579,44 @@
                     </div>
                     <div class="box-body">
                         <label for="termPrefix_app_{{app.id}}">Префикс сроков</label>
-                        <input class="form-control" type="text" placeholder="Префикс сроков"
-                               id="termPrefix_app_{{app.id}}"
-                               name="termPrefix_app_{{app.id}}">
+                        <input class="form-control" type="text" placeholder="Префикс сроков" id="termPrefix_app_{{app.id}}"
+                               name="termPrefix_app_{{app.id}}"
+                               {% if app.id in offer_apps_terms %}
+                               value="{{offer_apps_terms[app.id].termPrefix}}"
+                               {% endif %}
+                        >
 
                         <label for="termMin_app_{{app.id}}">Срок от</label>
                         <input class="form-control" type="text" placeholder="Введите срок" id="termMin_app_{{app.id}}"
-                               name="termMin_app_{{app.id}}">
+                               name="termMin_app_{{app.id}}"
+                               {% if app.id in offer_apps_terms %}
+                               value="{{offer_apps_terms[app.id].termMin}}"
+                               {% endif %}
+                        >
 
                         <label for="termMid_app_{{app.id}}">Разделитель сроков</label>
-                        <input class="form-control" type="text" placeholder="Разделитель сроков"
-                               id="termMid_app_{{app.id}}"
-                               name="termMid_app_{{app.id}}">
+                        <input class="form-control" type="text" placeholder="Разделитель сроков" id="termMid_app_{{app.id}}"
+                               name="termMid_app_{{app.id}}"
+                               {% if app.id in offer_apps_terms %}
+                               value="{{offer_apps_terms[app.id].termMid}}"
+                               {% endif %}
+                        >
 
                         <label for="termMax_app_{{app.id}}">Срок до</label>
                         <input class="form-control" type="text" placeholder="Введите срок" id="termMax_app_{{app.id}}"
-                               name="termMax_app_{{app.id}}">
+                               name="termMax_app_{{app.id}}"
+                               {% if app.id in offer_apps_terms %}
+                               value="{{offer_apps_terms[app.id].termMax}}"
+                               {% endif %}
+                        >
 
                         <label for="termPostfix_app_{{app.id}}">Постфикс сроков</label>
-                        <input class="form-control" type="text" placeholder="Постфикс сроков"
-                               id="termPostfix_app_{{app.id}}"
-                               name="termPostfix_app_{{app.id}}">
+                        <input class="form-control" type="text" placeholder="Постфикс сроков" id="termPostfix_app_{{app.id}}"
+                               name="termPostfix_app_{{app.id}}"
+                               {% if app.id in offer_apps_terms %}
+                               value="{{offer_apps_terms[app.id].termPostfix}}"
+                               {% endif %}
+                        >
 
                     </div>
                 </div>
@@ -441,6 +624,7 @@
                 {% endfor %}
             </div>
         </div>
+
 
         <div class="box box-info">
             <div class="row">

@@ -18,7 +18,7 @@
         <div class="row">
             <div class="col-xs-3">
                 <div class="btn-group">
-                    <a href="/offers?offers_type={{offers_type_id}}" type="button"
+                    <a href="/offers?offers_type={{offers_type_id}}&current_app={{current_app}}" type="button"
                        {% if offers_state=="all" %}}
                        class="btn btn-info"
                        {% else %}
@@ -26,14 +26,14 @@
                        {% endif%}
 
                     >Все</a>
-                    <a href="/offers?offers_type={{offers_type_id}}&state=active" type="button"
+                    <a href="/offers?offers_type={{offers_type_id}}&state=active&current_app={{current_app}}" type="button"
                        {% if offers_state=="active" %}}
                        class="btn btn-success"
                        {% else %}
                        class="btn btn-default"
                        {% endif%}
                     >Активные</a>
-                    <a href="/offers?offers_type={{offers_type_id}}&state=inactive" type="button"
+                    <a href="/offers?offers_type={{offers_type_id}}&state=inactive&current_app={{current_app}}" type="button"
                        {% if offers_state=="inactive" %}}
                        class="btn btn-danger"
                        {% else %}
@@ -46,8 +46,25 @@
                 <input type="text" name="search-input" id="search-input" onkeyup="filterItems()" class="form-control"
                        placeholder="Поиск по офферам...">
             </div>
-            <div class="col-xs-6">
-                <a href="/offers_create?offers_type={{offers_type_id}}" class="btn btn-info pull-right"
+            <div class="col-xs-3">
+                <div class="form-group">
+                    <select class="form-control" name="offer_type"
+                    onchange="document.location='offers?offers_type={{offers_type_id}}&state={{offers_state}}&current_app='+this.options[this.selectedIndex].value" >
+                        <option value="all">Все</option>
+                            {% for app in apps%}
+                        <option
+                                value="{{app.id}}"
+                                {% if app.id== current_app %}
+                                selected
+                                {% endif %}
+                        >{{app.name}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-3">
+                <a href="/offers_create?offers_type={{offers_type_id}}&state={{offers_state}}&current_app={{current_app}}" class="btn btn-info pull-right"
                    type="button">Создать</a>
             </div>
         </div>
@@ -57,7 +74,7 @@
         <table class="table table-bordered">
             <thead>
             <tr>
-                <th style="width: 30px">#</th>
+                <th hidden style="width: 30px">#</th>
                 <th style="width: 30px">Состояние</th>
                 <th>Название</th>
                 <th>Приложения</th>
@@ -65,12 +82,13 @@
                 <th style="width: 30px">Действие</th>
                 <th style="width: 100px">Лого</th>
                 <th style="width: 30px"></th>
+                <th style="width: 30px"></th>
             </tr>
             </thead>
             <tbody id="offers-table-body">
             {% for offer in offers %}
             <tr>
-                <td class="offer_position">{{offer.position}}</td>
+                <td hidden class="offer_position">{{offer.position}}</td>
                 <!-- Added for items position change-->
                 <td class="offer_id" style="display: none">{{offer.id}}</td>    <!-- Added for items position change -->
                 <td>
@@ -81,7 +99,7 @@
                         {% endif %}
                     </h4>
                 </td>
-                <td><a href="/offers_overview?id={{offer.id}}"><h4>{{ offer.name }}</h4></a></td>
+                <td><a href="/offers_overview?id={{offer.id}}&state={{offers_state}}&current_app={{current_app}}"><h4>{{ offer.name }}</h4></a></td>
                 <td>
                     <ul>
                         {% for app in offer.related_apps %}
@@ -93,16 +111,16 @@
                     <input class="form-control comment-input" type="text" id="comment"
                            name="comment" item_id={{offer.id}}
                            {% if offer.comment %}
-                           value={{ offer.comment }}
+                           value="{{ offer.comment }}"
                            {% endif %}
                     >
                 </td>
                 <td>
                     {% if offer.isActive %}
-                    <a href="/offers_actions?id={{offer.id}}&action=stop&offer_type={{offers_type_id}}" type="button"
+                    <a href="/offers_actions?id={{offer.id}}&action=stop&offer_type={{offers_type_id}}&app_id={{current_app}}" type="button"
                        class="btn btn-block btn-danger">Остановить</a>
                     {% else %}
-                    <a href="/offers_actions?id={{offer.id}}&action=run&offer_type={{offers_type_id}}" type="button"
+                    <a href="/offers_actions?id={{offer.id}}&action=run&offer_type={{offers_type_id}}&app_id={{current_app}}" type="button"
                        class="btn btn-block btn-success">Запустить</a>
                     {% endif %}
                 </td>
@@ -118,6 +136,9 @@
                                                            data-offer_name="{{offer.name}}"
                                                            data-toggle="modal"
                                                            data-target="#deleteConfirmationModal"></i></h4></a>
+                </td>
+                <td>
+                    <a class="text-info" href="/offers_duplicate?id={{offer.id}}"><h4><i class="fa fa-copy text-blue"></i></h4></a>
                 </td>
             </tr>
             {% endfor %}
@@ -148,7 +169,7 @@
 {% endblock %}
 
 {% block page_scripts %}
-<!-- Items position change -->
+
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script type="text/javascript">
     pass_arguments_to_modal();
@@ -189,10 +210,10 @@
         xhr.send(data);
 
     }
-
+<!-- Items position change -->
     function uploadUpdatedOrder(updated_position_data) {
         var xhr = new XMLHttpRequest();
-        var url = "/offers_update_order";
+        var url = "/offers_update_order?app_id={{current_app}}";
         xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onreadystatechange = function () {
@@ -252,7 +273,7 @@
 
             $(this).closest('.modal').one('hidden.bs.modal', function () {
                 if ($button.attr("id") == 'confirm-delete-button') {
-                    window.location.href = '/offers_actions?&action=delete&offer_type={{offers_type_id}}&id=' + window.removing_id;
+                    window.location.href = '/offers_actions?&action=delete&offer_type={{offers_type_id}}&app_id={{current_app}}&id=' + window.removing_id;
                 }
             });
         });

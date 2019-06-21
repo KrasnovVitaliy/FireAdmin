@@ -14,13 +14,13 @@
 
 {% block content %}
 
-<form role="form" action="/offers_overview?id={{offer.id}}" method="post">
+<form role="form" action="/offers_overview?id={{offer.id}}&state={{offers_state}}&current_app={{current_app}}" method="post">
     <section class="content">
         <div class="box box-info">
             <div class="row">
                 <div class="col-md-12">
                     <div class="box-footer">
-                        <button class="btn btn-default" onclick="goBack()">Отмена</button>
+                        <a href="#" class="btn btn-default" onclick="goBack()">Отмена</a>
                         <button type="submit" class="btn btn-info pull-right">Сохранить</button>
                     </div>
                 </div>
@@ -86,13 +86,12 @@
                                {% endif %}
                         >
 
-                        <label for="screen">Ссылка на картинку</label>
+                        <label for="screen">Ссылка на картинку по умолчанию</label>
                         <input class="form-control" type="text" placeholder="Введите адрес" id="screen" name="screen"
                                {% if offer.screen %}
                                value="{{offer.screen}}"
                                {% endif %}
                         >
-
                         <img class="img-responsive" width="100px" src="{{ offer.screen }}" alt="Photo">
 
                         <label for="description">Описание</label>
@@ -104,7 +103,6 @@
 
                     </div>
                 </div>
-
 
                 <div class="box box-info">
                     <div class="box-header with-border">
@@ -191,7 +189,7 @@
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" name="app_{{app.id}}"
-                                       {% if app.id in offers_apps %}
+                                       {% if app.id in offer_apps %}
                                        checked
                                        {% endif %}
                                 >
@@ -301,7 +299,8 @@
                         >
 
                         <label for="summMid">Разделитель суммы</label>
-                        <input class="form-control" type="text" placeholder="Введите разделитель" id="summMid" name="summMid"
+                        <input class="form-control" type="text" placeholder="Введите разделитель" id="summMid"
+                               name="summMid"
                                {% if offer.summMid %}
                                value="{{offer.summMid}}"
                                {% endif %}
@@ -370,11 +369,269 @@
                 </div>
             </section>
         </div>
+
+        <div class="box box-info collapsed-box">
+            <div class="box-header with-border" data-widget="collapse">
+                <h3 class="box-title">Ссылки офферов по приложениям</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+
+                {% for app in apps %}
+                <label for="order_app_{{app.id}}">Ссылка на заказ {{app.name}}</label>
+                <input class="form-control" type="text" placeholder="Введите адрес"
+                       name="order_app_{{app.id}}"
+                       id="order_app_{{app.id}}"
+                       {% if app.id in offer_apps_orders %}
+                       value="{{offer_apps_orders[app.id]}}"
+                       {% endif %}
+                >
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="box box-info collapsed-box">
+            <div class="box-header with-border" data-widget="collapse">
+                <h3 class="box-title">Название офферов по приложениям</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+
+                {% for app in apps %}
+                <label for="name_app_{{app.id}}">Название оффера для {{app.name}}</label>
+                <input class="form-control" type="text" placeholder="Введите имя"
+                       name="name_app_{{app.id}}"
+                       id="name_app_{{app.id}}"
+                       {% if app.id in offer_apps_names %}
+                       value="{{offer_apps_names[app.id]}}"
+                       {% endif %}
+                >
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="box box-info collapsed-box">
+            <div class="box-header with-border" data-widget="collapse">
+                <h3 class="box-title">Картинки офферов по приложениям</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+
+                {% for app in apps %}
+                <label for="screen_app_{{app.id}}">Ссылка на картинку {{app.name}}</label>
+                <input class="form-control" type="text" placeholder="Введите адрес"
+                       name="screen_app_{{app.id}}"
+                       id="screen_app_{{app.id}}"
+                       {% if app.id in offer_apps_creatives %}
+                       value="{{offer_apps_creatives[app.id]}}"
+                       {% endif %}
+                >
+                {% if app.id in offer_apps_creatives %}
+                <img class="img-responsive" width="100px" src="{{offer_apps_creatives[app.id]}}"
+                     alt="Photo">
+                {% endif %}
+
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="box box-info collapsed-box">
+            <div class="box-header with-border" data-widget="collapse">
+                <h3 class="box-title">Ставки офферов по приложениям</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+
+                {% for app in apps %}
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Ставки приложения <b>{{app.name}}</b></h3>
+                    </div>
+                    <div class="box-body">
+
+                        <label for="percentPrefix_app_{{app.id}}">Префикс процентов</label>
+                        <input class="form-control" type="text" placeholder="Префикс процентов"
+                               id="percentPrefix_app_{{app.id}}"
+                               name="percentPrefix_app_{{app.id}}"
+                               {% if app.id in offer_apps_percents %}
+                               value="{{offer_apps_percents[app.id].percentPrefix}}"
+                               {% endif %}
+                        >
+
+                        <label for="percent_app_{{app.id}}">Процентная ставка</label>
+                        <input class="form-control" type="text" placeholder="Введите ставку" id="percent_app_{{app.id}}"
+                               name="percent_app_{{app.id}}"
+                               {% if app.id in offer_apps_percents %}
+                               value="{{offer_apps_percents[app.id].percent}}"
+                               {% endif %}
+                        >
+
+                        <label for="percentPostfix_app_{{app.id}}">Постфикс процентов</label>
+                        <input class="form-control" type="text" placeholder="Введите Постфикс"
+                               id="percentPostfix_app_{{app.id}}"
+                               name="percentPostfix_app_{{app.id}}"
+                               {% if app.id in offer_apps_percents %}
+                               value="{{offer_apps_percents[app.id].percentPostfix}}"
+                               {% endif %}
+                        >
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+        </div>
+
+
+        <div class="box box-info collapsed-box">
+            <div class="box-header with-border" data-widget="collapse">
+                <h3 class="box-title">Суммы офферов по приложениям</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+
+                {% for app in apps %}
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Суммы приложения <b>{{app.name}}</b></h3>
+                    </div>
+                    <div class="box-body">
+                        <label for="summPrefix_app_{{app.id}}">Префикс суммы</label>
+                        <input class="form-control" type="text" placeholder="Префикс суммы" id="summPrefix_app_{{app.id}}"
+                               name="summPrefix_app_{{app.id}}"
+                               {% if app.id in offer_apps_summs %}
+                               value="{{offer_apps_summs[app.id].summPrefix}}"
+                               {% endif %}
+                        >
+
+                        <label for="summMin_app_{{app.id}}">Сумма от</label>
+                        <input class="form-control" type="text" placeholder="Введите сумму" id="summMin_app_{{app.id}}"
+                               name="summMin_app_{{app.id}}"
+                               {% if app.id in offer_apps_summs %}
+                               value="{{offer_apps_summs[app.id].summMin}}"
+                               {% endif %}
+                        >
+
+                        <label for="summMid_app_{{app.id}}">Разделитель суммы</label>
+                        <input class="form-control" type="text" placeholder="Введите разделитель" id="summMid_app_{{app.id}}"
+                               name="summMid_app_{{app.id}}"
+                               {% if app.id in offer_apps_summs %}
+                               value="{{offer_apps_summs[app.id].summMid}}"
+                               {% endif %}
+                        >
+
+                        <label for="summMax_app_{{app.id}}">Сумма до</label>
+                        <input class="form-control" type="text" placeholder="Введите сумму" id="summMax_app_{{app.id}}"
+                               name="summMax_app_{{app.id}}"
+                               {% if app.id in offer_apps_summs %}
+                               value="{{offer_apps_summs[app.id].summMax}}"
+                               {% endif %}
+                        >
+
+                        <label for="summPostfix_app_{{app.id}}">Постфикс суммы</label>
+                        <input class="form-control" type="text" placeholder="Постфикс суммы" id="summPostfix_app_{{app.id}}"
+                               name="summPostfix_app_{{app.id}}"
+                               {% if app.id in offer_apps_summs %}
+                               value="{{offer_apps_summs[app.id].summPostfix}}"
+                               {% endif %}
+                        >
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+        </div>
+
+
+        <div class="box box-info collapsed-box">
+            <div class="box-header with-border" data-widget="collapse">
+                <h3 class="box-title">Сроки офферов по приложениям</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+
+                {% for app in apps %}
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Сроки приложения <b>{{app.name}}</b></h3>
+                    </div>
+                    <div class="box-body">
+                        <label for="termPrefix_app_{{app.id}}">Префикс сроков</label>
+                        <input class="form-control" type="text" placeholder="Префикс сроков" id="termPrefix_app_{{app.id}}"
+                               name="termPrefix_app_{{app.id}}"
+                               {% if app.id in offer_apps_terms %}
+                               value="{{offer_apps_terms[app.id].termPrefix}}"
+                               {% endif %}
+                        >
+
+                        <label for="termMin_app_{{app.id}}">Срок от</label>
+                        <input class="form-control" type="text" placeholder="Введите срок" id="termMin_app_{{app.id}}"
+                               name="termMin_app_{{app.id}}"
+                               {% if app.id in offer_apps_terms %}
+                               value="{{offer_apps_terms[app.id].termMin}}"
+                               {% endif %}
+                        >
+
+                        <label for="termMid_app_{{app.id}}">Разделитель сроков</label>
+                        <input class="form-control" type="text" placeholder="Разделитель сроков" id="termMid_app_{{app.id}}"
+                               name="termMid_app_{{app.id}}"
+                               {% if app.id in offer_apps_terms %}
+                               value="{{offer_apps_terms[app.id].termMid}}"
+                               {% endif %}
+                        >
+
+                        <label for="termMax_app_{{app.id}}">Срок до</label>
+                        <input class="form-control" type="text" placeholder="Введите срок" id="termMax_app_{{app.id}}"
+                               name="termMax_app_{{app.id}}"
+                               {% if app.id in offer_apps_terms %}
+                               value="{{offer_apps_terms[app.id].termMax}}"
+                               {% endif %}
+                        >
+
+                        <label for="termPostfix_app_{{app.id}}">Постфикс сроков</label>
+                        <input class="form-control" type="text" placeholder="Постфикс сроков" id="termPostfix_app_{{app.id}}"
+                               name="termPostfix_app_{{app.id}}"
+                               {% if app.id in offer_apps_terms %}
+                               value="{{offer_apps_terms[app.id].termPostfix}}"
+                               {% endif %}
+                        >
+
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+        </div>
+
+
         <div class="box box-info">
             <div class="row">
                 <div class="col-md-12">
                     <div class="box-footer">
-                        <button class="btn btn-default" onclick="goBack()">Отмена</button>
+                        <a href="#" class="btn btn-default" onclick="goBack()">Отмена</a>
                         <button type="submit" class="btn btn-info pull-right">Сохранить</button>
                     </div>
                 </div>

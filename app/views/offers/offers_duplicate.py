@@ -14,13 +14,18 @@ def is_field_in_map(field, data_map, field_type):
         data_map[field] = field_type
     return data_map
 
-class OffersCreateView(web.View):
-    @aiohttp_jinja2.template('offers/offers_create.html')
+
+class OffersDuplicateView(web.View):
+    @aiohttp_jinja2.template('offers/offers_duplicate.html')
     async def get(self, *args, **kwargs):
         params = self.request.rel_url.query
-        offer_data = {}
-        if 'offers_type' in params:
-            offer_data['offer_type'] = int(params['offers_type'])
+
+        filters = {
+            'id': params['id']
+        }
+
+        offer = db.session.query(db.Offers).filter_by(**filters).first()
+        offer_data = offer.to_json()
 
         filters = {
             'deleted': None,
@@ -28,10 +33,69 @@ class OffersCreateView(web.View):
         apps = db.session.query(db.Applications).filter_by(**filters).all()
         apps_data = [obj.to_json() for obj in apps]
 
+        filters = {
+            'offer_id': params['id']
+        }
+
+        offer_apps = db.session.query(db.OffersAppsRelations).filter_by(**filters).all()
+        offer_apps_data = [obj.app_id for obj in offer_apps]
+
+        offer_apps_creatives = db.session.query(db.OffersAppsCreatives).filter_by(**filters).all()
+        offer_apps_creatives_data = {}
+        for item in offer_apps_creatives:
+            offer_apps_creatives_data[item.app_id] = item.creative_url
+
+        offer_apps_orders = db.session.query(db.OffersAppsOrderUrls).filter_by(**filters).all()
+        offer_apps_orders_data = {}
+        for item in offer_apps_orders:
+            offer_apps_orders_data[item.app_id] = item.order_url
+
+        offer_apps_names = db.session.query(db.OffersAppsNames).filter_by(**filters).all()
+        offer_apps_names_data = {}
+        for item in offer_apps_names:
+            offer_apps_names_data[item.app_id] = item.name
+
+        offer_apps_summs = db.session.query(db.OffersAppsSumms).filter_by(**filters).all()
+        offer_apps_summs_data = {}
+        for item in offer_apps_summs:
+            offer_apps_summs_data[item.app_id] = item.to_json()
+
+        offer_apps_terms = db.session.query(db.OffersAppsTerms).filter_by(**filters).all()
+        offer_apps_terms_data = {}
+        for item in offer_apps_terms:
+            offer_apps_terms_data[item.app_id] = item.to_json()
+
+        offer_apps_percents = db.session.query(db.OffersAppsPercents).filter_by(**filters).all()
+        offer_apps_percents_data = {}
+        for item in offer_apps_percents:
+            offer_apps_percents_data[item.app_id] = item.to_json()
+
+        offers_state = None
+        if 'state' in params:
+            offers_state = params['state']
+
+        current_app = None
+        if 'current_app' in params:
+            current_app = params['current_app']
+
+        logger.debug("Offers overview get params: {}".format(params))
+
         return {
-            'apps': apps_data,
             'offers_types': avm.offers_types(),
-            'offer': offer_data
+            'offer': offer_data,
+            'apps': apps_data,
+            'offer_apps': offer_apps_data,
+            'offer_apps_creatives': offer_apps_creatives_data,
+            'offer_apps_orders': offer_apps_orders_data,
+            'offer_apps_names': offer_apps_names_data,
+            'offer_apps_summs': offer_apps_summs_data,
+            'offer_apps_terms': offer_apps_terms_data,
+            'offer_apps_percents': offer_apps_percents_data,
+            'offers_state': offers_state,
+            'current_app': current_app,
+
+            'active_menu_item': 'offers',
+            'offers_type_id': int(offer_data['offer_type']),
         }
 
     async def post(self, *args, **kwargs):
@@ -168,4 +232,13 @@ class OffersCreateView(web.View):
 
         db.session.commit()
 
-        return web.HTTPFound('/offers?offers_type={}'.format(offer.offer_type))
+        offers_state = None
+        if 'state' in params:
+            offers_state = params['state']
+
+        current_app = None
+        if 'current_app' in params:
+            current_app = params['current_app']
+
+        return web.HTTPFound('/offers?offers_type={}&state={}&current_app={}'.format(
+            offer.offer_type, offers_state, current_app))

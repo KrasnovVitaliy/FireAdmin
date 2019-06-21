@@ -203,10 +203,12 @@ class OffersAppsRelations(Base):
     id = Column(Integer, primary_key=True)
     offer_id = Column(Integer, ForeignKey("offers.id"))
     app_id = Column(Integer, ForeignKey("applications.id"))
+    position = Column(Integer)
 
-    def __init__(self, offer_id=None, app_id=None):
+    def __init__(self, offer_id=None, app_id=None, position=None):
         self.offer_id = offer_id
         self.app_id = app_id
+        self.position = position
 
     def serialize(self, to_serialize):
         d = {}
@@ -218,7 +220,187 @@ class OffersAppsRelations(Base):
         return d
 
     def to_json(self):
-        to_serialize = ['id', 'offer_id', 'app_id']
+        to_serialize = ['id', 'offer_id', 'app_id', 'position']
+        return self.serialize(to_serialize)
+
+
+class OffersAppsOrderUrls(Base):
+    __tablename__ = 'offers_apps_order_urls'
+    id = Column(Integer, primary_key=True)
+    offer_id = Column(Integer, ForeignKey("offers.id"))
+    app_id = Column(Integer, ForeignKey("applications.id"))
+    order_url = Column(String(200))
+
+    def __init__(self, offer_id=None, app_id=None, order_url=None):
+        self.offer_id = offer_id
+        self.app_id = app_id
+        self.order_url = order_url
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'offer_id', 'app_id', 'order_url']
+        return self.serialize(to_serialize)
+
+
+class OffersAppsNames(Base):
+    __tablename__ = 'offers_apps_order_names'
+    id = Column(Integer, primary_key=True)
+    offer_id = Column(Integer, ForeignKey("offers.id"))
+    app_id = Column(Integer, ForeignKey("applications.id"))
+    name = Column(String(200))
+
+    def __init__(self, offer_id=None, app_id=None, name=None):
+        self.offer_id = offer_id
+        self.app_id = app_id
+        self.name = name
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'offer_id', 'app_id', 'name']
+        return self.serialize(to_serialize)
+
+
+class OffersAppsCreatives(Base):
+    __tablename__ = 'offers_apps_creatives'
+    id = Column(Integer, primary_key=True)
+    offer_id = Column(Integer, ForeignKey("offers.id"))
+    app_id = Column(Integer, ForeignKey("applications.id"))
+    creative_url = Column(String(200))
+
+    def __init__(self, offer_id=None, app_id=None, creative_url=None):
+        self.offer_id = offer_id
+        self.app_id = app_id
+        self.creative_url = creative_url
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'offer_id', 'app_id', 'creative_url']
+        return self.serialize(to_serialize)
+
+
+class OffersAppsTerms(Base):
+    __tablename__ = 'offers_apps_terms'
+    id = Column(Integer, primary_key=True)
+    offer_id = Column(Integer, ForeignKey("offers.id"))
+    app_id = Column(Integer, ForeignKey("applications.id"))
+    termPostfix = Column(String(50))
+    termMax = Column(String(50))
+    termMid = Column(String(50))
+    termMin = Column(String(50))
+    termPrefix = Column(String(50))
+
+    def __init__(self, offer_id=None, app_id=None, termPostfix=None, termMax=None, termMid=None,
+                 termMin=None, termPrefix=None):
+        self.offer_id = offer_id
+        self.app_id = app_id
+        self.termPostfix = termPostfix
+        self.termMax = termMax
+        self.termMid = termMid
+        self.termMin = termMin
+        self.termPrefix = termPrefix
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'offer_id', 'app_id', 'termPostfix', 'termMax', 'termMid', 'termMin',
+                        'termPrefix']
+        return self.serialize(to_serialize)
+
+
+class OffersAppsSumms(Base):
+    __tablename__ = 'offers_apps_summs'
+    id = Column(Integer, primary_key=True)
+    offer_id = Column(Integer, ForeignKey("offers.id"))
+    app_id = Column(Integer, ForeignKey("applications.id"))
+    summPostfix = Column(String(50))
+    summMax = Column(String(50))
+    summMid = Column(String(50))
+    summMin = Column(String(50))
+    summPrefix = Column(String(50))
+
+    def __init__(self, offer_id=None, app_id=None, summPostfix=None, summMax=None, summMid=None,
+                 summMin=None, summPrefix=None):
+        self.offer_id = offer_id
+        self.app_id = app_id
+        self.summPostfix = summPostfix
+        self.summMax = summMax
+        self.summMid = summMid
+        self.summMin = summMin
+        self.summPrefix = summPrefix
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'offer_id', 'app_id', 'summPostfix', 'summMax', 'summMid', 'summMin',
+                        'summPrefix']
+        return self.serialize(to_serialize)
+
+
+class OffersAppsPercents(Base):
+    __tablename__ = 'offers_apps_percents'
+    id = Column(Integer, primary_key=True)
+    offer_id = Column(Integer, ForeignKey("offers.id"))
+    app_id = Column(Integer, ForeignKey("applications.id"))
+    percent = Column(String(50))
+    percentPostfix = Column(String(50))
+    percentPrefix = Column(String(50))
+
+    def __init__(self, offer_id=None, app_id=None, percentPostfix=None, percent=None, percentPrefix=None):
+        self.offer_id = offer_id
+        self.app_id = app_id
+        self.percentPostfix = percentPostfix
+        self.percent = percent
+        self.percentPrefix = percentPrefix
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'offer_id', 'app_id', 'percentPostfix', 'percent', 'percentPrefix']
         return self.serialize(to_serialize)
 
 

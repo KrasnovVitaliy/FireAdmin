@@ -28,7 +28,28 @@ class OffersView(web.View):
         else:
             offers_state = 'all'
 
-        offers = db.session.query(db.Offers).filter_by(**filters).order_by(asc(db.Offers.position)).all()
+        try:
+            current_app = int(params['current_app'])
+        except Exception as e:
+            current_app = None
+
+        if current_app:
+            results = db.session.query(db.OffersAppsRelations, db.Offers) \
+                .filter(db.OffersAppsRelations.app_id == current_app) \
+                .filter(db.OffersAppsRelations.offer_id == db.Offers.id) \
+                .filter(db.Offers.deleted == None) \
+                .filter(db.Offers.offer_type == filters['offer_type'])
+            if 'isActive' in filters:
+                results = results.filter(db.Offers.isActive == filters['isActive'])
+
+            results = results.order_by(asc(db.OffersAppsRelations.position)).all()
+
+            # Building offers list from results
+            offers = [result[1] for result in results]
+
+        else:
+            offers = db.session.query(db.Offers).filter_by(**filters).order_by(asc(db.Offers.position)).all()
+
         offers_data = [obj.to_json() for obj in offers]
 
         apps = db.session.query(db.Applications).all()
@@ -44,10 +65,20 @@ class OffersView(web.View):
             for offer_app in offer_apps:
                 offer['related_apps'].append(app_data[offer_app.app_id])
 
+        filters = {
+            'deleted': None,
+        }
+        apps = db.session.query(db.Applications).filter_by(**filters).all()
+        apps_data = [obj.to_json() for obj in apps]
+
+        logger.debug("Offers list get params: {}".format(params))
+
         return {
             'offers': offers_data,
             'offers_types': avm.offers_types(),
             'offers_type_id': int(params['offers_type']),
             'offers_state': offers_state,
-            'active_menu_item': 'offers'
+            'active_menu_item': 'offers',
+            'apps': apps_data,
+            'current_app': current_app,
         }

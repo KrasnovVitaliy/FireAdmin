@@ -3,6 +3,7 @@ from views.index import *
 from views.offers.offers_types import *
 from views.offers.offers_list import *
 from views.offers.offers_overview import *
+from views.offers.offers_duplicate import *
 from views.offers.offers_actions import *
 from views.offers.offers_create import *
 
@@ -35,6 +36,7 @@ routes = [
     web.view('/offers_overview', OffersOverviewView),
     web.view('/offers_actions', OffersActionsView),
     web.view('/offers_create', OffersCreateView),
+    web.view('/offers_duplicate', OffersDuplicateView),
     web.view('/offers_update_order', OffersUpdateOrder),
     web.view('/offers_update_comment', OffersUpdateComment),
 

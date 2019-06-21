@@ -1,8 +1,9 @@
 from aiohttp import web
-import logging
 from config import Config
+import logging
 import json
 import db
+
 
 import utils.firebase_client as fb_client
 from utils.data_to_json import gen_app_json
@@ -15,17 +16,13 @@ class AppsFBDBGetView(web.View):
     async def get(self, *args, **kwargs):
         params = self.request.rel_url.query
 
-        filters = {
-            'app_id': params['id']
-        }
-
         app = db.session.query(db.Applications).filter_by(id=params['id']).first()
 
-        stuts_code, rsp_data = fb_client.get_all(app.fb_id)
-        if stuts_code != 200:
-            return web.HTTPError(body=rsp_data)
+        data = fb_client.get_all(app.fb_id)
+        if not data:
+            return web.HTTPError(body=data)
 
-        return web.HTTPOk(body=json.dumps(rsp_data), headers={
+        return web.HTTPOk(body=json.dumps(data, ensure_ascii=False), headers={
             'Content-Type': 'text/plain',
             'Content-Disposition': 'attachment; filename=fb_{}.json'.format(app.name),
             'Content-Transfer-Encoding': 'binary',
@@ -36,28 +33,11 @@ class AppsFBDBLoadView(web.View):
     async def get(self, *args, **kwargs):
         params = self.request.rel_url.query
 
-        filters = {
-            'app_id': params['id']
-        }
-
-        app = db.session.query(db.Applications).filter_by(id=params['id']).first()
-        results = db.session.query(db.OffersAppsRelations, db.Offers).filter_by(**filters).filter(
-            db.OffersAppsRelations.offer_id == db.Offers.id).all()
-
         app = db.session.query(db.Applications).filter_by(id=params['id']).first()
         data = gen_app_json(app)
-        # data = {}
-        # for result in results:
-        #     offer_data = trim_fields(result[1].to_json())
-        #
-        #     offer_type = db.session.query(db.OffersTypes).filter_by(id=result[1].offer_type).first()
-        #
-        #     if offer_type.name not in data:
-        #         data[offer_type.name] = []
-        #     data[offer_type.name].append(offer_data)
 
-        stuts_code, rsp_data = fb_client.load_all_data(app.fb_id, data)
-        if stuts_code != 200:
-            return web.HTTPError(body=rsp_data)
+        data = fb_client.load_all_data(app.fb_id, data)
+        if not data:
+            return web.HTTPError(body=data)
 
         return web.HTTPFound('/applications')

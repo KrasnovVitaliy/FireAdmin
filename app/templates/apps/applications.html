@@ -35,8 +35,13 @@
                     }}</h4></a></td>
                 <td>
                     <div class="btn-group">
-                        <a href="/app_fb_db_load?id={{app.id}}" type="button"
-                           class="btn btn-warning">Обновить Firebase DB</a>
+                        <a href="#" type="button"
+                           class="btn btn-warning"
+                           data-ufb_app_id={{app.id}}
+                           data-ufb_app_name="{{app.name}}"
+                           data-toggle="modal"
+                           data-target="#uploadFirebaseConfirmationModal"
+                        >Обновить Firebase DB</a>
 
                         <a href="/app_fb_db_get?id={{app.id}}" type="button"
                            class="btn btn-default">Скачать FB JSON</a>
@@ -47,23 +52,44 @@
                     </div>
                 <td>
                     <div class="btn-group">
-                        <a href="/add_all_offers?id={{app.id}}" type="button"
-                           class="btn btn-success">Добавить все</a>
-                        <a href="/delete_all_offers?id={{app.id}}" type="button"
-                           class="btn btn-danger">Удалить все</a>
+                        <a href="#" type="button"
+                           class="btn btn-success"
+                           data-aao_app_id={{app.id}}
+                           data-aao_app_name="{{app.name}}"
+                           data-toggle="modal"
+                           data-target="#addAllOffersConfirmationModal"
+                        >Добавить все</a>
+                        <a href="#" type="button"
+                           class="btn btn-danger"
+                           data-rao_app_id={{app.id}}
+                           data-rao_app_name="{{app.name}}"
+                           data-toggle="modal"
+                           data-target="#removeAllOffersConfirmationModal"
+                        >Удалить все</a>
                     </div>
                 </td>
                 <td>
                     <div class="btn-group">
-                        <a href="/add_all_news?id={{app.id}}" type="button"
-                           class="btn btn-success">Добавить все</a>
-                        <a href="/delete_all_news?id={{app.id}}" type="button"
-                           class="btn btn-danger">Удалить все</a>
+                        <a href="#" type="button"
+                           class="btn btn-success"
+                           data-aan_app_id={{app.id}}
+                           data-aan_app_name="{{app.name}}"
+                           data-toggle="modal"
+                           data-target="#addAllNewsConfirmationModal"
+                        >Добавить все</a>
+                        <a href="#" type="button"
+                           class="btn btn-danger"
+                           data-ran_app_id={{app.id}}
+                           data-ran_app_name="{{app.name}}"
+                           data-toggle="modal"
+                           data-target="#removeAllNewsConfirmationModal"
+                        >Удалить все</a>
                     </div>
                 </td>
                 </td>
                 <td>
-                    <a class="text-danger" href="#"><h4><i class="fa fa-remove text-red" data-app_id={{app.id}}
+                    <a class="text-danger" href="#"><h4><i class="fa fa-remove text-red"
+                                                           data-app_id={{app.id}}
                                                            data-app_name="{{app.name}}"
                                                            data-toggle="modal"
                                                            data-target="#deleteConfirmationModal"></i></h4></a>
@@ -82,12 +108,105 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body">
-                <h3>Удалить приложение <span id="modal-app_name"></span>?</h3>
+                <h3>Удалить приложение <b><span id="modal-app_name"></span></b>?</h3>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-info" data-dismiss="modal" id="cancel-delete-button">Cancel
+                <button type="button" class="btn btn-info" data-dismiss="modal" id="cancel-button">Отмена
                 </button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirm-delete-button">Delete
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirm-button">Удалить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="uploadFirebaseConfirmationModal" tabindex="-1" role="dialog"
+     aria-labelledby="uploadFirebaseConfirmationModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h3>Загрузить офферы для приложения <b><span id="modal-ufb_app_name"></span></b> в Firebase?</h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal" id="ufb-cancel-button">Отмена
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="ufb-confirm-button">
+                    Загрузить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addAllOffersConfirmationModal" tabindex="-1" role="dialog"
+     aria-labelledby="uploadFirebaseConfirmationModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h3>Добавить все офферы в приложение <b><span id="modal-aao_app_name"></span></b></h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal" id="aao-cancel-button">Отмена
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="aao-confirm-button">
+                    Добавить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="removeAllOffersConfirmationModal" tabindex="-1" role="dialog"
+     aria-labelledby="uploadFirebaseConfirmationModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h3>Удалить все офферы из приложения <b><span id="modal-rao_app_name"></span></b></h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal" id="rao-cancel-button">Отмена
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="rao-confirm-button">Удалить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addAllNewsConfirmationModal" tabindex="-1" role="dialog"
+     aria-labelledby="uploadFirebaseConfirmationModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h3>Добавить все новости в приложение <b><span id="modal-aan_app_name"></span></b></h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal" id="aan-cancel-button">Отмена
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="aan-confirm-button">
+                    Добавить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="removeAllNewsConfirmationModal" tabindex="-1" role="dialog"
+     aria-labelledby="uploadFirebaseConfirmationModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h3>Удалить все новости из приложения <b><span id="modal-ran_app_name"></span></b></h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal" id="ran-cancel-button">Отмена
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="ran-confirm-button">Удалить
                 </button>
             </div>
         </div>
@@ -101,7 +220,7 @@
     set_confirmation_modal_handlers();
 
     function pass_arguments_to_modal() {
-        let ATTRIBUTES = ['app_name'];
+        let ATTRIBUTES = ['app_name', 'ufb_app_name', 'aao_app_name', 'rao_app_name', 'aan_app_name', 'ran_app_name'];
         $('[data-toggle="modal"]').on('click', function (e) {
             // convert target (e.g. the button) to jquery object
             var $target = $(e.target);
@@ -116,7 +235,11 @@
                 $modalAttribute.text(dataValue || '');
             });
             window.removing_id = $target.data('app_id');
-            console.log("Selected id: " + window.removing_id);
+            window.ufb_id = $target.data('ufb_app_id');
+            window.aao_id = $target.data('aao_app_id');
+            window.rao_id = $target.data('rao_app_id');
+            window.aan_id = $target.data('aan_app_id');
+            window.ran_id = $target.data('ran_app_id');
         });
     }
 
@@ -125,8 +248,58 @@
             var $button = $(event.target); // The clicked button
 
             $(this).closest('.modal').one('hidden.bs.modal', function () {
-                if ($button.attr("id") == 'confirm-delete-button') {
+                if ($button.attr("id") == 'confirm-button') {
                     window.location.href = '/apps_actions?&action=delete&id=' + window.removing_id;
+                }
+            });
+        });
+
+        $('#uploadFirebaseConfirmationModal .modal-footer button').on('click', function (event) {
+            var $button = $(event.target); // The clicked button
+
+            $(this).closest('.modal').one('hidden.bs.modal', function () {
+                if ($button.attr("id") == 'ufb-confirm-button') {
+                    window.location.href = '/app_fb_db_load?id=' + window.ufb_id;
+                }
+            });
+        });
+
+        $('#addAllOffersConfirmationModal .modal-footer button').on('click', function (event) {
+            var $button = $(event.target); // The clicked button
+
+            $(this).closest('.modal').one('hidden.bs.modal', function () {
+                if ($button.attr("id") == 'aao-confirm-button') {
+                    window.location.href = '/add_all_offers?id=' + window.aao_id;
+                }
+            });
+        });
+
+        $('#removeAllOffersConfirmationModal .modal-footer button').on('click', function (event) {
+            var $button = $(event.target); // The clicked button
+
+            $(this).closest('.modal').one('hidden.bs.modal', function () {
+                if ($button.attr("id") == 'rao-confirm-button') {
+                    window.location.href = '/delete_all_offers?id=' + window.rao_id;
+                }
+            });
+        });
+
+        $('#addAllNewsConfirmationModal .modal-footer button').on('click', function (event) {
+            var $button = $(event.target); // The clicked button
+
+            $(this).closest('.modal').one('hidden.bs.modal', function () {
+                if ($button.attr("id") == 'aan-confirm-button') {
+                    window.location.href = '/add_all_news?id=' + window.aan_id;
+                }
+            });
+        });
+
+        $('#removeAllNewsConfirmationModal .modal-footer button').on('click', function (event) {
+            var $button = $(event.target); // The clicked button
+
+            $(this).closest('.modal').one('hidden.bs.modal', function () {
+                if ($button.attr("id") == 'ran-confirm-button') {
+                    window.location.href = '/delete_all_news?id=' + window.ran_id;
                 }
             });
         });
