@@ -15,6 +15,19 @@ def is_field_in_map(field, data_map, field_type):
     return data_map
 
 
+def get_max_position(app_id, offer_type):
+    result = db.session.execute(
+        "SELECT max(offers_apps_relations.position)from offers_apps_relations inner join offers on offers_apps_relations.offer_id==offers.id where offers_apps_relations.app_id={} and offers.offer_type={} and offers.deleted is null;".format(
+            int(app_id), int(offer_type)
+        ))
+    try:
+        for row in result:
+            return int(row[0])
+    except:
+        return 0
+    return 0
+
+
 class OffersOverviewView(web.View):
     @aiohttp_jinja2.template('offers/offers_overview.html')
     async def get(self, *args, **kwargs):
@@ -225,6 +238,9 @@ class OffersOverviewView(web.View):
 
                 if int(app_id) in offer_app_relation_old_data:
                     offer_app_relation.position = offer_app_relation_old_data[int(app_id)]
+                else:
+                    max_position = get_max_position(app_id, offer.offer_type)
+                    offer_app_relation.position = max_position + 1
                 db.session.add(offer_app_relation)
 
         for app_id in percent_app_data.keys():

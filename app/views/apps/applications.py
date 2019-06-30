@@ -25,3 +25,14 @@ class ApplicationsView(web.View):
             "offers_types": avm.offers_types(),
             'active_menu_item': 'applications'
         }
+
+
+class ApplicationsJsonView(web.View):
+    async def get(self, *args, **kwargs):
+        filters = {
+            'deleted': None,
+        }
+        apps = db.session.query(db.Applications).filter_by(**filters).all()
+        apps_data = [obj.to_json() for obj in apps]
+
+        return web.json_response(apps_data, status=web.HTTPOk.status_code)

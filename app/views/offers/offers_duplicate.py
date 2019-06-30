@@ -15,6 +15,16 @@ def is_field_in_map(field, data_map, field_type):
     return data_map
 
 
+def get_max_position(app_id, offer_type):
+    result = db.session.execute(
+        "SELECT max(offers_apps_relations.position)from offers_apps_relations inner join offers on offers_apps_relations.offer_id==offers.id where offers_apps_relations.app_id={} and offers.offer_type={} and offers.deleted is null;".format(
+            int(app_id), int(offer_type)
+        ))
+    for row in result:
+        return int(row[0])
+    return 0
+
+
 class OffersDuplicateView(web.View):
     @aiohttp_jinja2.template('offers/offers_duplicate.html')
     async def get(self, *args, **kwargs):
@@ -197,8 +207,10 @@ class OffersDuplicateView(web.View):
 
             elif "app_" in field:
                 app_id = field.replace('app_', '')
+
+                max_position = get_max_position(app_id, offer.offer_type)
                 offer_app_relation = db.OffersAppsRelations(
-                    app_id=app_id, offer_id=offer.id)
+                    app_id=app_id, offer_id=offer.id, position=max_position + 1)
 
                 db.session.add(offer_app_relation)
 

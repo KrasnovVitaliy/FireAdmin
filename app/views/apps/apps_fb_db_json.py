@@ -4,7 +4,6 @@ import logging
 import json
 import db
 
-
 import utils.firebase_client as fb_client
 from utils.data_to_json import gen_app_json
 
@@ -40,4 +39,8 @@ class AppsFBDBLoadView(web.View):
         if not data:
             return web.HTTPError(body=data)
 
-        return web.HTTPFound('/applications')
+        if 'redirect_uri' in params:
+            logger.debug("Redirection uri: {}".format(params['redirect_uri']))
+            return web.HTTPFound(params['redirect_uri'])
+        else:
+            return web.HTTPFound('/applications')

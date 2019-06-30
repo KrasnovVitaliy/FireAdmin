@@ -41,6 +41,7 @@ routes = [
     web.view('/offers_update_comment', OffersUpdateComment),
 
     web.view('/applications', ApplicationsView),
+    web.view('/applications_json', ApplicationsJsonView),
     web.view('/apps_create', AppsCreateView),
     web.view('/apps_overview', AppsOverviewView),
     web.view('/apps_actions', AppsActionsView),
