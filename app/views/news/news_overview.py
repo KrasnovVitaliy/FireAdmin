@@ -33,13 +33,20 @@ class NewsOverviewView(web.View):
         news_apps = db.session.query(db.NewsAppsRelations).filter_by(**filters).all()
         news_apps_data = [obj.app_id for obj in news_apps]
 
-        print(news_apps_data)
+        countries = db.session.query(db.Countries).all()
+        countries_data = [obj.to_json() for obj in countries]
+
+        news_countries = db.session.query(db.NewsCountriesRelations).filter_by(**filters).all()
+        news_countries_data = [obj.country_id for obj in news_countries]
+
         return {
             'offers_types': avm.offers_types(),
             'news': news_data,
             'apps': apps_data,
             'news_apps': news_apps_data,
             'active_menu_item': 'newss',
+            'countries': countries_data,
+            'news_countries': news_countries_data,
         }
 
     async def post(self, *args, **kwargs):
@@ -79,6 +86,11 @@ class NewsOverviewView(web.View):
             if "app_" in field:
                 news_app_relation = db.NewsAppsRelations(app_id=field.replace('app_', ''), news_id=news_item.id)
                 db.session.add(news_app_relation)
+            elif "country_" in field:
+                country_id = field.replace('country_', '')
+                news_country_relation = db.NewsCountriesRelations(
+                    country_id=country_id, news_id=params['id'])
+                db.session.add(news_country_relation)
 
         db.session.commit()
 

@@ -4,17 +4,27 @@ from sqlalchemy import asc, desc
 import re
 
 
-def gen_app_json(app):
+def get_offers_data(app, country_id=None):
     filters = {
         'app_id': app.id,
     }
 
-    results = db.session.query(db.OffersAppsRelations, db.Offers) \
-        .filter(db.OffersAppsRelations.app_id == app.id) \
-        .filter(db.OffersAppsRelations.offer_id == db.Offers.id) \
-        .filter(db.Offers.deleted == None) \
-        .filter(db.Offers.isActive == 1) \
-        .order_by(asc(db.OffersAppsRelations.position)).all()
+    if country_id:
+        results = db.session.query(db.OffersAppsRelations, db.Offers, db.OffersCountriesRelations) \
+            .filter(db.OffersAppsRelations.app_id == app.id) \
+            .filter(db.OffersCountriesRelations.country_id == country_id) \
+            .filter(db.OffersCountriesRelations.offer_id == db.Offers.id) \
+            .filter(db.OffersAppsRelations.offer_id == db.Offers.id) \
+            .filter(db.Offers.deleted == None) \
+            .filter(db.Offers.isActive == 1) \
+            .order_by(asc(db.OffersAppsRelations.position)).all()
+    else:
+        results = db.session.query(db.OffersAppsRelations, db.Offers) \
+            .filter(db.OffersAppsRelations.app_id == app.id) \
+            .filter(db.OffersAppsRelations.offer_id == db.Offers.id) \
+            .filter(db.Offers.deleted == None) \
+            .filter(db.Offers.isActive == 1) \
+            .order_by(asc(db.OffersAppsRelations.position)).all()
 
     offer_apps_creatives = db.session.query(db.OffersAppsCreatives).filter_by(**filters).all()
     offer_apps_creatives_data = {}
@@ -126,8 +136,18 @@ def gen_app_json(app):
     filters = {
         'app_id': app.id,
     }
-    results = db.session.query(db.NewsAppsRelations, db.News).filter_by(**filters).filter(
-        db.NewsAppsRelations.news_id == db.News.id).order_by(asc(db.News.position)).all()
+    if country_id:
+        results = db.session.query(db.NewsAppsRelations, db.News, db.NewsCountriesRelations) \
+            .filter_by(**filters) \
+            .filter(db.NewsCountriesRelations.country_id == country_id) \
+            .filter(db.NewsCountriesRelations.news_id == db.News.id) \
+            .filter(db.NewsAppsRelations.news_id == db.News.id).order_by(asc(db.News.position)).all()
+    else:
+        results = db.session.query(db.NewsAppsRelations, db.News).filter_by(**filters).filter(
+            db.NewsAppsRelations.news_id == db.News.id).order_by(asc(db.News.position)).all()
+
+    # results = db.session.query(db.NewsAppsRelations, db.News).filter_by(**filters).filter(
+    #     db.NewsAppsRelations.news_id == db.News.id).order_by(asc(db.News.position)).all()
     ret_data['news'] = []
     for result in results:
         if result[1].isActive:
@@ -146,5 +166,15 @@ def gen_app_json(app):
         cards.extend(ret_data['cards_installment'])
 
     ret_data['cards'] = cards
+
+    return ret_data
+
+
+def gen_app_json(app):
+    ret_data = get_offers_data(app)
+
+    countries = db.session.query(db.Countries).all()
+    for country in countries:
+        ret_data[country.code] = get_offers_data(app, country_id=country.id)
 
     return ret_data

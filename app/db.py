@@ -437,7 +437,10 @@ class News(Base):
         for attr_name in to_serialize:
             attr_value = getattr(self, attr_name)
             if isinstance(attr_value, datetime.datetime):
-                attr_value = str(attr_value)
+                if attr_name == 'expireDate':
+                    attr_value = attr_value.strftime("%d.%m.%Y")
+                else:
+                    attr_value = str(attr_value)
             d[attr_name] = attr_value
         return d
 
@@ -468,6 +471,78 @@ class NewsAppsRelations(Base):
 
     def to_json(self):
         to_serialize = ['id', 'news_id', 'app_id']
+        return self.serialize(to_serialize)
+
+
+class Countries(Base):
+    __tablename__ = 'countries'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100))
+    code = Column(String(2))
+
+    def __init__(self, name=None, code=None):
+        self.name = name
+        self.code = code
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'name', 'code']
+        return self.serialize(to_serialize)
+
+
+class OffersCountriesRelations(Base):
+    __tablename__ = 'offers_countries_relations'
+    id = Column(Integer, primary_key=True)
+    offer_id = Column(Integer, ForeignKey("offers.id"))
+    country_id = Column(Integer, ForeignKey("countries.id"))
+
+    def __init__(self, offer_id=None, country_id=None):
+        self.offer_id = offer_id
+        self.country_id = country_id
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'offer_id', 'country_id']
+        return self.serialize(to_serialize)
+
+
+class NewsCountriesRelations(Base):
+    __tablename__ = 'news_countries_relations'
+    id = Column(Integer, primary_key=True)
+    news_id = Column(Integer, ForeignKey("news.id"))
+    country_id = Column(Integer, ForeignKey("countries.id"))
+
+    def __init__(self, news_id=None, country_id=None):
+        self.news_id = news_id
+        self.country_id = country_id
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'news_id', 'country_id']
         return self.serialize(to_serialize)
 
 

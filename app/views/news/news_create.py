@@ -19,10 +19,13 @@ class NewsCreateView(web.View):
         apps = db.session.query(db.Applications).all()
         apps_data = [obj.to_json() for obj in apps]
 
+        countries = db.session.query(db.Countries).all()
+        countries_data = [obj.to_json() for obj in countries]
         return {
             'apps': apps_data,
             'offers_types': avm.offers_types(),
-            'offer': offer_data
+            'offer': offer_data,
+            'countries': countries_data,
         }
 
     async def post(self, *args, **kwargs):
@@ -56,8 +59,12 @@ class NewsCreateView(web.View):
             if "app_" in field:
                 news_app_relation = db.NewsAppsRelations(app_id=field.replace('app_', ''), news_id=news_item.id)
                 db.session.add(news_app_relation)
+            elif "country_" in field:
+                country_id = field.replace('country_', '')
+                news_country_relation = db.NewsCountriesRelations(
+                    country_id=country_id, news_id=news_item.id)
+                db.session.add(news_country_relation)
 
         db.session.commit()
 
         return web.HTTPFound('/news')
-

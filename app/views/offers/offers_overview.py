@@ -93,6 +93,12 @@ class OffersOverviewView(web.View):
 
         logger.debug("Offers overview get params: {}".format(params))
 
+        countries = db.session.query(db.Countries).all()
+        countries_data = [obj.to_json() for obj in countries]
+
+        offer_countries = db.session.query(db.OffersCountriesRelations).filter_by(**filters).all()
+        offer_countries_data = [obj.country_id for obj in offer_countries]
+
         return {
             'offers_types': avm.offers_types(),
             'offer': offer_data,
@@ -106,7 +112,8 @@ class OffersOverviewView(web.View):
             'offer_apps_percents': offer_apps_percents_data,
             'offers_state': offers_state,
             'current_app': current_app,
-
+            'countries': countries_data,
+            'offer_countries': offer_countries_data,
             'active_menu_item': 'offers',
             'offers_type_id': int(offer_data['offer_type']),
         }
@@ -242,6 +249,11 @@ class OffersOverviewView(web.View):
                     max_position = get_max_position(app_id, offer.offer_type)
                     offer_app_relation.position = max_position + 1
                 db.session.add(offer_app_relation)
+            elif "country_" in field:
+                country_id = field.replace('country_', '')
+                offer_country_relation = db.OffersCountriesRelations(
+                    country_id=country_id, offer_id=params['id'])
+                db.session.add(offer_country_relation)
 
         for app_id in percent_app_data.keys():
             offer_app_percent = db.OffersAppsPercents(

@@ -14,7 +14,8 @@
 
 {% block content %}
 
-<form role="form" action="/offers_overview?id={{offer.id}}&state={{offers_state}}&current_app={{current_app}}" method="post">
+<form role="form" action="/offers_overview?id={{offer.id}}&state={{offers_state}}&current_app={{current_app}}"
+      method="post">
     <section class="content">
         <div class="box box-info">
             <div class="row">
@@ -175,6 +176,28 @@
                                     Наличные
                                 </label>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Страны</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            {% for country in countries %}
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="country_{{country.id}}"
+                                           {% if country.id in offer_countries %}
+                                           checked
+                                           {% endif %}
+                                    >
+                                    {{country.name}}
+                                </label>
+                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -516,7 +539,8 @@
                     </div>
                     <div class="box-body">
                         <label for="summPrefix_app_{{app.id}}">Префикс суммы</label>
-                        <input class="form-control" type="text" placeholder="Префикс суммы" id="summPrefix_app_{{app.id}}"
+                        <input class="form-control" type="text" placeholder="Префикс суммы"
+                               id="summPrefix_app_{{app.id}}"
                                name="summPrefix_app_{{app.id}}"
                                {% if app.id in offer_apps_summs %}
                                value="{{offer_apps_summs[app.id].summPrefix}}"
@@ -532,7 +556,8 @@
                         >
 
                         <label for="summMid_app_{{app.id}}">Разделитель суммы</label>
-                        <input class="form-control" type="text" placeholder="Введите разделитель" id="summMid_app_{{app.id}}"
+                        <input class="form-control" type="text" placeholder="Введите разделитель"
+                               id="summMid_app_{{app.id}}"
                                name="summMid_app_{{app.id}}"
                                {% if app.id in offer_apps_summs %}
                                value="{{offer_apps_summs[app.id].summMid}}"
@@ -548,7 +573,8 @@
                         >
 
                         <label for="summPostfix_app_{{app.id}}">Постфикс суммы</label>
-                        <input class="form-control" type="text" placeholder="Постфикс суммы" id="summPostfix_app_{{app.id}}"
+                        <input class="form-control" type="text" placeholder="Постфикс суммы"
+                               id="summPostfix_app_{{app.id}}"
                                name="summPostfix_app_{{app.id}}"
                                {% if app.id in offer_apps_summs %}
                                value="{{offer_apps_summs[app.id].summPostfix}}"
@@ -580,7 +606,8 @@
                     </div>
                     <div class="box-body">
                         <label for="termPrefix_app_{{app.id}}">Префикс сроков</label>
-                        <input class="form-control" type="text" placeholder="Префикс сроков" id="termPrefix_app_{{app.id}}"
+                        <input class="form-control" type="text" placeholder="Префикс сроков"
+                               id="termPrefix_app_{{app.id}}"
                                name="termPrefix_app_{{app.id}}"
                                {% if app.id in offer_apps_terms %}
                                value="{{offer_apps_terms[app.id].termPrefix}}"
@@ -596,7 +623,8 @@
                         >
 
                         <label for="termMid_app_{{app.id}}">Разделитель сроков</label>
-                        <input class="form-control" type="text" placeholder="Разделитель сроков" id="termMid_app_{{app.id}}"
+                        <input class="form-control" type="text" placeholder="Разделитель сроков"
+                               id="termMid_app_{{app.id}}"
                                name="termMid_app_{{app.id}}"
                                {% if app.id in offer_apps_terms %}
                                value="{{offer_apps_terms[app.id].termMid}}"
@@ -612,7 +640,8 @@
                         >
 
                         <label for="termPostfix_app_{{app.id}}">Постфикс сроков</label>
-                        <input class="form-control" type="text" placeholder="Постфикс сроков" id="termPostfix_app_{{app.id}}"
+                        <input class="form-control" type="text" placeholder="Постфикс сроков"
+                               id="termPostfix_app_{{app.id}}"
                                name="termPostfix_app_{{app.id}}"
                                {% if app.id in offer_apps_terms %}
                                value="{{offer_apps_terms[app.id].termPostfix}}"

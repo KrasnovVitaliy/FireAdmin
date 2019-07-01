@@ -1,0 +1,23 @@
+CREATE TABLE countries(
+	id INTEGER PRIMARY KEY,
+	name STRING[100],
+	code STRING[2]
+	);
+
+INSERT INTO countries(name, code) VALUES("Россия", "ru");
+INSERT INTO countries(name, code) VALUES("Украина", "ua");
+INSERT INTO countries(name, code) VALUES("Казахстан", "kz");
+
+CREATE TABLE offers_countries_relations(
+	id INTEGER PRIMARY KEY,
+	offer_id INTEGER,
+	country_id INTEGER,
+	FOREIGN KEY(offer_id) REFERENCES offers(id),
+	FOREIGN KEY(country_id) REFERENCES countries(id));
+
+CREATE TABLE news_countries_relations(
+	id INTEGER PRIMARY KEY,
+	news_id INTEGER,
+	country_id INTEGER,
+	FOREIGN KEY(news_id) REFERENCES news(id),
+	FOREIGN KEY(country_id) REFERENCES countries(id));

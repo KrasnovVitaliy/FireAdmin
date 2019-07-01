@@ -39,10 +39,13 @@ class OffersCreateView(web.View):
         apps = db.session.query(db.Applications).filter_by(**filters).all()
         apps_data = [obj.to_json() for obj in apps]
 
+        countries = db.session.query(db.Countries).all()
+        countries_data = [obj.to_json() for obj in countries]
         return {
             'apps': apps_data,
             'offers_types': avm.offers_types(),
-            'offer': offer_data
+            'offer': offer_data,
+            'countries': countries_data,
         }
 
     async def post(self, *args, **kwargs):
@@ -149,6 +152,12 @@ class OffersCreateView(web.View):
                     app_id=app_id, offer_id=offer.id, position=max_position + 1)
 
                 db.session.add(offer_app_relation)
+
+            elif "country_" in field:
+                country_id = field.replace('country_', '')
+                offer_country_relation = db.OffersCountriesRelations(
+                    country_id=country_id, offer_id=offer.id)
+                db.session.add(offer_country_relation)
 
         for app_id in percent_app_data.keys():
             offer_app_percent = db.OffersAppsPercents(

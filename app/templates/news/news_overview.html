@@ -64,7 +64,7 @@
                                 <div class="input-group-addon">
                                     <i class="fa fa-calendar"></i>
                                 </div>
-                                <input type="text" class="form-control pull-right" id="expireDate"
+                                <input required type="text" class="form-control pull-right" id="expireDate"
                                        name="expireDate" value="{{news.expireDate}}">
                             </div>
                             <!-- /.input group -->
@@ -106,6 +106,27 @@
                             </label>
                         </div>
                         {% endfor %}
+                    </div>
+                </div>
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Страны</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            {% for country in countries %}
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" name="country_{{country.id}}"
+                                           {% if country.id in news_countries %}
+                                           checked
+                                           {% endif %}
+                                    >
+                                    {{country.name}}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </section>
