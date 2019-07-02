@@ -37,27 +37,11 @@ class OffersUpdateOrder(web.View):
         app_id = None
         if 'app_id' in params and params['app_id'] != None:
             app_id = params['app_id']
-            # db.session.query(db.OffersAppsPositions).filter_by(app_id=app_id).delete()
-            # for item in data:
-            #     offer_app_position = db.OffersAppsPositions()
-            #     offer_app_position.app_id = app_id
-            #     offer_app_position.offer_id = item['item_id']
-            #     offer_app_position.position = item['position']
-            #     db.session.add(offer_app_position)
-
-                # logger.debug("Post data: {}".format(item))
-                # offer = db.session.query(db.Offers).filter_by(id=item['item_id']).first()
-                # offer.position = item['position']
 
         for item in data:
             logger.debug("Post data: {}".format(item))
             offer = db.session.query(db.OffersAppsRelations).filter_by(app_id=app_id, offer_id=item['item_id']).first()
             offer.position = item['position']
-
-        # for item in data:
-        #     logger.debug("Post data: {}".format(item))
-        #     offer = db.session.query(db.Offers).filter_by(id=item['item_id']).first()
-        #     offer.position = item['position']
 
         db.session.commit()
         return web.HTTPOk()

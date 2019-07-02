@@ -13,8 +13,13 @@ class AppsCreateView(web.View):
     @aiohttp_jinja2.template('apps/apps_create.html')
     async def get(self, *args, **kwargs):
         params = self.request.rel_url.query
+        countries = db.session.query(db.Countries).all()
+        countries_data = [obj.to_json() for obj in countries]
+
         return {
             'offers_types': avm.offers_types(),
+            'countries': countries_data,
+            'auth_service_address': config.AUTH_SERVICE_ADDRESS
         }
 
     async def post(self, *args, **kwargs):
@@ -24,9 +29,26 @@ class AppsCreateView(web.View):
         application = db.Applications()
 
         for field in post_data:
-            setattr(application, field, post_data[field])
+            if "country_license_term_" not in field:
+                setattr(application, field, post_data[field])
 
         db.session.add(application)
+        db.session.commit()
+
+        for field in post_data:
+            if "country_license_term_" in field:
+                country_id = int(field.replace("country_license_term_", ""))
+
+                app_country_term = db.AppsCountriesTerms(
+                    app_id=application.id,
+                    country_id=int(country_id),
+                    license_term=post_data[field]
+                )
+                db.session.add(app_country_term)
+                print('!!!!!!!')
+                print(application.id, int(country_id))
+                print('!!!!!!!')
+
         db.session.commit()
 
         return web.HTTPFound('/applications?')

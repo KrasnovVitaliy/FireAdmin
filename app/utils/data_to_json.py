@@ -146,17 +146,22 @@ def get_offers_data(app, country_id=None):
         results = db.session.query(db.NewsAppsRelations, db.News).filter_by(**filters).filter(
             db.NewsAppsRelations.news_id == db.News.id).order_by(asc(db.News.position)).all()
 
-    # results = db.session.query(db.NewsAppsRelations, db.News).filter_by(**filters).filter(
-    #     db.NewsAppsRelations.news_id == db.News.id).order_by(asc(db.News.position)).all()
     ret_data['news'] = []
     for result in results:
         if result[1].isActive:
             news_data = prepare_object_data(result[1].to_json())  # fields_to_str(trim_fields(result[1].to_json()))
             ret_data['news'].append(news_data)
 
-    # Adding license terms
-    ret_data['license_term'] = app.license_term
+    app_country_terms = db.session.query(db.AppsCountriesTerms) \
+        .filter(db.AppsCountriesTerms.app_id == app.id) \
+        .filter(db.AppsCountriesTerms.country_id == country_id) \
+        .first()
+    if app_country_terms:
+        ret_data['license_term'] = app_country_terms.license_term
+    else:
+        ret_data['license_term'] = app.license_term
 
+    # Adding cards
     cards = []
     if 'cards_debit' in ret_data:
         cards.extend(ret_data['cards_debit'])

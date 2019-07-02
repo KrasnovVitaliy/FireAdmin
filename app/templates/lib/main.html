@@ -8,6 +8,7 @@
 <!-- Site wrapper -->
 <div class="wrapper">
 
+
     <header class="main-header">
         {% include 'lib/header.html' %}
         {% block header_nav %}
@@ -17,9 +18,10 @@
 
 
     <!-- =============================================== -->
-
+    {% block side_nav %}
     <!-- Left side column. contains the sidebar -->
     {% include 'lib/side_nav.html' %}
+    {% endblock %}
     <!-- =============================================== -->
 
     <!-- Content Wrapper. Contains page content -->

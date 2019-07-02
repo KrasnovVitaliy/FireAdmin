@@ -1,5 +1,7 @@
 from aiohttp import web
 from views.index import *
+from views.auth.login import *
+
 from views.offers.offers_types import *
 from views.offers.offers_list import *
 from views.offers.offers_overview import *
@@ -31,6 +33,9 @@ config = Config()
 path_to_static_folder = './static'
 routes = [
     web.view('/', IndexView),
+
+    web.view('/login', LoginView),
+
     web.view('/offers_type', OffersTypesView),
     web.view('/offers', OffersView),
     web.view('/offers_overview', OffersOverviewView),

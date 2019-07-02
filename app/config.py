@@ -11,8 +11,8 @@ class Config(ConfigBase):
     PORT = 8080
     HOST = "0.0.0.0"
 
-    # DB_URI = 'sqlite:////root/fireadmin.db'
-    DB_URI = 'sqlite:///./data.db'
+    DB_URI = 'sqlite:////root/fireadmin.db'
+    # DB_URI = 'sqlite:///./data.db'
     # DB_URI = 'sqlite:///./prod.db'
 
     # Logging
@@ -20,8 +20,8 @@ class Config(ConfigBase):
     LOG_LEVEL = logging.DEBUG
     LOG_FILE = None
 
-    AUTH_SERVICE_INTERNAL = "http://qa_space_auth:7000"
-    AUTH_SERVICE_EXTERNAL = "http://127.0.0.1:7000"
+    AUTH_SERVICE_INTERNAL = "http://127.0.0.1:8081"
+    AUTH_SERVICE_EXTERNAL = "http://51.158.176.243:8081"
 
     TOKENS_SECRET = "nzIxhdYtE4UUDITCHst9bhvSJsuhPMbYNostg28oM"
     COOKIE_SECRET = "kioQTiAtFMoncsZOYRnj5IvagCndNV2e9LFy1RNEMOU="
@@ -38,3 +38,5 @@ class Config(ConfigBase):
     os.chdir(os.path.dirname(__file__))
     PROJECT_DIR = os.getcwd()
     sys.path.append(PROJECT_DIR)
+
+    AUTH_SERVICE_ADDRESS = "http://51.158.176.243:8081"

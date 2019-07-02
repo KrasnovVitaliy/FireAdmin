@@ -18,5 +18,6 @@ class OffersTypesView(web.View):
 
         return {
             'offers_types': offers_types_data,
-            'active_menu_item': 'offers_types'
+            'active_menu_item': 'offers_types',
+            'auth_service_address': config.AUTH_SERVICE_ADDRESS
         }

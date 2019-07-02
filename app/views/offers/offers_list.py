@@ -90,4 +90,5 @@ class OffersView(web.View):
             'active_menu_item': 'offers',
             'apps': apps_data,
             'current_app': current_app,
+            'auth_service_address': config.AUTH_SERVICE_ADDRESS
         }

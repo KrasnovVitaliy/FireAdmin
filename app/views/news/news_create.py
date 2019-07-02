@@ -26,6 +26,7 @@ class NewsCreateView(web.View):
             'offers_types': avm.offers_types(),
             'offer': offer_data,
             'countries': countries_data,
+            'auth_service_address': config.AUTH_SERVICE_ADDRESS
         }
 
     async def post(self, *args, **kwargs):

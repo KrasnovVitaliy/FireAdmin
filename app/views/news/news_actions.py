@@ -31,11 +31,16 @@ class NewsActionsView(web.View):
 
 class NewsUpdateOrder(web.View):
     async def post(self, *args, **kwargs):
+        params = self.request.rel_url.query
         data = await self.request.json()
+
+        app_id = None
+        if 'app_id' in params and params['app_id'] != None:
+            app_id = params['app_id']
 
         for item in data:
             logger.debug("Post data: {}".format(item))
-            news = db.session.query(db.News).filter_by(id=item['item_id']).first()
+            news = db.session.query(db.NewsAppsRelations).filter_by(app_id=app_id, news_id=item['item_id']).first()
             news.position = item['position']
 
         db.session.commit()

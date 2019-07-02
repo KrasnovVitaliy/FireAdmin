@@ -455,10 +455,12 @@ class NewsAppsRelations(Base):
     id = Column(Integer, primary_key=True)
     news_id = Column(Integer, ForeignKey("news.id"))
     app_id = Column(Integer, ForeignKey("applications.id"))
+    position = Column(Integer)
 
-    def __init__(self, news_id=None, app_id=None):
+    def __init__(self, news_id=None, app_id=None, position=None):
         self.news_id = news_id
         self.app_id = app_id
+        self.position = position
 
     def serialize(self, to_serialize):
         d = {}
@@ -470,7 +472,7 @@ class NewsAppsRelations(Base):
         return d
 
     def to_json(self):
-        to_serialize = ['id', 'news_id', 'app_id']
+        to_serialize = ['id', 'news_id', 'app_id', 'position']
         return self.serialize(to_serialize)
 
 
@@ -543,6 +545,32 @@ class NewsCountriesRelations(Base):
 
     def to_json(self):
         to_serialize = ['id', 'news_id', 'country_id']
+        return self.serialize(to_serialize)
+
+
+class AppsCountriesTerms(Base):
+    __tablename__ = 'apps_countries_terms'
+    id = Column(Integer, primary_key=True)
+    license_term = Column(String(5000))
+    app_id = Column(Integer, ForeignKey("applications.id"))
+    country_id = Column(Integer, ForeignKey("countries.id"))
+
+    def __init__(self, app_id=None, country_id=None, license_term=None):
+        self.app_id = app_id
+        self.country_id = country_id
+        self.license_term = license_term
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'app_id', 'country_id', 'license_term']
         return self.serialize(to_serialize)
 
 

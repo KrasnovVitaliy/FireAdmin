@@ -106,6 +106,7 @@ class OffersDuplicateView(web.View):
 
             'active_menu_item': 'offers',
             'offers_type_id': int(offer_data['offer_type']),
+            'auth_service_address': config.AUTH_SERVICE_ADDRESS
         }
 
     async def post(self, *args, **kwargs):

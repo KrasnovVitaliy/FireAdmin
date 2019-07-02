@@ -19,7 +19,7 @@
         <div class="row">
             <div class="col-xs-3">
                 <div class="btn-group">
-                    <a href="/news" type="button"
+                    <a href="/news?current_app={%if current_app %} {{current_app.id}} {% endif %}" type="button"
                        {% if news_state=="all" %}}
                        class="btn btn-info"
                        {% else %}
@@ -27,14 +27,16 @@
                        {% endif%}
 
                     >Все</a>
-                    <a href="/news?state=active" type="button"
+                    <a href="/news?state=active&current_app={%if current_app %} {{current_app.id}} {% endif %}"
+                       type="button"
                        {% if news_state=="active" %}}
                        class="btn btn-success"
                        {% else %}
                        class="btn btn-default"
                        {% endif%}
                     >Активные</a>
-                    <a href="/news?state=inactive" type="button"
+                    <a href="/news?state=inactive&current_app={%if current_app %} {{current_app.id}} {% endif %}"
+                       type="button"
                        {% if news_state=="inactive" %}}
                        class="btn btn-danger"
                        {% else %}
@@ -45,11 +47,43 @@
             </div>
             <div class="col-xs-3">
                 <input type="text" name="search-input" id="search-input" onkeyup="filterItems()"
-                           class="form-control"
-                           placeholder="Поиск по новостям...">
+                       class="form-control"
+                       placeholder="Поиск по новостям...">
             </div>
-            <div class="col-xs-6">
-                <a href="/news_create" class="btn btn-info pull-right" type="button">Создать</a>
+            <div class="col-xs-3">
+                <div class="form-group">
+                    <select class="form-control" name="offer_type"
+                            onchange="document.location='news?state={{news_state}}&current_app='+this.options[this.selectedIndex].value">
+                        <option value="all">Все</option>
+                        {% for app in apps%}
+                        <option
+                                value="{{app.id}}"
+                                {%if current_app %}
+                                {% if app.id== current_app.id %}
+                                selected
+                                {% endif %}
+                                {% endif %}
+                        >{{app.name}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-3">
+                <div class="btn-group">
+                    <a href="#" type="button"
+                       class="btn btn-warning"
+                       {% if current_app %}
+                       data-ufb_app_id={%if current_app %} {{current_app.id}} {% endif %}
+                       data-ufb_app_name="{{current_app.name}}"
+                       data-toggle="modal"
+                       data-target="#uploadFirebaseConfirmationModal"
+                       {% else %}
+                       disabled
+                       {% endif %}
+                    >Обновить Firebase DB</a>
+                    <a href="/news_create" class="btn btn-info pull-right" type="button">Создать</a>
+                </div>
             </div>
         </div>
 
@@ -72,7 +106,7 @@
                 <tbody id="news-table-body">
                 {% for news_item in news %}
                 <tr>
-                    <td class="offer_position">{{news_item.position}}</td>
+                    <td class="offer_position">{{news_item.app_position[current_app.id]}}</td>
                     <!-- Added for items position change-->
                     <td class="offer_id" style="display: none">{{news_item.id}}</td>
                     <!-- Added for items position change -->
@@ -84,7 +118,9 @@
                             {% endif %}
                         </h4>
                     </td>
-                    <td><a href="/news_overview?id={{news_item.id}}"><h4>{{ news_item.title }}</h4></a></td>
+                    <td>
+                        <a href="/news_overview?id={{news_item.id}}&state={{news_state}}&current_app={%if current_app %} {{current_app.id}} {% endif %}">
+                            <h4>{{ news_item.title }}</h4></a></td>
                     <td>{{news_item.expireDate}}</td>
                     <td>
                         <ul>
@@ -153,6 +189,25 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="uploadFirebaseConfirmationModal" tabindex="-1" role="dialog"
+         aria-labelledby="uploadFirebaseConfirmationModal"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h3>Загрузить офферы для приложения <b><span id="modal-ufb_app_name"></span></b> в Firebase?</h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal" id="ufb-cancel-button">Отмена
+                    </button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" id="ufb-confirm-button">
+                        Загрузить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     {% endblock %}
 
     {% block page_scripts %}
@@ -178,6 +233,17 @@
                     updateNewsComment({item_id: item_id, comment: comment});
                 }
             });
+
+            $('#uploadFirebaseConfirmationModal .modal-footer button').on('click', function (event) {
+            var $button = $(event.target); // The clicked button
+
+            $(this).closest('.modal').one('hidden.bs.modal', function () {
+                if ($button.attr("id") == 'ufb-confirm-button') {
+                    redirect_uri = encodeURIComponent(window.location.pathname + window.location.search);
+                    window.location.href = '/app_fb_db_load?id=' + window.ufb_id + '&redirect_uri=' + redirect_uri;
+                }
+            });
+        });
         });
 
         function updateNewsComment(updated_comment_data) {
@@ -202,7 +268,7 @@
             console.log(updated_position_data);
 
             var xhr = new XMLHttpRequest();
-            var url = "/news_update_order";
+            var url = "/news_update_order?app_id={%if current_app %} {{current_app.id}} {% endif %}";
             xhr.open("POST", url, true);
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = function () {
@@ -237,7 +303,7 @@
         }
 
         function pass_arguments_to_modal() {
-            let ATTRIBUTES = ['news_item_name'];
+            let ATTRIBUTES = ['news_item_name', 'ufb_app_name'];
             $('[data-toggle="modal"]').on('click', function (e) {
                 // convert target (e.g. the button) to jquery object
                 var $target = $(e.target);
@@ -252,7 +318,7 @@
                     $modalAttribute.text(dataValue || '');
                 });
                 window.removing_id = $target.data('news_item_id');
-                console.log("Selected id: " + window.removing_id);
+                window.ufb_id = $target.data('ufb_app_id');
             });
         }
 

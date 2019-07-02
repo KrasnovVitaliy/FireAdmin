@@ -116,6 +116,7 @@ class OffersOverviewView(web.View):
             'offer_countries': offer_countries_data,
             'active_menu_item': 'offers',
             'offers_type_id': int(offer_data['offer_type']),
+            'auth_service_address': config.AUTH_SERVICE_ADDRESS
         }
 
     async def post(self, *args, **kwargs):
@@ -151,9 +152,7 @@ class OffersOverviewView(web.View):
             if item.position:
                 offer_app_relation_old_data[int(item.app_id)] = int(item.position)
 
-        logger.debug("offer_app_relation_old_data")
-        logger.debug(offer_app_relation_old_data)
-
+        db.session.query(db.OffersCountriesRelations).filter_by(**filters).delete()
         db.session.query(db.OffersAppsRelations).filter_by(**filters).delete()
         db.session.query(db.OffersAppsCreatives).filter_by(**filters).delete()
         db.session.query(db.OffersAppsOrderUrls).filter_by(**filters).delete()

@@ -1,12 +1,10 @@
+pyjwt
+py-bcrypt
 sqlalchemy
 celery
 aiohttp
 aiohttp_jinja2
-aiohttp_session
 aiohttp_cors
-PyJWT
-bcrypt
+aiohttp_session
 cryptography
 psycopg2
-requests==2.22.0
-py-bcrypt

@@ -69,6 +69,24 @@
                 </div>
             </section>
         </div>
+        <div class="box box-info collapsed-box">
+            <div class="box-header with-border" data-widget="collapse">
+                <h3 class="box-title">Пользовательское соглашение по странам</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+
+                {% for country in countries %}
+                <label for="country_license_term_{{ country.id }}">Соглашение для {{country.name}}</label>
+                <textarea id="country_license_term_{{ country.id }}" name="country_license_term_{{country.id }}" rows="5" cols="80"
+                                  placeholder="Соглашение"></textarea>
+                {% endfor %}
+            </div>
+        </div>
         <div class="box box-info">
             <div class="row">
                 <div class="col-md-12">
@@ -95,6 +113,9 @@
         // Replace the <textarea id="editor1"> with a CKEditor
         // instance, using default configuration.
         CKEDITOR.replace('license_term')
+        {% for country in countries %}
+        CKEDITOR.replace('country_license_term_{{ country.id }}');
+        {% endfor %}
         //bootstrap WYSIHTML5 - text editor
         $('.textarea').wysihtml5()
     })

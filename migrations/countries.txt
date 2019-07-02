@@ -21,3 +21,13 @@ CREATE TABLE news_countries_relations(
 	country_id INTEGER,
 	FOREIGN KEY(news_id) REFERENCES news(id),
 	FOREIGN KEY(country_id) REFERENCES countries(id));
+
+ALTER TABLE news_apps_relations ADD COLUMN position INTEGER;
+
+CREATE TABLE apps_countries_terms(
+	id INTEGER PRIMARY KEY,
+	app_id INTEGER,
+	country_id INTEGER,
+	license_term STRING[5000],
+	FOREIGN KEY(app_id) REFERENCES applications(id),
+	FOREIGN KEY(country_id) REFERENCES countries(id));

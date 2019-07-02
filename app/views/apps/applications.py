@@ -23,7 +23,8 @@ class ApplicationsView(web.View):
         return {
             'applications': apps_data,
             "offers_types": avm.offers_types(),
-            'active_menu_item': 'applications'
+            'active_menu_item': 'applications',
+            'auth_service_address': config.AUTH_SERVICE_ADDRESS
         }
 
 

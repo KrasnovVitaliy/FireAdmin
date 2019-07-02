@@ -47,9 +47,7 @@
                         <textarea class="form-control" rows="5" id="description" name="description"
                                   placeholder="Описание">{{app.description}}</textarea>
 
-                        <label for="license_term">Польательское соглашение</label>
-                        <!--<textarea class="form-control" rows="10" id="license_term" name="license_term"-->
-                        <!--placeholder="Соглашение">{{app.license_term}}</textarea>-->
+                        <label for="license_term">Пользовательское соглашение</label>
                         <textarea id="license_term" name="license_term" rows="5" cols="80" id="license_term"
                                   placeholder="Соглашение">{% if app.license_term %}{{app.license_term}}{% endif %}</textarea>
                     </div>
@@ -82,6 +80,24 @@
                 </div>
             </section>
         </div>
+        <div class="box box-info collapsed-box">
+            <div class="box-header with-border" data-widget="collapse">
+                <h3 class="box-title">Пользовательское соглашение по странам</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+
+                {% for country in countries %}
+                <label for="country_license_term_{{ country.id }}">Соглашение для {{country.name}}</label>
+                <textarea id="country_license_term_{{ country.id }}" name="country_license_term_{{country.id }}" rows="5" cols="80"
+                                  placeholder="Соглашение">{% if country.id in app_country_terms %}{{app_country_terms[country.id].license_term}}{% endif %}</textarea>
+                {% endfor %}
+            </div>
+        </div>
 
         <div class="box box-info">
             <div class="row">
@@ -108,7 +124,10 @@
     $(function () {
         // Replace the <textarea id="editor1"> with a CKEditor
         // instance, using default configuration.
-        CKEDITOR.replace('license_term')
+        CKEDITOR.replace('license_term');
+        {% for country in countries %}
+        CKEDITOR.replace('country_license_term_{{ country.id }}');
+        {% endfor %}
         //bootstrap WYSIHTML5 - text editor
         $('.textarea').wysihtml5()
     })
