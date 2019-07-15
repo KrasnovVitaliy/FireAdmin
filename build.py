@@ -1,10 +1,16 @@
-import __init__
-from tempfile import mkstemp
-import os
-from shutil import move
 import tarfile
+import logging
+import os
+import __init__
+
+from tempfile import mkstemp
+from shutil import move
 
 ini_file_path = "./__init__.py"
+
+logging.basicConfig(filename=None, filemode='w', level=logging.INFO,
+                    format='%(asctime)-15s | %(levelname)s | %(filename)s | %(lineno)d: %(message)s')
+logger = logging.getLogger(__name__)
 
 
 def get_new_version_str():
@@ -39,10 +45,20 @@ def make_tarfile(output_filename):
 
 
 def main():
+    logger.info("Script started")
+    logger.info("Getting new version str")
     new_version_str = get_new_version_str()
+    logger.info("New version str: {}".format(new_version_str))
+
+    logger.info("Updating version in init file")
     update_ini_file_version(new_version_str)
+
+    logger.info("updating version in template file")
     update_template_file_version(new_version_str)
+
+    logger.info("Creating tar.gz archive")
     make_tarfile("./fireadmin_{}.tar.gz".format(new_version_str), )
+    logger.info("Created archive ./fireadmin_{}.tar.gz".format(new_version_str))
 
 
 if __name__ == "__main__":
