@@ -1,6 +1,6 @@
 import __init__
 from tempfile import mkstemp
-from os import remove
+import os
 from shutil import move
 import tarfile
 
@@ -23,7 +23,7 @@ def update_ini_file_version(new_version_str):
                     new_file.write("version = \"{}\"".format(new_version_str))
                 else:
                     new_file.write(line)
-    remove(ini_file_path)
+    os.remove(ini_file_path)
     # Move new file
     move(abs_path, ini_file_path)
 
@@ -33,15 +33,16 @@ def update_template_file_version(new_version_str):
         out_file.write(new_version_str)
 
 
-def make_tarfile(output_filename, source_dir):
+def make_tarfile(output_filename):
     with tarfile.open(output_filename, "w:gz") as tar:
-        tar.add(source_dir, arcname=os.path.basename(source_dir))
+        tar.add("./", arcname=os.path.basename("./"))
 
 
 def main():
     new_version_str = get_new_version_str()
     update_ini_file_version(new_version_str)
     update_template_file_version(new_version_str)
+    make_tarfile("./fireadmin_{}.tar.gz".format(new_version_str), )
 
 
 if __name__ == "__main__":

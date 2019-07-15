@@ -11,8 +11,8 @@ class Config(ConfigBase):
     PORT = 8080
     HOST = "0.0.0.0"
 
-    # DB_URI = 'sqlite:////root/fireadmin.db'
-    DB_URI = 'sqlite:///./data.db'
+    DB_URI = 'sqlite:////root/fireadmin.db'
+    # DB_URI = 'sqlite:///./data.db'
     # DB_URI = 'sqlite:///./prod.db'
 
     # Logging
