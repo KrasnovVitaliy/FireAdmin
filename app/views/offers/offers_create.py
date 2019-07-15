@@ -25,6 +25,19 @@ def get_max_position(app_id, offer_type):
     return 0
 
 
+def get_max_country_offer_position(app_id, offer_type_id, country_id):
+    result = db.session.execute(
+        "SELECT max(position) from offers_apps_countries_positions where app_id={} and offer_type_id={} and country_id={};".format(
+            int(app_id), int(offer_type_id), int(country_id)
+        ))
+    try:
+        for row in result:
+            return int(row[0])
+    except:
+        return 0
+    return 0
+
+
 class OffersCreateView(web.View):
     @aiohttp_jinja2.template('offers/offers_create.html')
     async def get(self, *args, **kwargs):
@@ -72,6 +85,9 @@ class OffersCreateView(web.View):
         percent_app_data = {}
         terms_app_data = {}
         summs_app_data = {}
+
+        app_ids = []
+        country_ids = []
 
         for field in post_data:
             if "screen_app_" in field:
@@ -153,12 +169,22 @@ class OffersCreateView(web.View):
                     app_id=app_id, offer_id=offer.id, position=max_position + 1)
 
                 db.session.add(offer_app_relation)
+                app_ids.append(app_id)
+
+                position = get_max_country_offer_position(app_id=app_id, offer_type_id=offer.offer_type, country_id=-1)
+
+                offer_position = db.OffersAppsCountriesPositions(app_id=app_id, offer_id=offer.id,
+                                                                 offer_type_id=offer.offer_type,
+                                                                 country_id=-1,
+                                                                 position=position + 1)
+                db.session.add(offer_position)
 
             elif "country_" in field:
                 country_id = field.replace('country_', '')
                 offer_country_relation = db.OffersCountriesRelations(
                     country_id=country_id, offer_id=offer.id)
                 db.session.add(offer_country_relation)
+                country_ids.append(country_id)
 
         for app_id in percent_app_data.keys():
             offer_app_percent = db.OffersAppsPercents(
@@ -188,6 +214,24 @@ class OffersCreateView(web.View):
                 summPrefix=summs_app_data[app_id]['summPrefix'])
             db.session.add(offer_app_summ)
 
+        db.session.commit()
+
+        for app_id in app_ids:
+            for country_id in country_ids:
+                offer_position = db.session.query(db.OffersAppsCountriesPositions) \
+                    .filter(db.OffersAppsCountriesPositions.offer_id == offer.id) \
+                    .filter(db.OffersAppsCountriesPositions.offer_type_id == offer.offer_type) \
+                    .filter(db.OffersAppsCountriesPositions.country_id == country_id) \
+                    .filter(db.OffersAppsCountriesPositions.app_id == app_id).first()
+
+                if not offer_position:
+                    position = get_max_country_offer_position(app_id=app_id, offer_type_id=offer.offer_type,
+                                                              country_id=country_id)
+                    offer_position = db.OffersAppsCountriesPositions(app_id=app_id, offer_id=offer.id,
+                                                                     offer_type_id=offer.offer_type,
+                                                                     country_id=country_id,
+                                                                     position=position + 1)
+                    db.session.add(offer_position)
         db.session.commit()
 
         return web.HTTPFound('/offers?offers_type={}'.format(offer.offer_type))

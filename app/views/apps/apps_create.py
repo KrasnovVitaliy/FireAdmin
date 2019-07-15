@@ -45,10 +45,12 @@ class AppsCreateView(web.View):
                     license_term=post_data[field]
                 )
                 db.session.add(app_country_term)
-                print('!!!!!!!')
-                print(application.id, int(country_id))
-                print('!!!!!!!')
-
+            elif "country_" in field:
+                country_id = field.replace('country_', '')
+                app_country_relation = db.AppsCountriesRelations(
+                    country_id=country_id, app_id=application.id)
+                db.session.add(app_country_relation)
+                db.session.commit()
         db.session.commit()
 
         return web.HTTPFound('/applications?')

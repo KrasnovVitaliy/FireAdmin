@@ -28,6 +28,32 @@ def get_max_position(app_id, offer_type):
     return 0
 
 
+def get_offer_app_country_position(offer_id, offer_type, app_id, country_id=None):
+    offer_position = db.session.query(db.OffersAppsCountriesPositions) \
+        .filter(db.OffersAppsCountriesPositions.offer_id == offer_id) \
+        .filter(db.OffersAppsCountriesPositions.offer_type_id == offer_type) \
+        .filter(db.OffersAppsCountriesPositions.country_id == country_id) \
+        .filter(db.OffersAppsCountriesPositions.app_id == app_id).first()
+
+    if offer_position:
+        return offer_position.position
+    return 0
+
+
+
+def get_max_country_offer_position(app_id, offer_type_id, country_id=-1):
+    result = db.session.execute(
+        "SELECT max(position) from offers_apps_countries_positions where app_id={} and offer_type_id={} and country_id={};".format(
+            int(app_id), int(offer_type_id), int(country_id)
+        ))
+    try:
+        for row in result:
+            return int(row[0])
+    except:
+        return 0
+    return 0
+
+
 class OffersOverviewView(web.View):
     @aiohttp_jinja2.template('offers/offers_overview.html')
     async def get(self, *args, **kwargs):
@@ -91,6 +117,10 @@ class OffersOverviewView(web.View):
         if 'current_app' in params:
             current_app = params['current_app']
 
+        current_country = None
+        if 'current_country' in params:
+            current_country = params['current_country']
+
         logger.debug("Offers overview get params: {}".format(params))
 
         countries = db.session.query(db.Countries).all()
@@ -112,6 +142,7 @@ class OffersOverviewView(web.View):
             'offer_apps_percents': offer_apps_percents_data,
             'offers_state': offers_state,
             'current_app': current_app,
+            'current_country': current_country,
             'countries': countries_data,
             'offer_countries': offer_countries_data,
             'active_menu_item': 'offers',
@@ -146,11 +177,11 @@ class OffersOverviewView(web.View):
             'offer_id': params['id']
         }
 
-        offer_app_relation_old = db.session.query(db.OffersAppsRelations).filter_by(**filters).all()
-        offer_app_relation_old_data = {}
-        for item in offer_app_relation_old:
-            if item.position:
-                offer_app_relation_old_data[int(item.app_id)] = int(item.position)
+        # offer_app_relation_old = db.session.query(db.OffersAppsRelations).filter_by(**filters).all()
+        # offer_app_relation_old_data = {}
+        # for item in offer_app_relation_old:
+        #     if item.position:
+        #         offer_app_relation_old_data[int(item.app_id)] = int(item.position)
 
         db.session.query(db.OffersCountriesRelations).filter_by(**filters).delete()
         db.session.query(db.OffersAppsRelations).filter_by(**filters).delete()
@@ -164,6 +195,9 @@ class OffersOverviewView(web.View):
         percent_app_data = {}
         terms_app_data = {}
         summs_app_data = {}
+
+        app_ids = []
+        country_ids = []
 
         for field in post_data:
             if "screen_app_" in field:
@@ -241,18 +275,30 @@ class OffersOverviewView(web.View):
                 app_id = field.replace('app_', '')
                 offer_app_relation = db.OffersAppsRelations(
                     app_id=app_id, offer_id=params['id'])
-
-                if int(app_id) in offer_app_relation_old_data:
-                    offer_app_relation.position = offer_app_relation_old_data[int(app_id)]
-                else:
-                    max_position = get_max_position(app_id, offer.offer_type)
-                    offer_app_relation.position = max_position + 1
                 db.session.add(offer_app_relation)
+
+                if not get_offer_app_country_position(offer_id=offer.id, offer_type=offer.offer_type, app_id=app_id):
+                    position = get_max_country_offer_position(app_id=app_id, offer_type_id=offer.offer_type)
+
+                    offer_position = db.OffersAppsCountriesPositions(app_id=app_id, offer_id=offer.id,
+                                                                     offer_type_id=offer.offer_type,
+                                                                     country_id=-1,
+                                                                     position=position + 1)
+                    db.session.add(offer_position)
+
+                # if int(app_id) in offer_app_relation_old_data:
+                #     offer_app_relation.position = offer_app_relation_old_data[int(app_id)]
+                # else:
+                #     max_position = get_max_position(app_id, offer.offer_type)
+                #     offer_app_relation.position = max_position + 1
+                # db.session.add(offer_app_relation)
+                app_ids.append(app_id)
             elif "country_" in field:
                 country_id = field.replace('country_', '')
                 offer_country_relation = db.OffersCountriesRelations(
                     country_id=country_id, offer_id=params['id'])
                 db.session.add(offer_country_relation)
+                country_ids.append(country_id)
 
         for app_id in percent_app_data.keys():
             offer_app_percent = db.OffersAppsPercents(
@@ -284,7 +330,23 @@ class OffersOverviewView(web.View):
 
         db.session.commit()
 
-        logger.debug("Offers overview post params: {}".format(params))
+        for app_id in app_ids:
+            for country_id in country_ids:
+                offer_position = db.session.query(db.OffersAppsCountriesPositions) \
+                    .filter(db.OffersAppsCountriesPositions.offer_id == offer.id) \
+                    .filter(db.OffersAppsCountriesPositions.offer_type_id == offer.offer_type) \
+                    .filter(db.OffersAppsCountriesPositions.country_id == country_id) \
+                    .filter(db.OffersAppsCountriesPositions.app_id == app_id).first()
+
+                if not offer_position:
+                    position = get_max_country_offer_position(app_id=app_id, offer_type_id=offer.offer_type,
+                                                              country_id=int(country_id))
+                    offer_position = db.OffersAppsCountriesPositions(app_id=app_id, offer_id=offer.id,
+                                                                     offer_type_id=offer.offer_type,
+                                                                     country_id=country_id,
+                                                                     position=position + 1)
+                    db.session.add(offer_position)
+        db.session.commit()
 
         offers_state = None
         if 'state' in params:
@@ -294,5 +356,9 @@ class OffersOverviewView(web.View):
         if 'current_app' in params:
             current_app = params['current_app']
 
-        return web.HTTPFound('/offers?offers_type={}&state={}&current_app={}'.format(
-            offer.offer_type, offers_state, current_app))
+        current_country = None
+        if 'current_country' in params:
+            current_country = params['current_country']
+
+        return web.HTTPFound('/offers?offers_type={}&state={}&current_app={}&current_country={}'.format(
+            offer.offer_type, offers_state, current_app, current_country))

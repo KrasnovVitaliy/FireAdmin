@@ -14,7 +14,7 @@
 
 {% block content %}
 
-<form role="form" action="/news_overview?id={{news.id}}&state={{offers_state}}&current_app={{current_app}}" method="post">
+<form role="form" action="/news_overview?id={{news.id}}&state={{offers_state}}&current_app={{current_app}}&current_country={%if current_country %}{{current_country}}{% endif %}" method="post">
     <section class="content">
         <div class="box box-info">
             <div class="row">

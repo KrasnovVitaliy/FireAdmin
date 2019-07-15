@@ -18,7 +18,7 @@
         <div class="row">
             <div class="col-xs-3">
                 <div class="btn-group">
-                    <a href="/offers?offers_type={{offers_type_id}}&current_app={%if current_app %} {{current_app.id}} {% endif %}"
+                    <a href="/offers?offers_type={{offers_type_id}}&current_app={%if current_app %} {{current_app.id}} {% endif %}&current_country={%if current_country %}{{current_country.id}}{% endif %}"
                        type="button"
                        {% if offers_state=="all" %}}
                        class="btn btn-info"
@@ -27,7 +27,7 @@
                        {% endif%}
 
                     >Все</a>
-                    <a href="/offers?offers_type={{offers_type_id}}&state=active&current_app={%if current_app %} {{current_app.id}} {% endif %}"
+                    <a href="/offers?offers_type={{offers_type_id}}&state=active&current_app={%if current_app %} {{current_app.id}} {% endif %}&current_country={%if current_country %}{{current_country.id}}{% endif %}"
                        type="button"
                        {% if offers_state=="active" %}}
                        class="btn btn-success"
@@ -35,7 +35,7 @@
                        class="btn btn-default"
                        {% endif%}
                     >Активные</a>
-                    <a href="/offers?offers_type={{offers_type_id}}&state=inactive&current_app={%if current_app %} {{current_app.id}} {% endif %}"
+                    <a href="/offers?offers_type={{offers_type_id}}&state=inactive&current_app={%if current_app %} {{current_app.id}} {% endif %}&current_country={%if current_country %}{{current_country.id}}{% endif %}"
                        type="button"
                        {% if offers_state=="inactive" %}}
                        class="btn btn-danger"
@@ -46,14 +46,19 @@
                 </div>
             </div>
             <div class="col-xs-3">
-                <input type="text" name="search-input" id="search-input" onkeyup="filterItems()" class="form-control"
-                       placeholder="Поиск по офферам...">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                    <input type="text" name="search-input" id="search-input" onkeyup="filterItems()"
+                           class="form-control"
+                           placeholder="Поиск по офферам...">
+                </div>
             </div>
-            <div class="col-xs-3">
-                <div class="form-group">
+            <div class="col-xs-2">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-puzzle-piece"></i></span>
                     <select class="form-control" name="offer_type"
-                            onchange="document.location='offers?offers_type={{offers_type_id}}&state={{offers_state}}&current_app='+this.options[this.selectedIndex].value">
-                        <option value="all">Все</option>
+                            onchange="document.location='offers?offers_type={{offers_type_id}}&state={{offers_state}}&current_country={{current_country.id}}&current_app='+this.options[this.selectedIndex].value">
+                        <option value="all">Все приложения</option>
                         {% for app in apps%}
                         <option
                                 value="{{app.id}}"
@@ -68,23 +73,41 @@
                     </select>
                 </div>
             </div>
-            <div class="col-xs-3">
+            <div class="col-xs-2">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-globe"></i></span>
+                    <select class="form-control" name="offer_type"
+                            onchange="document.location='offers?offers_type={{offers_type_id}}&state={{offers_state}}&current_app={{current_app.id}}&current_country='+this.options[this.selectedIndex].value">
+                        <option value="all">Все страны</option>
+                        {% for country in countries%}
+                        <option
+                                value="{{country.id}}"
+                                {%if current_country %}
+                                {% if country.id== current_country.id %}
+                                selected
+                                {% endif %}
+                                {% endif %}
+                        >{{country.name}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-2">
                 <div class="btn-group">
-                    <a href="#" type="button"
-                       class="btn btn-warning"
+                    <a href="#" type="button" class="btn btn-default"
                        {% if current_app %}
-                       data-ufb_app_id={%if current_app %} {{current_app.id}} {% endif %}
+                       data-ufb_app_id="{{current_app.id}}"
                        data-ufb_app_name="{{current_app.name}}"
                        data-toggle="modal"
                        data-target="#uploadFirebaseConfirmationModal"
                        {% else %}
                        disabled
                        {% endif %}
-                    >Обновить Firebase DB</a>
+                    ><img src="/static/img/firebase_icon.png" width="16" height="16"></a>
 
-                    <a href="/offers_create?offers_type={{offers_type_id}}&state={{offers_state}}&current_app={%if current_app %} {{current_app.id}} {% endif %}"
-                       class="btn btn-info pull-right"
-                       type="button">Создать</a>
+                    <a href="/offers_create?offers_type={{offers_type_id}}&state={{offers_state}}&current_app={%if current_app %}{{current_app.id}}{% endif %}&current_country={%if current_country %}{{current_country.id}}{% endif %}"
+                       type="button" class="btn btn-default"><i class="fa fa-file"></i></a>
                 </div>
             </div>
         </div>
@@ -109,7 +132,9 @@
             {% for offer in offers %}
             <tr>
                 {%if current_app %}
-                <td class="offer_position">{{offer.app_position[current_app.id]}}</td>
+                <td class="offer_position">{{offer.app_position}}</td>
+                {% else %}
+                <td class="offer_position"></td>
                 {% endif %}
                 <!-- Added for items position change-->
                 <td class="offer_id" style="display: none">{{offer.id}}</td>    <!-- Added for items position change -->
@@ -122,7 +147,7 @@
                     </h4>
                 </td>
                 <td>
-                    <a href="/offers_overview?id={{offer.id}}&state={{offers_state}}&current_app={%if current_app %} {{current_app.id}} {% endif %}">
+                    <a href="/offers_overview?id={{offer.id}}&state={{offers_state}}&current_app={%if current_app %}{{current_app.id}}{% endif %}&current_country={%if current_country %}{{current_country.id}}{% endif %}">
                         <h4>{{
                             offer.name }}</h4></a></td>
                 <td>
@@ -142,13 +167,23 @@
                 </td>
                 <td>
                     {% if offer.isActive %}
-                    <a href="/offers_actions?id={{offer.id}}&action=stop&offer_type={{offers_type_id}}&app_id={%if current_app %} {{current_app.id}} {% endif %}"
+                    <a href="/offers_actions?id={{offer.id}}&action=stop&offer_type={{offers_type_id}}&app_id={%if current_app %} {{current_app.id}} {% endif %}&current_country={%if current_country %}{{current_country.id}}{% endif %}"
                        type="button"
                        class="btn btn-block btn-danger">Остановить</a>
                     {% else %}
-                    <a href="/offers_actions?id={{offer.id}}&action=run&offer_type={{offers_type_id}}&app_id={%if current_app %} {{current_app.id}} {% endif %}"
+                    <a href="/offers_actions?id={{offer.id}}&action=run&offer_type={{offers_type_id}}&app_id={%if current_app %} {{current_app.id}} {% endif %}&current_country={%if current_country %}{{current_country.id}}{% endif %}"
                        type="button"
                        class="btn btn-block btn-success">Запустить</a>
+                    {% endif %}
+
+                    {% if current_app %}
+                    <a href="#"
+                       type="button"
+                       class="btn btn-block btn-default"
+                       data-toggle="modal"
+                       data-target="#offerLinkModal"
+                       onclick="getOfferLink('{{offer.id}}', '{{current_app.id}}', '{{offer.name}}', '{{current_app.name}}')"
+                    >Сгенерировать ссылку</a>
                     {% endif %}
                 </td>
                 <td>
@@ -201,13 +236,66 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-body">
-                <h3>Загрузить офферы для приложения <b><span id="modal-ufb_app_name"></span></b> в Firebase?</h3>
+                <h3>Загрузить офферы для приложения <b>{%if current_app %}{{current_app.name}}{% endif %}</b> в
+                    Firebase?</h3>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-info" data-dismiss="modal" id="ufb-cancel-button">Отмена
                 </button>
                 <button type="button" class="btn btn-danger" data-dismiss="modal" id="ufb-confirm-button">
                     Загрузить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="offerLinkModal" tabindex="-1" role="dialog"
+     aria-labelledby="offerLinkModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                Ссылка на оффер <b><span id="offer-link-modal-offer-name"></span></b> для приложения <b><span
+                    id="offer-link-modal-app-name"></span></b>
+            </div>
+            <div class="modal-body">
+                <div class="center-block">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="offer-link-modal-offer-old-link">Ссылка для приложений без разделений карт</label>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-10">
+                            <input class="form-control" readonly id="offer-link-modal-offer-old-link" value="">
+                        </div>
+                        <div class="col-md-1">
+                            <span onclick="copyOldLinkToClipboard()" class="btn btn-default"><i
+                                    class="fa fa-copy"></i></span>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="offer-link-modal-offer-old-link">Ссылка для приложений с разделением карт</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10">
+
+                            <input class="form-control" readonly id="offer-link-modal-offer-link" value="">
+                        </div>
+                        <div class="col-md-1">
+                            <span onclick="copyLinkToClipboard()" class="btn btn-default"><i
+                                    class="fa fa-copy"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal">Отмена
                 </button>
             </div>
         </div>
@@ -245,7 +333,7 @@
             $(this).closest('.modal').one('hidden.bs.modal', function () {
                 if ($button.attr("id") == 'ufb-confirm-button') {
                     redirect_uri = encodeURIComponent(window.location.pathname + window.location.search);
-                    window.location.href = '/app_fb_db_load?id=' + window.ufb_id + '&redirect_uri=' + redirect_uri;
+                    window.location.href = '/app_fb_db_load?id={%if current_app %}{{current_app.id}}{% endif %}&redirect_uri=' + redirect_uri;
                 }
             });
         });
@@ -272,7 +360,7 @@
     <!-- Items position change -->
     function uploadUpdatedOrder(updated_position_data) {
         var xhr = new XMLHttpRequest();
-        var url = "/offers_update_order?app_id={%if current_app %} {{current_app.id}} {% endif %}";
+        var url = "/offers_update_order?app_id={%if current_app %} {{current_app.id}} {% endif %}&country_id={%if current_country %} {{current_country.id}} {% endif %}&offers_type_id={%if offers_type_id %} {{offers_type_id}} {% endif %}";
         xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onreadystatechange = function () {
@@ -295,9 +383,9 @@
         updated_position_data = [];
 
         for (let i = 0; i < offers_lines.length; i++) {
-            offers_lines[i].children[0].innerHTML = (i).toString();
+            offers_lines[i].children[0].innerHTML = (i + 1).toString();
             item_data = {
-                position: i,
+                position: i + 1,
                 item_id: offers_lines[i].children[1].innerHTML
             };
             updated_position_data.push(item_data);
@@ -307,7 +395,7 @@
     }
 
     function pass_arguments_to_modal() {
-        let ATTRIBUTES = ['offer_name', 'ufb_app_name'];
+        let ATTRIBUTES = ['offer_name', 'ufb_app_name', 'ufb_app_id'];
         $('[data-toggle="modal"]').on('click', function (e) {
             // convert target (e.g. the button) to jquery object
             var $target = $(e.target);
@@ -332,7 +420,7 @@
 
             $(this).closest('.modal').one('hidden.bs.modal', function () {
                 if ($button.attr("id") == 'confirm-delete-button') {
-                    window.location.href = '/offers_actions?&action=delete&offer_type={{offers_type_id}}&app_id={%if current_app %} {{current_app.id}} {% endif %}&id=' + window.removing_id;
+                    window.location.href = '/offers_actions?&action=delete&offer_type={{offers_type_id}}&app_id={%if current_app %}{{current_app.id}} {% endif %}&id=' + window.removing_id;
                 }
             });
         });
@@ -357,6 +445,43 @@
                 sorting_items[i].style.display = "none";
             }
         }
+    }
+
+    function getOfferLink(offer_id, app_id, offer_name, app_name) {
+        document.getElementById("offer-link-modal-offer-name").innerText = offer_name;
+        document.getElementById("offer-link-modal-app-name").innerText = app_name;
+        document.getElementById("offer-link-modal-offer-link").value = "";
+        document.getElementById("offer-link-modal-offer-old-link").value = "";
+
+        var xhr = new XMLHttpRequest();
+        var url = "/offers_dynamic_link?offer_id=" + offer_id + "&app_id=" + app_id;
+        xhr.open("GET", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log(xhr.responseText);
+                rsp = JSON.parse(xhr.responseText);
+                console.log(rsp);
+                document.getElementById("offer-link-modal-offer-link").value = rsp['link'];
+                document.getElementById("offer-link-modal-offer-old-link").value = rsp['old_link'];
+            } else {
+                console.error(xhr.responseText);
+            }
+        };
+        xhr.send();
+    }
+
+    function copyLinkToClipboard() {
+        var linkText = document.getElementById("offer-link-modal-offer-link");
+        linkText.select();
+        document.execCommand("copy");
+    }
+
+
+    function copyOldLinkToClipboard() {
+        var linkText = document.getElementById("offer-link-modal-offer-old-link");
+        linkText.select();
+        document.execCommand("copy");
     }
 </script>
 <!-- End Items position change -->

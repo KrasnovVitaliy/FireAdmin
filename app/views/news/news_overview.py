@@ -22,6 +22,19 @@ def get_max_position(app_id):
     return 0
 
 
+def get_max_country_news_position(app_id, country_id):
+    result = db.session.execute(
+        "SELECT max(position) from news_apps_countries_positions where app_id={} and country_id={};".format(
+            int(app_id), int(country_id)
+        ))
+    try:
+        for row in result:
+            return int(row[0])
+    except:
+        return 0
+    return 0
+
+
 class NewsOverviewView(web.View):
     @aiohttp_jinja2.template('news/news_overview.html')
     async def get(self, *args, **kwargs):
@@ -61,6 +74,11 @@ class NewsOverviewView(web.View):
         current_app = None
         if 'current_app' in params:
             current_app = params['current_app']
+
+        current_country = None
+        if 'current_country' in params:
+            current_country = params['current_country']
+
         return {
             'offers_types': avm.offers_types(),
             'news': news_data,
@@ -71,6 +89,7 @@ class NewsOverviewView(web.View):
             'news_countries': news_countries_data,
             'offers_state': news_state,
             'current_app': current_app,
+            'current_country': current_country,
             'auth_service_address': config.AUTH_SERVICE_ADDRESS
         }
 
@@ -115,6 +134,9 @@ class NewsOverviewView(web.View):
             if item.position:
                 news_app_relation_old_data[int(item.app_id)] = int(item.position)
 
+        app_ids = []
+        country_ids = []
+
         db.session.query(db.NewsAppsRelations).filter_by(news_id=news_item.id).delete()
         db.session.query(db.NewsCountriesRelations).filter_by(**filters).delete()
         for field in post_data:
@@ -127,12 +149,31 @@ class NewsOverviewView(web.View):
                     max_position = get_max_position(app_id)
                     news_app_relation.position = max_position + 1
                 db.session.add(news_app_relation)
+                app_ids.append(app_id)
 
             elif "country_" in field:
                 country_id = field.replace('country_', '')
                 news_country_relation = db.NewsCountriesRelations(
                     country_id=country_id, news_id=params['id'])
                 db.session.add(news_country_relation)
+                country_ids.append(country_id)
+
+        db.session.commit()
+
+        for app_id in app_ids:
+            for country_id in country_ids:
+                news_position = db.session.query(db.NewsAppsCountriesPositions) \
+                    .filter(db.NewsAppsCountriesPositions.news_id == news_item.id) \
+                    .filter(db.NewsAppsCountriesPositions.country_id == country_id) \
+                    .filter(db.NewsAppsCountriesPositions.app_id == app_id).first()
+
+                if not news_position:
+                    position = get_max_country_news_position(app_id=app_id,
+                                                             country_id=country_id)
+                    news_position = db.NewsAppsCountriesPositions(app_id=app_id, news_id=news_item.id,
+                                                                  country_id=country_id,
+                                                                  position=position + 1)
+                    db.session.add(news_position)
 
         db.session.commit()
 
@@ -144,4 +185,10 @@ class NewsOverviewView(web.View):
         if 'current_app' in params:
             current_app = params['current_app']
 
-        return web.HTTPFound('/news?state={}&current_app={}'.format(news_state, current_app))
+        current_country = None
+        if 'current_country' in params:
+            current_country = params['current_country']
+
+        print("!!!!!!!")
+        print(params)
+        return web.HTTPFound('/news?state={}&current_app={}&current_country={}'.format(news_state, current_app, current_country))

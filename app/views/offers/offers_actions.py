@@ -2,8 +2,8 @@ from aiohttp import web
 import datetime
 import logging
 from config import Config
-import views.all_view_methods as avm
 import db
+import utils.firebase_client as fb_client
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -38,10 +38,47 @@ class OffersUpdateOrder(web.View):
         if 'app_id' in params and params['app_id'] != None:
             app_id = params['app_id']
 
-        for item in data:
-            logger.debug("Post data: {}".format(item))
-            offer = db.session.query(db.OffersAppsRelations).filter_by(app_id=app_id, offer_id=item['item_id']).first()
-            offer.position = item['position']
+        offers_type_id = None
+        if 'offers_type_id' in params and params['offers_type_id'] != None:
+            offers_type_id = params['offers_type_id']
+
+        country_id = None
+        if 'country_id' in params and params['country_id'] != None:
+            country_id = params['country_id']
+
+        if country_id:
+            for item in data:
+                offer = db.session.query(db.OffersAppsCountriesPositions) \
+                    .filter(db.OffersAppsCountriesPositions.app_id == app_id) \
+                    .filter(db.OffersAppsCountriesPositions.offer_type_id == offers_type_id) \
+                    .filter(db.OffersAppsCountriesPositions.offer_id == item['item_id']) \
+                    .filter(db.OffersAppsCountriesPositions.country_id == country_id).first()
+                if offer:
+                    offer.position = item['position']
+                else:
+                    offer = db.OffersAppsCountriesPositions(app_id=app_id, offer_id=item['item_id'],
+                                                            offer_type_id=offers_type_id, country_id=country_id,
+                                                            position=item['position'])
+                    db.session.add(offer)
+
+        else:
+            for item in data:
+                logger.debug("Post data: {}".format(item))
+                offer_position = db.session.query(db.OffersAppsCountriesPositions).filter_by(app_id=app_id,
+                                                                                             offer_id=item['item_id'],
+                                                                                             offer_type_id=offers_type_id,
+                                                                                             country_id=-1).first()
+
+                # offer = db.session.query(db.OffersAppsRelations).filter_by(app_id=app_id,
+                #                                                            offer_id=item['item_id']).first()
+                if offer_position:
+                    offer_position.position = item['position']
+                else:
+                    offer_position = db.OffersAppsCountriesPositions(app_id=app_id, offer_id=item['item_id'],
+                                                                     offer_type_id=offers_type_id,
+                                                                     country_id=-1,
+                                                                     position=item['position'])
+                    db.session.add(offer_position)
 
         db.session.commit()
         return web.HTTPOk()
@@ -57,3 +94,48 @@ class OffersUpdateComment(web.View):
 
         db.session.commit()
         return web.HTTPOk()
+
+
+class OffersDynamicLink(web.View):
+    async def get(self, *args, **kwargs):
+        params = self.request.rel_url.query
+
+        try:
+            if "app_id" not in params:
+                return web.HTTPNoContent()
+            app_id = int(params["app_id"])
+
+            if "offer_id" not in params:
+                return web.HTTPNoContent()
+            offer_id = int(params["offer_id"])
+        except Exception as e:
+            return web.HTTPNoContent()
+
+        app = db.session.query(db.Applications).filter(db.Applications.id == app_id).first()
+        offer = db.session.query(db.Offers).filter(db.Offers.id == offer_id).first()
+        offer_type = db.session.query(db.OffersTypes).filter(db.OffersTypes.id == offer.offer_type).first()
+
+        app_offers = fb_client.get_all(app.fb_id)
+
+        offer_position = 0
+        for item in app_offers[offer_type.name]:
+            if int(offer.id) == int(item['id']):
+                break
+            offer_position += 1
+        offer_link = "www.{}.ru/{}?id={}".format(app.fb_id, offer_type.name, offer_position)
+
+        if "card" in offer_type.name:
+            offer_position = 0
+            for item in app_offers["cards"]:
+                if int(offer.id) == int(item['id']):
+                    break
+                offer_position += 1
+            old_link = "www.{}.ru/cards?id={}".format(app.fb_id, offer_position)
+        else:
+            old_link = offer_link
+
+        rsp = {
+            "old_link": old_link,
+            "link": offer_link
+        }
+        return web.json_response(rsp)

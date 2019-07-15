@@ -4,6 +4,28 @@ from sqlalchemy import asc, desc
 import re
 
 
+def get_offer_country_position(offer_id, country_id, app_id):
+    offer = db.session.query(db.OffersAppsCountriesPositions) \
+        .filter(db.OffersAppsCountriesPositions.offer_id == offer_id) \
+        .filter(db.OffersAppsCountriesPositions.country_id == country_id) \
+        .filter(db.OffersAppsCountriesPositions.app_id == app_id).first()
+
+    if offer:
+        return offer.position
+    return 0
+
+
+def get_news_country_position(news_id, country_id, app_id):
+    news_item = db.session.query(db.NewsAppsCountriesPositions) \
+        .filter(db.NewsAppsCountriesPositions.news_id == news_id) \
+        .filter(db.NewsAppsCountriesPositions.country_id == country_id) \
+        .filter(db.NewsAppsCountriesPositions.app_id == app_id).first()
+
+    if news_item:
+        return news_item.position
+    return 0
+
+
 def get_offers_data(app, country_id=None):
     filters = {
         'app_id': app.id,
@@ -16,8 +38,8 @@ def get_offers_data(app, country_id=None):
             .filter(db.OffersCountriesRelations.offer_id == db.Offers.id) \
             .filter(db.OffersAppsRelations.offer_id == db.Offers.id) \
             .filter(db.Offers.deleted == None) \
-            .filter(db.Offers.isActive == 1) \
-            .order_by(asc(db.OffersAppsRelations.position)).all()
+            .filter(db.Offers.isActive == 1).all()
+        # .order_by(asc(db.OffersAppsRelations.position))
     else:
         results = db.session.query(db.OffersAppsRelations, db.Offers) \
             .filter(db.OffersAppsRelations.app_id == app.id) \
@@ -122,17 +144,41 @@ def get_offers_data(app, country_id=None):
             offer_data['summ'] = ""
             for field in ['summPrefix', 'summMin', 'summMid', 'summMax', 'summPostfix']:
                 if field in offer_data:
-                    offer_data['summ'] += " {}".format(offer_data[field])
+                    offer_data['summ'] += "{} ".format(offer_data[field])
             offer_data['summ'] = re.sub(' +', ' ', offer_data['summ'])
+
+            # Removing spaces in the begin and end of string
+            if offer_data['summ'][-1] == " ":
+                offer_data['summ'] = offer_data['summ'][:-1]
+            if len(offer_data['summ']) > 1 and offer_data['summ'][0] == " ":
+                offer_data['summ'] = offer_data['summ'][1:]
 
             offer_data['term'] = ""
             for field in ['termPrefix', 'termMin', 'termMid', 'termMax', 'termPostfix']:
                 if field in offer_data:
-                    offer_data['term'] += " {}".format(offer_data[field])
+                    offer_data['term'] += "{} ".format(offer_data[field])
             offer_data['term'] = re.sub(' +', ' ', offer_data['term'])
+
+            # Removing spaces in the begin and end of string
+            if offer_data['term'][-1] == " ":
+                offer_data['term'] = offer_data['term'][:-1]
+
+            if len(offer_data['term']) > 1 and offer_data['term'][0] == " ":
+                offer_data['term'] = offer_data['term'][1:]
+
+            # Updating empty scores "" to "0"
+            if offer_data['score'] == "":
+                offer_data['score'] = "0"
 
             ret_data[offer_type.name].append(offer_data)
 
+            if country_id:
+                offer_data['position'] = get_offer_country_position(
+                    offer_id=offer_data['id'], country_id=country_id, app_id=app.id)
+            else:
+                offer_data['position'] = 0 if result[0].position == None else result[0].position
+
+    # Adding news
     filters = {
         'app_id': app.id,
     }
@@ -141,7 +187,7 @@ def get_offers_data(app, country_id=None):
             .filter_by(**filters) \
             .filter(db.NewsCountriesRelations.country_id == country_id) \
             .filter(db.NewsCountriesRelations.news_id == db.News.id) \
-            .filter(db.NewsAppsRelations.news_id == db.News.id).order_by(asc(db.News.position)).all()
+            .filter(db.NewsAppsRelations.news_id == db.News.id).all()
     else:
         results = db.session.query(db.NewsAppsRelations, db.News).filter_by(**filters).filter(
             db.NewsAppsRelations.news_id == db.News.id).order_by(asc(db.News.position)).all()
@@ -149,8 +195,18 @@ def get_offers_data(app, country_id=None):
     ret_data['news'] = []
     for result in results:
         if result[1].isActive:
-            news_data = prepare_object_data(result[1].to_json())  # fields_to_str(trim_fields(result[1].to_json()))
+            news_data = prepare_object_data(result[1].to_json())
+
+            if country_id:
+                news_data['position'] = get_news_country_position(
+                    news_id=news_data['id'], country_id=country_id, app_id=app.id)
+            else:
+                news_data['position'] = 0 if result[0].position == None else result[0].position
+
             ret_data['news'].append(news_data)
+
+    for key in ret_data.keys():
+        ret_data[key] = sorted(ret_data[key], key=lambda k: k['position'])
 
     app_country_terms = db.session.query(db.AppsCountriesTerms) \
         .filter(db.AppsCountriesTerms.app_id == app.id) \
@@ -175,6 +231,22 @@ def get_offers_data(app, country_id=None):
     return ret_data
 
 
+def get_app_countrie(app):
+    countries = []
+    results = db.session.query(db.AppsCountriesRelations, db.Countries) \
+        .filter(db.AppsCountriesRelations.app_id == app.id) \
+        .filter(db.AppsCountriesRelations.country_id == db.Countries.id).all()
+    for result in results:
+        countries.append(
+            {
+                'id': str(result[1].id),
+                'code': result[1].code,
+                'name': result[1].name,
+            }
+        )
+    return countries
+
+
 def gen_app_json(app):
     ret_data = get_offers_data(app)
 
@@ -182,4 +254,5 @@ def gen_app_json(app):
     for country in countries:
         ret_data[country.code] = get_offers_data(app, country_id=country.id)
 
+    ret_data['countries'] = get_app_countrie(app)
     return ret_data

@@ -44,6 +44,7 @@ routes = [
     web.view('/offers_duplicate', OffersDuplicateView),
     web.view('/offers_update_order', OffersUpdateOrder),
     web.view('/offers_update_comment', OffersUpdateComment),
+    web.view('/offers_dynamic_link', OffersDynamicLink),
 
     web.view('/applications', ApplicationsView),
     web.view('/applications_json', ApplicationsJsonView),
@@ -65,6 +66,7 @@ routes = [
     web.view('/news_actions', NewsActionsView),
     web.view('/news_update_order', NewsUpdateOrder),
     web.view('/news_update_comment', NewsUpdateComment),
+    web.view('/news_dynamic_link', NewsDynamicLink),
 
     web.view('/system', SystemView),
 

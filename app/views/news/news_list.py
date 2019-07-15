@@ -11,6 +11,28 @@ config = Config()
 
 
 class NewsView(web.View):
+    def filter_news_by_countries(self, news, country_id):
+        news_list = []
+        for news_item in news:
+            result = db.session.query(db.NewsCountriesRelations) \
+                .filter(db.NewsCountriesRelations.news_id == news_item.id) \
+                .filter(db.NewsCountriesRelations.country_id == country_id).first()
+
+            if result:
+                news_list.append(news_item)
+
+        return news_list
+
+    def get_news_country_position(self, news_id, country_id, app_id):
+        news_item = db.session.query(db.NewsAppsCountriesPositions) \
+            .filter(db.NewsAppsCountriesPositions.news_id == news_id) \
+            .filter(db.NewsAppsCountriesPositions.country_id == country_id) \
+            .filter(db.NewsAppsCountriesPositions.app_id == app_id).first()
+
+        if news_item:
+            return news_item.position
+        return 0
+
     @aiohttp_jinja2.template('news/news.html')
     async def get(self, *args, **kwargs):
         params = self.request.rel_url.query
@@ -32,6 +54,11 @@ class NewsView(web.View):
         except Exception as e:
             current_app = None
 
+        try:
+            current_country = int(params['current_country'])
+        except Exception as e:
+            current_country = None
+
         if current_app:
             results = db.session.query(db.NewsAppsRelations, db.News) \
                 .filter(db.NewsAppsRelations.app_id == current_app) \
@@ -47,6 +74,9 @@ class NewsView(web.View):
 
         else:
             news = db.session.query(db.News).filter_by(**filters).order_by(asc(db.News.position)).all()
+
+        if current_country:
+            news = self.filter_news_by_countries(news, current_country)
 
         news_data = [obj.to_json() for obj in news]
 
@@ -69,23 +99,43 @@ class NewsView(web.View):
         apps = db.session.query(db.Applications).filter_by(**filters).all()
         apps_data = [obj.to_json() for obj in apps]
 
+        for news in news_data:
+            if 'related_apps' not in news:
+                news['related_apps'] = []
+            if 'app_position' not in news:
+                news['app_position'] = 0
+
+            news_apps = db.session.query(db.NewsAppsRelations).filter_by(news_id=news['id']).all()
+            for news_app in news_apps:
+                news['related_apps'].append(app_data[news_app.app_id])
+                # news['app_position'][news_app.app_id] = news_app.position
+
+                if current_app:
+                    if current_country:
+                        news['app_position'] = self.get_news_country_position(
+                            news_id=news['id'], country_id=current_country, app_id=current_app)
+                    else:
+                        if news_app.app_id == current_app:
+                            news['app_position'] = news_app.position if news_app.position else 0
+                else:
+                    news['app_position'] = 0
+
         if current_app:
             for app in apps_data:
                 if app['id'] == int(current_app):
                     current_app = app
                     break
 
-        for news in news_data:
-            if 'related_apps' not in news:
-                news['related_apps'] = []
-            if 'app_position' not in news:
-                news['app_position'] = {}
+        news_data = sorted(news_data, key=lambda k: k['app_position'])
 
-            news_apps = db.session.query(db.NewsAppsRelations).filter_by(news_id=news['id']).all()
-            for news_app in news_apps:
-                news['related_apps'].append(app_data[news_app.app_id])
-                news['app_position'][news_app.app_id] = news_app.position
+        countries = db.session.query(db.Countries).all()
+        countries_data = [obj.to_json() for obj in countries]
 
+        if current_country:
+            for country in countries_data:
+                if country['id'] == int(current_country):
+                    current_country = country
+                    break
         return {
             'news': news_data,
             'offers_types': avm.offers_types(),
@@ -93,5 +143,7 @@ class NewsView(web.View):
             'active_menu_item': 'news',
             'apps': apps_data,
             'current_app': current_app,
+            'countries': countries_data,
+            'current_country': current_country,
             'auth_service_address': config.AUTH_SERVICE_ADDRESS
         }

@@ -31,11 +31,18 @@ class AppsOverviewView(web.View):
         for app_country_term in app_country_terms:
             app_country_data[app_country_term.country_id] = app_country_term
 
+        app_countries_relation = db.session.query(db.AppsCountriesRelations) \
+            .filter(db.AppsCountriesRelations.app_id == app.id).all()
+        app_countries_relation_data = []
+        for item in app_countries_relation:
+            app_countries_relation_data.append(item.country_id)
+
         return {
             'app': app_data,
             'offers_types': avm.offers_types(),
             'countries': countries_data,
             'app_country_terms': app_country_data,
+            'app_countries_relation': app_countries_relation_data,
             'auth_service_address': config.AUTH_SERVICE_ADDRESS
         }
 
@@ -50,6 +57,7 @@ class AppsOverviewView(web.View):
 
         app = db.session.query(db.Applications).filter_by(**filters).first()
         db.session.query(db.AppsCountriesTerms).filter(db.AppsCountriesTerms.app_id == int(params['id'])).delete()
+        db.session.query(db.AppsCountriesRelations).filter(db.AppsCountriesRelations.app_id == int(params['id'])).delete()
 
         for field in post_data:
             if "country_license_term_" in field:
@@ -61,6 +69,13 @@ class AppsOverviewView(web.View):
                     license_term=post_data[field]
                 )
                 db.session.add(app_country_term)
+
+            elif "country_" in field:
+                country_id = field.replace('country_', '')
+                app_country_relation = db.AppsCountriesRelations(
+                    country_id=country_id, app_id=params['id'])
+                db.session.add(app_country_relation)
+                db.session.commit()
 
             else:
                 setattr(app, field, post_data[field])
