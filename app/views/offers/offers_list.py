@@ -107,8 +107,6 @@ class OffersView(web.View):
 
                         if not offer['app_position']:
                             offer['app_position'] = 0
-                        # if offer_app.app_id == current_app:
-                        #     offer['app_position'] = offer_app.position if offer_app.position else 0
                 else:
                     offer['app_position'] = 0
 

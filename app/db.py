@@ -30,11 +30,14 @@ class Applications(Base):
     appsflyer_link = Column(String(200))
     order_tracking_source = Column(String(50))
     license_term = Column(String(5000))
+    init_license_term = Column(String(5000))
     creator = Column(Integer)
     deleted = Column(DateTime)
+    browser_type = Column(String(20))
 
     def __init__(self, name=None, description=None, fb_id=None, fb_url=None, appmetrica_link=None, fabrica_link=None,
-                 appsflyer_link=None, order_tracking_source=None, license_term=None):
+                 appsflyer_link=None, order_tracking_source=None, license_term=None, init_license_term=None,
+                 browser_type=None):
         self.name = name
         self.description = description
         self.fb_id = fb_id
@@ -44,6 +47,8 @@ class Applications(Base):
         self.appsflyer_link = appsflyer_link
         self.order_tracking_source = order_tracking_source
         self.license_term = license_term
+        self.init_license_term = init_license_term
+        self.browser_type = browser_type
 
     def serialize(self, to_serialize):
         d = {}
@@ -56,8 +61,8 @@ class Applications(Base):
 
     def to_json(self):
         to_serialize = ['id', 'create_date', 'update_date', 'name', 'description', 'fb_id', 'fb_url', 'appmetrica_link',
-                        'fabrica_link', 'appsflyer_link', 'order_tracking_source', 'license_term', 'creator',
-                        'deleted']
+                        'fabrica_link', 'appsflyer_link', 'order_tracking_source', 'license_term', 'init_license_term',
+                        'creator', 'deleted', 'browser_type']
         return self.serialize(to_serialize)
 
 
@@ -138,13 +143,15 @@ class Offers(Base):
     creator = Column(Integer)
     deleted = Column(DateTime)
 
+    browser_type = Column(String(20))
+
     def __init__(self, offer_type=None, isActive=None, itemId=None,
                  name=None, description=None, order=None, orderButtonText=None, percent=None, percentPostfix=None,
                  percentPrefix=None, score=None, screen=None, mastercard=None, mir=None,
                  visa=None, qiwi=None, yandex=None, cash=None, greenStickerText=None, blueStickerText=None,
                  redStickerText=None, position=None, comment=None, termPostfix=None, termMax=None, termMid=None,
                  termMin=None, termPrefix=None, summPostfix=None, summPrefix=None, summMin=None, summMax=None,
-                 summMid=None):
+                 summMid=None, browser_type=None):
         self.offer_type = offer_type
         self.isActive = isActive
         self.itemId = itemId
@@ -178,6 +185,7 @@ class Offers(Base):
         self.summMid = summMid
         self.summMax = summMax
         self.summPostfix = summPostfix
+        self.browser_type = browser_type
 
     def serialize(self, to_serialize):
         d = {}
@@ -194,7 +202,7 @@ class Offers(Base):
                         'percentPrefix', 'score', 'screen', 'mastercard', 'mir',
                         'visa', 'qiwi', 'yandex', 'cash', 'creator', 'greenStickerText', 'blueStickerText',
                         'redStickerText', 'deleted', 'position', 'comment', 'termPostfix', 'termMax', 'termMid',
-                        'termMin', 'termPrefix', 'summPostfix', 'summPrefix', 'summMin', 'summMax', 'summMid']
+                        'termMin', 'termPrefix', 'summPostfix', 'summPrefix', 'summMin', 'summMax', 'summMid', 'browser_type']
         return self.serialize(to_serialize)
 
 
@@ -538,11 +546,13 @@ class Countries(Base):
     __tablename__ = 'countries'
     id = Column(Integer, primary_key=True)
     name = Column(String(100))
+    icon = Column(String(500))
     code = Column(String(2))
 
-    def __init__(self, name=None, code=None):
+    def __init__(self, name=None, icon=None, code=None):
         self.name = name
         self.code = code
+        self.icon = icon
 
     def serialize(self, to_serialize):
         d = {}
@@ -554,7 +564,7 @@ class Countries(Base):
         return d
 
     def to_json(self):
-        to_serialize = ['id', 'name', 'code']
+        to_serialize = ['id', 'name', 'icon', 'code']
         return self.serialize(to_serialize)
 
 
@@ -632,6 +642,32 @@ class AppsCountriesTerms(Base):
         return self.serialize(to_serialize)
 
 
+class AppsCountriesInitTerms(Base):
+    __tablename__ = 'apps_countries_init_terms'
+    id = Column(Integer, primary_key=True)
+    license_term = Column(String(5000))
+    app_id = Column(Integer, ForeignKey("applications.id"))
+    country_id = Column(Integer, ForeignKey("countries.id"))
+
+    def __init__(self, app_id=None, country_id=None, license_term=None):
+        self.app_id = app_id
+        self.country_id = country_id
+        self.license_term = license_term
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'app_id', 'country_id', 'license_term']
+        return self.serialize(to_serialize)
+
+
 class AppsCountriesRelations(Base):
     __tablename__ = 'apps_countries_relations'
     id = Column(Integer, primary_key=True)
@@ -653,6 +689,82 @@ class AppsCountriesRelations(Base):
 
     def to_json(self):
         to_serialize = ['id', 'app_id', 'country_id']
+        return self.serialize(to_serialize)
+
+
+class AppsDocumentsTypes(Base):
+    __tablename__ = 'apps_documents_types'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(20))
+
+    def __init__(self, name=None):
+        self.name = name
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'name']
+        return self.serialize(to_serialize)
+
+
+class AppsDocuments(Base):
+    __tablename__ = 'apps_documents'
+    id = Column(Integer, primary_key=True)
+    app_id = Column(Integer, ForeignKey("applications.id"))
+    name = Column(String(50))
+    url = Column(String(500))
+    type = Column(Integer, ForeignKey("apps_documents_types.id"))
+
+    def __init__(self, app_id=None, name=None, url=None, type=None, ):
+        self.app_id = app_id
+        self.name = name
+        self.url = url
+        self.type = type
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'app_id', 'name', 'url', 'type']
+        return self.serialize(to_serialize)
+
+
+class OffersAppsBrowsersTypes(Base):
+    __tablename__ = 'offers_apps_browsers_types'
+    id = Column(Integer, primary_key=True)
+    offer_id = Column(Integer, ForeignKey("offers.id"))
+    app_id = Column(Integer, ForeignKey("applications.id"))
+    browser_type = Column(String(20))
+
+    def __init__(self, app_id=None, offer_id=None,  browser_type=None):
+        self.app_id = app_id
+        self.offer_id = offer_id
+        self.browser_type = browser_type
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'offer_id', 'app_id', 'browser_type']
         return self.serialize(to_serialize)
 
 

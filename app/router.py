@@ -23,6 +23,11 @@ from views.news.news_create import *
 from views.news.news_overview import *
 from views.news.news_actions import *
 
+from views.countries.countries import *
+from views.countries.countries_overview import *
+from views.countries.countries_create import *
+from views.countries.countries_actions import *
+
 from views.system import *
 
 from views.config import *
@@ -67,6 +72,11 @@ routes = [
     web.view('/news_update_order', NewsUpdateOrder),
     web.view('/news_update_comment', NewsUpdateComment),
     web.view('/news_dynamic_link', NewsDynamicLink),
+
+    web.view('/countries', CountriesView),
+    web.view('/countries_overview', CountriesOverviewView),
+    web.view('/countries_create', CountriesCreateView),
+    web.view('/countries_actions', CountriesActionsView),
 
     web.view('/system', SystemView),
 

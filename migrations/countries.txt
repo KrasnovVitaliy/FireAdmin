@@ -31,3 +31,14 @@ CREATE TABLE apps_countries_terms(
 	license_term STRING[5000],
 	FOREIGN KEY(app_id) REFERENCES applications(id),
 	FOREIGN KEY(country_id) REFERENCES countries(id));
+
+ALTER TABLE countries ADD COLUMN icon String(500);
+
+CREATE TABLE apps_countries_init_terms(
+	id INTEGER PRIMARY KEY,
+	app_id INTEGER,
+	country_id INTEGER,
+	license_term STRING[5000],
+	FOREIGN KEY(app_id) REFERENCES applications(id),
+	FOREIGN KEY(country_id) REFERENCES countries(id));
+ALTER TABLE applications ADD COLUMN init_license_term String(1000);

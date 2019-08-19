@@ -28,7 +28,7 @@ def get_max_position(app_id, offer_type):
     return 0
 
 
-def get_offer_app_country_position(offer_id, offer_type, app_id, country_id=None):
+def get_offer_app_country_position(offer_id, offer_type, app_id, country_id=-1):
     offer_position = db.session.query(db.OffersAppsCountriesPositions) \
         .filter(db.OffersAppsCountriesPositions.offer_id == offer_id) \
         .filter(db.OffersAppsCountriesPositions.offer_type_id == offer_type) \
@@ -38,7 +38,6 @@ def get_offer_app_country_position(offer_id, offer_type, app_id, country_id=None
     if offer_position:
         return offer_position.position
     return 0
-
 
 
 def get_max_country_offer_position(app_id, offer_type_id, country_id=-1):
@@ -129,6 +128,13 @@ class OffersOverviewView(web.View):
         offer_countries = db.session.query(db.OffersCountriesRelations).filter_by(**filters).all()
         offer_countries_data = [obj.country_id for obj in offer_countries]
 
+        offers_apps_browser_types = db.session.query(db.OffersAppsBrowsersTypes).filter_by(**filters).all()
+        offers_apps_browser_types_data = {}
+        for item in offers_apps_browser_types:
+            offers_apps_browser_types_data[item.app_id] = item.to_json()
+
+        print("offers_apps_browser_types", offers_apps_browser_types)
+        print("offers_apps_browser_types_data", offers_apps_browser_types_data)
         return {
             'offers_types': avm.offers_types(),
             'offer': offer_data,
@@ -147,7 +153,8 @@ class OffersOverviewView(web.View):
             'offer_countries': offer_countries_data,
             'active_menu_item': 'offers',
             'offers_type_id': int(offer_data['offer_type']),
-            'auth_service_address': config.AUTH_SERVICE_ADDRESS
+            'auth_service_address': config.AUTH_SERVICE_ADDRESS,
+            'offers_apps_browser_types': offers_apps_browser_types_data,
         }
 
     async def post(self, *args, **kwargs):
@@ -161,6 +168,7 @@ class OffersOverviewView(web.View):
         }
         offer = db.session.query(db.Offers).filter_by(**filters).first()
 
+        offer.browser_type = None
         for field in post_data:
             if "app_" in field or "screen_app_" in field:
                 continue
@@ -177,12 +185,6 @@ class OffersOverviewView(web.View):
             'offer_id': params['id']
         }
 
-        # offer_app_relation_old = db.session.query(db.OffersAppsRelations).filter_by(**filters).all()
-        # offer_app_relation_old_data = {}
-        # for item in offer_app_relation_old:
-        #     if item.position:
-        #         offer_app_relation_old_data[int(item.app_id)] = int(item.position)
-
         db.session.query(db.OffersCountriesRelations).filter_by(**filters).delete()
         db.session.query(db.OffersAppsRelations).filter_by(**filters).delete()
         db.session.query(db.OffersAppsCreatives).filter_by(**filters).delete()
@@ -191,15 +193,18 @@ class OffersOverviewView(web.View):
         db.session.query(db.OffersAppsSumms).filter_by(**filters).delete()
         db.session.query(db.OffersAppsTerms).filter_by(**filters).delete()
         db.session.query(db.OffersAppsPercents).filter_by(**filters).delete()
+        db.session.query(db.OffersAppsBrowsersTypes).filter_by(**filters).delete()
 
         percent_app_data = {}
         terms_app_data = {}
         summs_app_data = {}
+        apps_browser_types_data = {}
 
         app_ids = []
         country_ids = []
 
         for field in post_data:
+
             if "screen_app_" in field:
                 offer_app_creative = db.OffersAppsCreatives(
                     app_id=field.replace('screen_app_', ''), offer_id=params['id'],
@@ -271,6 +276,16 @@ class OffersOverviewView(web.View):
                 is_field_in_map(field=field.replace('termPostfix_app_', ''),
                                 data_map=terms_app_data, field_type={})
                 terms_app_data[field.replace('termPostfix_app_', '')]['termPostfix'] = post_data[field]
+
+            elif "use_open_selection_app_" in field:
+                pass
+
+            elif "browser_type_app_" in field:
+                apps_browser_types_data[field.replace('browser_type_app_', '')] = post_data[field]
+            elif "browser_type" in field:
+                print("!!!!!!!!")
+                print(post_data[field])
+
             elif "app_" in field:
                 app_id = field.replace('app_', '')
                 offer_app_relation = db.OffersAppsRelations(
@@ -285,13 +300,6 @@ class OffersOverviewView(web.View):
                                                                      country_id=-1,
                                                                      position=position + 1)
                     db.session.add(offer_position)
-
-                # if int(app_id) in offer_app_relation_old_data:
-                #     offer_app_relation.position = offer_app_relation_old_data[int(app_id)]
-                # else:
-                #     max_position = get_max_position(app_id, offer.offer_type)
-                #     offer_app_relation.position = max_position + 1
-                # db.session.add(offer_app_relation)
                 app_ids.append(app_id)
             elif "country_" in field:
                 country_id = field.replace('country_', '')
@@ -328,6 +336,13 @@ class OffersOverviewView(web.View):
                 summPrefix=summs_app_data[app_id]['summPrefix'])
             db.session.add(offer_app_summ)
 
+        for app_id in apps_browser_types_data.keys():
+            offer_app_browser_type = db.OffersAppsBrowsersTypes(
+                app_id=app_id, offer_id=params['id'],
+                browser_type=apps_browser_types_data[app_id]
+            )
+            db.session.add(offer_app_browser_type)
+
         db.session.commit()
 
         for app_id in app_ids:
@@ -346,6 +361,7 @@ class OffersOverviewView(web.View):
                                                                      country_id=country_id,
                                                                      position=position + 1)
                     db.session.add(offer_position)
+
         db.session.commit()
 
         offers_state = None

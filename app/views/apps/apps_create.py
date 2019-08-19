@@ -32,14 +32,28 @@ class AppsCreateView(web.View):
             if "country_license_term_" not in field:
                 setattr(application, field, post_data[field])
 
+            if "country_license_init_term_" not in field:
+                setattr(application, field, post_data[field])
+
         db.session.add(application)
         db.session.commit()
 
         for field in post_data:
+            print("field", field)
             if "country_license_term_" in field:
                 country_id = int(field.replace("country_license_term_", ""))
 
                 app_country_term = db.AppsCountriesTerms(
+                    app_id=application.id,
+                    country_id=int(country_id),
+                    license_term=post_data[field]
+                )
+                db.session.add(app_country_term)
+
+            if "country_license_init_term_" in field:
+                country_id = int(field.replace("country_license_init_term_", ""))
+
+                app_country_term = db.AppsCountriesInitTerms(
                     app_id=application.id,
                     country_id=int(country_id),
                     license_term=post_data[field]
@@ -51,6 +65,7 @@ class AppsCreateView(web.View):
                     country_id=country_id, app_id=application.id)
                 db.session.add(app_country_relation)
                 db.session.commit()
+
         db.session.commit()
 
         return web.HTTPFound('/applications?')

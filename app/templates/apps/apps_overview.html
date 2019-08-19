@@ -4,7 +4,7 @@
 
 {% block content_header %}
 <h1>
-    Создать приложение
+    Редактирование приложения: {{app.name}}
 </h1>
 
 {% endblock %}
@@ -46,6 +46,11 @@
                         <label for="description">Описание</label>
                         <textarea class="form-control" rows="5" id="description" name="description"
                                   placeholder="Описание">{{app.description}}</textarea>
+
+                        <label for="init_license_term">Начальное пользовательское соглашение</label>
+                        <textarea id="init_license_term" name="init_license_term" rows="5" cols="80"
+                                  id="init_license_term"
+                                  placeholder="Соглашение">{% if app.init_license_term %}{{app.init_license_term}}{% endif %}</textarea>
 
                         <label for="license_term">Пользовательское соглашение</label>
                         <textarea id="license_term" name="license_term" rows="5" cols="80" id="license_term"
@@ -103,7 +108,77 @@
                     </div>
                 </div>
             </section>
+            <section class="col-md-6">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Вариант открытия офферов</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="use_open_selection">Задать вариант открытия офферов</label>
+                            <input type="checkbox" onClick="use_open_selection_handler()" name="use_open_selection"
+                                   id="use_open_selection"
+                                   {%if app.browser_type and app.browser_type !="" %} checked {%endif%}
+                            >
+                        </div>
+                        <div class="form-group">
+                            <input {%if app.browser_type and app.browser_type=="" %} disabled {%endif%}
+                                   {%if app.browser_type=="internal" %} checked {%endif%}
+                                   type="radio" name="browser_type" id="internal_browser" value="internal">
+                            Внутренний<br>
+                            <input {%if app.browser_type and app.browser_type=="" %} disabled {%endif%}
+                                   {%if app.browser_type=="external" %} checked {%endif%}
+                                   type="radio" name="browser_type" id="external_browser" value="external"> Внешний<br>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
+
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title">Документы</h3>
+            </div>
+            <div class="box-body">
+                <div id="apps_documents" class="form-group">
+                    {% for document in app_documents %}
+                    <div class="row" id="apps_documents_row_{{document.position}}">
+                        <div class="col-md-4">
+                            <label for="apps_doc_name_{{document.position}}">Название</label>
+                            <input class="form-control" name="apps_doc_name_{{document.position}}" id="apps_doc_name_{{document.position}}"
+                            value="{{document.name}}">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="apps_doc_url_{{document.position}}">Ссылка</label>
+                            <input class="form-control" name="apps_doc_url_{{document.position}}" id="apps_doc_url_{{document.position}}"
+                            value="{{document.url}}">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="apps_doc_type_{{document.position}}">Тип</label>
+                            <select class="form-control" name="apps_doc_type_{{document.position}}" id="apps_doc_type_{{document.position}}">
+                                {% for doc_type in apps_documents_types_data %}
+                                    <option value="{{doc_type.name}}" {% if document.type=="{{doc_type.name}}" %} selected {% endif %}>{{doc_type.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label for="apps_doc_remove_{{document.position}}"></label>
+                            <a class="text-danger" id="apps_doc_remove_{{document.position}}"
+                               onclick="document.getElementById('apps_documents_row_{{document.position}}').remove()"><h4><i
+                                    class="fa fa-remove text-red"></i></h4></a>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="box-footer">
+                <a onclick="addDocumentsrow()" class="btn btn-info">Добавить</a>
+            </div>
+        </div>
+
         <div class="box box-info collapsed-box">
             <div class="box-header with-border" data-widget="collapse">
                 <h3 class="box-title">Пользовательское соглашение по странам</h3>
@@ -116,9 +191,16 @@
             <div class="box-body">
 
                 {% for country in countries %}
+                <label for="country_init_license_term_{{ country.id }}">Начальное соглашение для
+                    {{country.name}}</label>
+                <textarea id="country_init_license_term_{{ country.id }}"
+                          name="country_init_license_term_{{country.id }}" rows="5" cols="80"
+                          placeholder="Соглашение">{% if country.id in app_country_init_terms %}{{app_country_init_terms[country.id].license_term}}{% endif %}</textarea>
+
                 <label for="country_license_term_{{ country.id }}">Соглашение для {{country.name}}</label>
-                <textarea id="country_license_term_{{ country.id }}" name="country_license_term_{{country.id }}" rows="5" cols="80"
-                                  placeholder="Соглашение">{% if country.id in app_country_terms %}{{app_country_terms[country.id].license_term}}{% endif %}</textarea>
+                <textarea id="country_license_term_{{ country.id }}" name="country_license_term_{{country.id }}"
+                          rows="5" cols="80"
+                          placeholder="Соглашение">{% if country.id in app_country_terms %}{{app_country_terms[country.id].license_term}}{% endif %}</textarea>
                 {% endfor %}
             </div>
         </div>
@@ -149,11 +231,128 @@
         // Replace the <textarea id="editor1"> with a CKEditor
         // instance, using default configuration.
         CKEDITOR.replace('license_term');
-        {% for country in countries %}
+        CKEDITOR.replace('init_license_term');
+        {%
+            for country in countries %}
         CKEDITOR.replace('country_license_term_{{ country.id }}');
-        {% endfor %}
+        CKEDITOR.replace('country_init_license_term_{{ country.id }}');
+        {%
+            endfor %}
         //bootstrap WYSIHTML5 - text editor
         $('.textarea').wysihtml5()
-    })
+    });
+
+    function addDocumentsrow() {
+        console.log("Adding document row");
+        var appsDocuments = document.getElementById("apps_documents");
+
+        if (!window.documentsCount) {
+            window.documentsCount = appsDocuments.children.length;
+        } else {
+            window.documentsCount++;
+        }
+        var elemnentNum = window.documentsCount;
+        console.log(elemnentNum);
+
+        rowElement = document.createElement("div");
+        rowElement.setAttribute("class", "row");
+        rowElement.setAttribute("id", "apps_documents_row_" + elemnentNum);
+
+        // Document name
+        colNameElement = document.createElement("div");
+        colNameElement.setAttribute("class", "col-md-4");
+        rowElement.appendChild(colNameElement);
+
+        labelNameElement = document.createElement("label");
+        labelNameElement.setAttribute("for", "apps_doc_name_" + elemnentNum);
+        labelNameElement.innerText = "Название";
+        colNameElement.appendChild(labelNameElement);
+        inputNameElement = document.createElement("input");
+        inputNameElement.setAttribute("class", "form-control");
+        inputNameElement.setAttribute("name", "apps_doc_name_" + elemnentNum);
+        inputNameElement.setAttribute("id", "apps_doc_name_" + elemnentNum);
+        colNameElement.appendChild(inputNameElement);
+
+        // Document url
+        colUrlElement = document.createElement("div");
+        colUrlElement.setAttribute("class", "col-md-4");
+        rowElement.appendChild(colUrlElement);
+
+        labelUrlElement = document.createElement("label");
+        labelUrlElement.setAttribute("for", "apps_doc_url_" + elemnentNum);
+        labelUrlElement.innerText = "Ссылка";
+        colUrlElement.appendChild(labelUrlElement);
+        inputUrlElement = document.createElement("input");
+        inputUrlElement.setAttribute("class", "form-control");
+        inputUrlElement.setAttribute("name", "apps_doc_url_" + elemnentNum);
+        inputUrlElement.setAttribute("id", "apps_doc_url_" + elemnentNum);
+        colUrlElement.appendChild(inputUrlElement);
+
+        appsDocuments.appendChild(rowElement);
+
+        // Document type
+        colTypeElement = document.createElement("div");
+        colTypeElement.setAttribute("class", "col-md-2");
+        rowElement.appendChild(colTypeElement);
+
+        labelTypeElement = document.createElement("label");
+        labelTypeElement.setAttribute("for", "apps_doc_type_" + elemnentNum);
+        labelTypeElement.innerText = "Тип";
+        colTypeElement.appendChild(labelTypeElement);
+
+        selectTypeElement = document.createElement("select");
+        selectTypeElement.setAttribute("class", "form-control");
+        selectTypeElement.setAttribute("name", "apps_doc_type_" + elemnentNum);
+        selectTypeElement.setAttribute("id", "apps_doc_type_" + elemnentNum);
+        colTypeElement.appendChild(selectTypeElement);
+
+        {% for doc_type in apps_documents_types %}
+            optionImgElement = document.createElement("option");
+            optionImgElement.setAttribute("value", "{{doc_type.name}}");
+            optionImgElement.innerText = "{{doc_type.name}}";
+            selectTypeElement.appendChild(optionImgElement);
+        {% endfor %}
+
+
+        // optionPdfElement = document.createElement("option");
+        // optionPdfElement.setAttribute("value", "PDF");
+        // optionPdfElement.innerText = "PDF";
+        // selectTypeElement.appendChild(optionPdfElement);
+
+        // Document remove
+        colRemoveElement = document.createElement("div");
+        colRemoveElement.setAttribute("class", "col-md-2");
+        rowElement.appendChild(colRemoveElement);
+
+        labelRemoveElement = document.createElement("label");
+        labelRemoveElement.setAttribute("for", "apps_doc_remove_" + elemnentNum);
+        colRemoveElement.appendChild(labelRemoveElement);
+
+        buttonRemoveElement = document.createElement("a");
+        buttonRemoveElement.setAttribute("class", "text-danger");
+        buttonRemoveElement.setAttribute("onClick", "document.getElementById(\"apps_documents_row_" + elemnentNum + "\").remove()");
+        selectTypeElement.setAttribute("id", "apps_doc_remove_" + elemnentNum);
+        colRemoveElement.appendChild(buttonRemoveElement);
+
+        hRemoveElement = document.createElement("h4");
+        buttonRemoveElement.appendChild(hRemoveElement);
+
+        iconRemoveelement = document.createElement("i");
+        iconRemoveelement.setAttribute("class", "fa fa-remove text-red");
+        hRemoveElement.appendChild(iconRemoveelement);
+
+        appsDocuments.appendChild(rowElement);
+    }
+
+    function use_open_selection_handler() {
+        useOpenSelectionCheckBox = document.getElementById("use_open_selection");
+        if (useOpenSelectionCheckBox.checked) {
+            document.getElementById("internal_browser").disabled = false;
+            document.getElementById("external_browser").disabled = false;
+        } else {
+            document.getElementById("internal_browser").disabled = true;
+            document.getElementById("external_browser").disabled = true;
+        }
+    }
 </script>
 {% endblock %}

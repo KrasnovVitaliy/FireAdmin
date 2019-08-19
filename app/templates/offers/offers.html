@@ -182,7 +182,8 @@
                        class="btn btn-block btn-default"
                        data-toggle="modal"
                        data-target="#offerLinkModal"
-                       onclick="getOfferLink('{{offer.id}}', '{{current_app.id}}', '{{offer.name}}', '{{current_app.name}}')"
+                       onclick="getOfferLink('{{offer.id}}', '{{current_app.id}}', '{{offer.name}}', '{{current_app.name}}',
+                       '{{current_country.code}}')"
                     >Сгенерировать ссылку</a>
                     {% endif %}
                 </td>
@@ -277,6 +278,7 @@
                         </div>
                     </div>
                     <br>
+
                     <div class="row">
                         <div class="col-md-12">
                             <label for="offer-link-modal-offer-old-link">Ссылка для приложений с разделением карт</label>
@@ -289,6 +291,23 @@
                         </div>
                         <div class="col-md-1">
                             <span onclick="copyLinkToClipboard()" class="btn btn-default"><i
+                                    class="fa fa-copy"></i></span>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="offer-link-modal-offer-country-link">Ссылка для приложений с разделением стран</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10">
+
+                            <input class="form-control" readonly id="offer-link-modal-offer-country-link" value="">
+                        </div>
+                        <div class="col-md-1">
+                            <span onclick="copyCountryLinkToClipboard()" class="btn btn-default"><i
                                     class="fa fa-copy"></i></span>
                         </div>
                     </div>
@@ -447,14 +466,15 @@
         }
     }
 
-    function getOfferLink(offer_id, app_id, offer_name, app_name) {
+    function getOfferLink(offer_id, app_id, offer_name, app_name, country_code) {
         document.getElementById("offer-link-modal-offer-name").innerText = offer_name;
         document.getElementById("offer-link-modal-app-name").innerText = app_name;
         document.getElementById("offer-link-modal-offer-link").value = "";
         document.getElementById("offer-link-modal-offer-old-link").value = "";
+        document.getElementById("offer-link-modal-offer-country-link").value = "";
 
         var xhr = new XMLHttpRequest();
-        var url = "/offers_dynamic_link?offer_id=" + offer_id + "&app_id=" + app_id;
+        var url = "/offers_dynamic_link?offer_id=" + offer_id + "&app_id=" + app_id + "&country_code=" + country_code;
         xhr.open("GET", url, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onreadystatechange = function () {
@@ -464,6 +484,7 @@
                 console.log(rsp);
                 document.getElementById("offer-link-modal-offer-link").value = rsp['link'];
                 document.getElementById("offer-link-modal-offer-old-link").value = rsp['old_link'];
+                document.getElementById("offer-link-modal-offer-country-link").value = rsp['country_link'];
             } else {
                 console.error(xhr.responseText);
             }
@@ -480,6 +501,12 @@
 
     function copyOldLinkToClipboard() {
         var linkText = document.getElementById("offer-link-modal-offer-old-link");
+        linkText.select();
+        document.execCommand("copy");
+    }
+
+    function copyCountryLinkToClipboard() {
+        var linkText = document.getElementById("offer-link-modal-offer-country-link");
         linkText.select();
         document.execCommand("copy");
     }

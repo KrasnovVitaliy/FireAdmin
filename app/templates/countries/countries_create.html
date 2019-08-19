@@ -1,0 +1,73 @@
+{% extends 'lib/main.html' %}
+{% block header_nav %}
+{% endblock %}
+
+{% block content_header %}
+<h1>
+    Создать страну
+</h1>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+
+<form role="form" action="/countries_create" method="post">
+    <section class="content">
+        <div class="box box-info">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box-footer">
+                        <button class="btn btn-default" onclick="goBack()">Отмена</button>
+                        <button type="submit" class="btn btn-info pull-right">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- left column -->
+            <section class="col-md-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Основная информация</h3>
+                    </div>
+                    <div class="box-body">
+                        <label for="name">Название страны</label>
+                        <input required class="form-control" type="text" placeholder="Введите название" id="name"
+                               name="name">
+
+                        <label for="code">Код страны</label>
+                        <input required class="form-control" type="text" placeholder="Введите код страны" id="code"
+                               name="code">
+
+                        <label for="icon">Иконка страны</label>
+                        <input required class="form-control" type="text" placeholder="Введите ссылку иконки" id="icon"
+                               name="icon">
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="box box-info">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="box-footer">
+                        <button class="btn btn-default" onclick="goBack()">Отмена</button>
+                        <button type="submit" class="btn btn-info pull-right">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</form>
+
+<!-- /.box-body -->
+</div>
+
+{% endblock %}
+
+{% block page_scripts %}
+{% endblock %}

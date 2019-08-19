@@ -4,7 +4,7 @@
 
 {% block content_header %}
 <h1>
-    Редактирование оффера - {{offer.name}}
+    Соффера - {{offer.name}}
 </h1>
 
 {% endblock %}
@@ -14,7 +14,8 @@
 
 {% block content %}
 
-<form role="form" action="/offers_overview?id={{offer.id}}&state={{offers_state}}&current_app={{current_app}}&current_country={{current_country}}"
+<form role="form"
+      action="/offers_overview?id={{offer.id}}&state={{offers_state}}&current_app={{current_app}}&current_country={{current_country}}"
       method="post">
     <section class="content">
         <div class="box box-info">
@@ -201,6 +202,33 @@
                         </div>
                     </div>
                 </div>
+
+
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Вариант открытия офферов</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="use_open_selection">Задать вариант открытия офферов</label>
+                            <input type="checkbox" onClick="use_open_selection_handler()" name="use_open_selection"
+                                   id="use_open_selection"
+                                   {%if offer.browser_type and offer.browser_type !="" %} checked {%endif%}
+                            >
+                        </div>
+                        <div class="form-group">
+                            <input {%if offer.browser_type=="" %} disabled {%endif%}
+                                   {%if offer.browser_type=="internal" %} checked {%endif%}
+                                   type="radio" name="browser_type" id="internal_browser" value="internal">
+                            Внутренний<br>
+                            <input {%if offer.browser_type=="" %} disabled {%endif%}
+                                   {%if offer.browser_type=="external" %} checked {%endif%}
+                                   type="radio" name="browser_type" id="external_browser" value="external"> Внешний<br>
+                        </div>
+                    </div>
+                </div>
+
+
             </section>
             <section class="col-md-6">
                 <div class="box box-info">
@@ -655,6 +683,56 @@
             </div>
         </div>
 
+        <div class="box box-info collapsed-box">
+            <div class="box-header with-border" data-widget="collapse">
+                <h3 class="box-title">Варианты открытия офферов по приложениям</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+
+                {% for app in apps %}
+                <div class="box box-default">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"><b>{{app.name}}</b></h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="use_open_selection">Задать вариант открытия офферов</label>
+                            <input type="checkbox" onClick="use_open_selection_app_handler({{app.id}})"
+                                   name="use_open_selection_app_{{app.id}}" id="use_open_selection_app_{{app.id}}"
+                                   {% if app.id in offers_apps_browser_types %}
+                                   checked
+                                   {% endif %}
+
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <input {% if app.id in offers_apps_browser_types %} disabled {%endif%}
+                                   {%if
+                                   app.id in offers_apps_browser_types and
+                                   offers_apps_browser_types[app.id].browser_type=="internal" %}
+                                   checked
+                                   {%endif%}
+                                   type="radio" name="browser_type_app_{{app.id}}" id="internal_browser_app_{{app.id}}"
+                                   value="internal"> Внутренний<br>
+                            <input {% if app.id in offers_apps_browser_types %} disabled {%endif%}
+                                   {% if app.id in offers_apps_browser_types and
+                                   offers_apps_browser_types[app.id].browser_type=="external" %} checked {%endif%}
+                                   type="radio" name="browser_type_app_{{app.id}}" id="external_browser_app_{{app.id}}"
+                                   value="external"> Внешний<br>
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+        </div>
+
 
         <div class="box box-info">
             <div class="row">
@@ -681,9 +759,36 @@
     $(function () {
         // Replace the <textarea id="description"> with a CKEditor
         // instance, using default configuration.
-        CKEDITOR.replace('description')
+        CKEDITOR.replace('description');
         //bootstrap WYSIHTML5 - text editor
-        $('.textarea').wysihtml5()
-    })
+        $('.textarea').wysihtml5();
+        use_open_selection_handler();
+
+        {% for app in apps %}
+        use_open_selection_app_handler({{app.id}});
+        {% endfor %}
+    });
+
+    function use_open_selection_handler() {
+        useOpenSelectionCheckBox = document.getElementById("use_open_selection");
+        if (useOpenSelectionCheckBox.checked) {
+            document.getElementById("internal_browser").disabled = false;
+            document.getElementById("external_browser").disabled = false;
+        } else {
+            document.getElementById("internal_browser").disabled = true;
+            document.getElementById("external_browser").disabled = true;
+        }
+    }
+
+    function use_open_selection_app_handler(app_id) {
+        useOpenSelectionCheckBox = document.getElementById("use_open_selection_app_" + app_id);
+        if (useOpenSelectionCheckBox.checked) {
+            document.getElementById("internal_browser_app_" + app_id).disabled = false;
+            document.getElementById("external_browser_app_" + app_id).disabled = false;
+        } else {
+            document.getElementById("internal_browser_app_" + app_id).disabled = true;
+            document.getElementById("external_browser_app_" + app_id).disabled = true;
+        }
+    }
 </script>
 {% endblock %}

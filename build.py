@@ -1,6 +1,7 @@
 import tarfile
 import logging
 import os
+import sys
 import __init__
 
 from tempfile import mkstemp
@@ -13,11 +14,11 @@ logging.basicConfig(filename=None, filemode='w', level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 
-def get_new_version_str():
+def get_new_version_str(build_version):
     current_version_str = __init__.version
     current_version = current_version_str.split(".")
-    new_minor_version = int(current_version[-1]) + 1
-    return "{}.{}.{}".format(current_version[0], current_version[1], new_minor_version)
+    # new_minor_version = int(current_version[-1]) + 1
+    return "{}.{}.{}".format(current_version[0], current_version[1], build_version)
 
 
 def update_ini_file_version(new_version_str):
@@ -47,7 +48,7 @@ def make_tarfile(output_filename):
 def main():
     logger.info("Script started")
     logger.info("Getting new version str")
-    new_version_str = get_new_version_str()
+    new_version_str = get_new_version_str(sys.argv[1])
     logger.info("New version str: {}".format(new_version_str))
 
     logger.info("Updating version in init file")

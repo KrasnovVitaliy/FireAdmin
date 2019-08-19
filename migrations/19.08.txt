@@ -1,0 +1,30 @@
+CREATE TABLE apps_documents_types(
+	id INTEGER PRIMARY KEY,
+	name STRING[20],
+	country_id INTEGER
+	);
+
+CREATE TABLE apps_documents(
+	id INTEGER PRIMARY KEY,
+	app_id INTEGER,
+	name STRING[50],
+	url STRING[500],
+	type INTEGER,
+	FOREIGN KEY(app_id) REFERENCES applications(id)
+	FOREIGN KEY(type) REFERENCES apps_documents_types(id)
+	);
+
+ALTER TABLE applications ADD COLUMN browser_type String(20);
+ALTER TABLE offers ADD COLUMN browser_type String(20);
+
+CREATE TABLE offers_apps_browsers_types(
+	id INTEGER PRIMARY KEY,
+	offer_id INTEGER,
+	app_id INTEGER,
+	browser_type STRING[20],
+	FOREIGN KEY(offer_id) REFERENCES offers(id)
+	FOREIGN KEY(app_id) REFERENCES applications(id)
+	);
+
+INSERT INTO apps_documents_types (name) VALUES ('img');
+INSERT INTO apps_documents_types (name) VALUES ('pdf');

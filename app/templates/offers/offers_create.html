@@ -487,7 +487,18 @@
         // instance, using default configuration.
         CKEDITOR.replace('description')
         //bootstrap WYSIHTML5 - text editor
-        $('.textarea').wysihtml5()
-    })
+        $('.textarea').wysihtml5();
+    });
+
+    function use_open_selection_handler(){
+        useOpenSelectionCheckBox = document.getElementById("use_open_selection");
+        if(useOpenSelectionCheckBox.checked) {
+            document.getElementById("internal_browser").disabled = false;
+            document.getElementById("external_browser").disabled = false;
+        } else {
+            document.getElementById("internal_browser").disabled = true;
+            document.getElementById("external_browser").disabled = true;
+        }
+    }
 </script>
 {% endblock %}

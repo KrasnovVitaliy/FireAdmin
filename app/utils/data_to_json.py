@@ -2,6 +2,9 @@ import db
 from utils.data_fields_utils import prepare_object_data
 from sqlalchemy import asc, desc
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_offer_country_position(offer_id, country_id, app_id):
@@ -77,6 +80,11 @@ def get_offers_data(app, country_id=None):
     offer_apps_percents_data = {}
     for item in offer_apps_percents:
         offer_apps_percents_data[item.offer_id] = item.to_json()
+
+    offers_apps_browser_types = db.session.query(db.OffersAppsBrowsersTypes).filter_by(**filters).all()
+    offers_apps_browser_types_data = {}
+    for item in offers_apps_browser_types:
+        offers_apps_browser_types_data[item.offer_id] = item.to_json()
 
     ret_data = {}
     for result in results:
@@ -176,9 +184,16 @@ def get_offers_data(app, country_id=None):
                 offer_data['position'] = get_offer_country_position(
                     offer_id=offer_data['id'], country_id=country_id, app_id=app.id)
             else:
-                offer_data['position'] = 0 if result[0].position == None else result[0].position
+                offer_data['position'] = get_offer_country_position(
+                    offer_id=offer_data['id'], country_id=-1, app_id=app.id)
 
-    # Adding news
+            # Updating offer browser type
+            if int(offer_data['id']) in offers_apps_browser_types_data:
+                offer_data['browser_type'] = offers_apps_browser_types_data[int(offer_data['id'])]['browser_type']
+            if app.browser_type != "":
+                offer_data['browser_type'] = app.browser_type
+            # print("app_browser_type:", app.browser_type)
+
     filters = {
         'app_id': app.id,
     }
@@ -201,7 +216,8 @@ def get_offers_data(app, country_id=None):
                 news_data['position'] = get_news_country_position(
                     news_id=news_data['id'], country_id=country_id, app_id=app.id)
             else:
-                news_data['position'] = 0 if result[0].position == None else result[0].position
+                news_data['position'] = get_news_country_position(
+                    news_id=news_data['id'], country_id=-1, app_id=app.id)
 
             ret_data['news'].append(news_data)
 
@@ -212,10 +228,37 @@ def get_offers_data(app, country_id=None):
         .filter(db.AppsCountriesTerms.app_id == app.id) \
         .filter(db.AppsCountriesTerms.country_id == country_id) \
         .first()
-    if app_country_terms:
-        ret_data['license_term'] = app_country_terms.license_term
+
+    app_country_init_terms = db.session.query(db.AppsCountriesInitTerms) \
+        .filter(db.AppsCountriesInitTerms.app_id == app.id) \
+        .filter(db.AppsCountriesInitTerms.country_id == country_id) \
+        .first()
+
+    if app_country_init_terms:
+        if app_country_terms:
+            ret_data['license_term'] = app_country_terms.license_term
+            ret_data['init_license_term'] = app_country_init_terms.license_term
+        else:
+            ret_data['license_term'] = app.license_term
+            ret_data['init_license_term'] = app.init_license_term
     else:
         ret_data['license_term'] = app.license_term
+        ret_data['init_license_term'] = app.init_license_term
+
+    ret_data["documents"] = []
+    results = db.session.query(db.AppsDocuments, db.AppsDocumentsTypes) \
+        .filter(db.AppsDocuments.app_id == app.id) \
+        .filter(db.AppsDocuments.type == db.AppsDocumentsTypes.id) \
+        .all()
+
+    for result in results:
+        ret_data["documents"].append(
+            {
+                "name": result[0].name,
+                "url": result[0].url,
+                "type": result[1].name,
+            }
+        )
 
     # Adding cards
     cards = []
@@ -242,6 +285,7 @@ def get_app_countrie(app):
                 'id': str(result[1].id),
                 'code': result[1].code,
                 'name': result[1].name,
+                'icon': result[1].icon,
             }
         )
     return countries

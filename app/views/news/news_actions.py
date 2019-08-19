@@ -58,10 +58,23 @@ class NewsUpdateOrder(web.View):
                     db.session.add(news)
 
         else:
+            # for item in data:
+            #     logger.debug("Post data: {}".format(item))
+            #     news = db.session.query(db.NewsAppsRelations).filter_by(app_id=app_id, news_id=item['item_id']).first()
+            #     news.position = item['position']
+
             for item in data:
-                logger.debug("Post data: {}".format(item))
-                news = db.session.query(db.NewsAppsRelations).filter_by(app_id=app_id, news_id=item['item_id']).first()
-                news.position = item['position']
+                news = db.session.query(db.NewsAppsCountriesPositions) \
+                    .filter(db.NewsAppsCountriesPositions.app_id == app_id) \
+                    .filter(db.NewsAppsCountriesPositions.news_id == item['item_id']) \
+                    .filter(db.NewsAppsCountriesPositions.country_id == -1).first()
+                if news:
+                    news.position = item['position']
+                else:
+                    news = db.NewsAppsCountriesPositions(app_id=app_id, news_id=item['item_id'],
+                                                         country_id=-1,
+                                                         position=item['position'])
+                    db.session.add(news)
 
         db.session.commit()
         return web.HTTPOk()
@@ -94,6 +107,10 @@ class NewsDynamicLink(web.View):
         except Exception as e:
             return web.HTTPNoContent()
 
+        country_code = None
+        if "country_code" in params:
+            country_code = params["country_code"]
+
         app = db.session.query(db.Applications).filter(db.Applications.id == app_id).first()
         offer = db.session.query(db.News).filter(db.News.id == offer_id).first()
 
@@ -106,7 +123,14 @@ class NewsDynamicLink(web.View):
             offer_position += 1
         offer_link = "www.{}.ru/news?id={}".format(app.fb_id, offer_position)
 
+        country_offer_link = "Страна не задана"
+        if country_code:
+            country_offer_link = "http://www.{}.ru/offer_item/{}/news/{}".format(
+                app.fb_id, country_code, offer_position)
+
         rsp = {
-            "link": offer_link
+            "link": offer_link,
+            "country_link": country_offer_link
         }
+
         return web.json_response(rsp)

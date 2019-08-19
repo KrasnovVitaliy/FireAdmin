@@ -35,6 +35,17 @@ def get_max_country_news_position(app_id, country_id):
     return 0
 
 
+def get_news_app_country_position(news_id, app_id, country_id=-1):
+    offer_position = db.session.query(db.NewsAppsCountriesPositions) \
+        .filter(db.NewsAppsCountriesPositions.news_id == news_id) \
+        .filter(db.NewsAppsCountriesPositions.country_id == country_id) \
+        .filter(db.NewsAppsCountriesPositions.app_id == app_id).first()
+
+    if offer_position:
+        return offer_position.position
+    return 0
+
+
 class NewsOverviewView(web.View):
     @aiohttp_jinja2.template('news/news_overview.html')
     async def get(self, *args, **kwargs):
@@ -143,12 +154,16 @@ class NewsOverviewView(web.View):
             if "app_" in field:
                 app_id = field.replace('app_', '')
                 news_app_relation = db.NewsAppsRelations(app_id=app_id, news_id=news_item.id)
-                if int(app_id) in news_app_relation_old_data:
-                    news_app_relation.position = news_app_relation_old_data[int(app_id)]
-                else:
-                    max_position = get_max_position(app_id)
-                    news_app_relation.position = max_position + 1
                 db.session.add(news_app_relation)
+
+                if not get_news_app_country_position(news_id=news_item.id, app_id=app_id):
+                    position = get_max_country_news_position(app_id=app_id,
+                                                             country_id=-1)
+
+                    offer_position = db.NewsAppsCountriesPositions(app_id=app_id, news_id=news_item.id,
+                                                                   country_id=-1,
+                                                                   position=position + 1)
+                    db.session.add(offer_position)
                 app_ids.append(app_id)
 
             elif "country_" in field:
@@ -191,4 +206,5 @@ class NewsOverviewView(web.View):
 
         print("!!!!!!!")
         print(params)
-        return web.HTTPFound('/news?state={}&current_app={}&current_country={}'.format(news_state, current_app, current_country))
+        return web.HTTPFound(
+            '/news?state={}&current_app={}&current_country={}'.format(news_state, current_app, current_country))

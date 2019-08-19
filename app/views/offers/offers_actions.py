@@ -69,8 +69,6 @@ class OffersUpdateOrder(web.View):
                                                                                              offer_type_id=offers_type_id,
                                                                                              country_id=-1).first()
 
-                # offer = db.session.query(db.OffersAppsRelations).filter_by(app_id=app_id,
-                #                                                            offer_id=item['item_id']).first()
                 if offer_position:
                     offer_position.position = item['position']
                 else:
@@ -99,7 +97,6 @@ class OffersUpdateComment(web.View):
 class OffersDynamicLink(web.View):
     async def get(self, *args, **kwargs):
         params = self.request.rel_url.query
-
         try:
             if "app_id" not in params:
                 return web.HTTPNoContent()
@@ -108,6 +105,11 @@ class OffersDynamicLink(web.View):
             if "offer_id" not in params:
                 return web.HTTPNoContent()
             offer_id = int(params["offer_id"])
+
+            country_code = None
+            if "country_code" in params:
+                country_code = params["country_code"]
+
         except Exception as e:
             return web.HTTPNoContent()
 
@@ -124,6 +126,11 @@ class OffersDynamicLink(web.View):
             offer_position += 1
         offer_link = "www.{}.ru/{}?id={}".format(app.fb_id, offer_type.name, offer_position)
 
+        country_offer_link = "Страна не задана"
+        if country_code:
+            country_offer_link = "http://www.{}.ru/offer_item/{}/{}/{}".format(
+                app.fb_id, country_code, offer_type.name, offer_position)
+
         if "card" in offer_type.name:
             offer_position = 0
             for item in app_offers["cards"]:
@@ -136,6 +143,8 @@ class OffersDynamicLink(web.View):
 
         rsp = {
             "old_link": old_link,
-            "link": offer_link
+            "link": offer_link,
+            "country_link": country_offer_link
         }
+
         return web.json_response(rsp)

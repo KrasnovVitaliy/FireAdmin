@@ -1,0 +1,103 @@
+{% extends 'lib/main.html' %}
+{% block header_nav %} {% endblock %}
+
+{% block content_header %}
+<h1>
+    Страны
+</h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+<div class="box">
+    <div class="box-header">
+        <a href="/countries_create" class="btn btn-info pull-right" type="button">Создать</a>
+    </div>
+
+    <div class="box-body">
+        <table class="table table-bordered">
+            <tr>
+                <th>Название</th>
+                <th>Код</th>
+                <th>Иконка</th>
+                <th></th>
+            </tr>
+
+            {% for country in countries %}
+            <tr>
+                <td><a href="/countries_overview?id={{country.id}}"><h4>{{ country.name }}</h4></a></td>
+                <td><h4>{{ country.code}}</h4></a></td>
+                <td><img src="{{ country.icon}}" class="user-image" alt="Country icon" width="32" height="32"></td>
+                <td>
+                    <a class="text-danger" href="#"><h4><i class="fa fa-remove text-red"
+                                                           data-country_id={{country.id}}
+                                                           data-country_name="{{country.name}}"
+                                                           data-toggle="modal"
+                                                           data-target="#deleteConfirmationModal"></i></h4></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <!-- /.box-body -->
+</div>
+<!-- /.box -->
+
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog"
+     aria-labelledby="deleteConfirmationModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h3>Удалить страну <b><span id="modal-country_name"></span></b>?</h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal" id="cancel-button">Отмена
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirm-button">Удалить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+<script type="text/javascript">
+    pass_arguments_to_modal();
+    set_confirmation_modal_handlers();
+
+    function pass_arguments_to_modal() {
+        let ATTRIBUTES = ['country_name'];
+        $('[data-toggle="modal"]').on('click', function (e) {
+            // convert target (e.g. the button) to jquery object
+            var $target = $(e.target);
+            // modal targeted by the button
+            var modalSelector = $target.data('target');
+
+            // iterate over each possible data-* attribute
+            ATTRIBUTES.forEach(function (attributeName) {
+                // retrieve the dom element corresponding to current attribute
+                var $modalAttribute = $(modalSelector + ' #modal-' + attributeName);
+                var dataValue = $target.data(attributeName);
+                $modalAttribute.text(dataValue || '');
+            });
+            window.removing_id = $target.data('country_id');
+        });
+    }
+
+    function set_confirmation_modal_handlers() {
+        $('#deleteConfirmationModal .modal-footer button').on('click', function (event) {
+            var $button = $(event.target); // The clicked button
+
+            $(this).closest('.modal').one('hidden.bs.modal', function () {
+                if ($button.attr("id") == 'confirm-button') {
+                    window.location.href = '/countries_actions?&action=delete&id=' + window.removing_id;
+                }
+            });
+        });
+    }
+</script>
+{% endblock %}

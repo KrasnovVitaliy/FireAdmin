@@ -115,8 +115,11 @@ class NewsView(web.View):
                         news['app_position'] = self.get_news_country_position(
                             news_id=news['id'], country_id=current_country, app_id=current_app)
                     else:
-                        if news_app.app_id == current_app:
-                            news['app_position'] = news_app.position if news_app.position else 0
+                        news['app_position'] = self.get_news_country_position(
+                            news_id=news['id'], country_id=-1, app_id=current_app)
+
+                        if not news['app_position']:
+                            news['app_position'] = 0
                 else:
                     news['app_position'] = 0
 

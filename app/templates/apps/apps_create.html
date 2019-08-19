@@ -43,11 +43,14 @@
                         <textarea class="form-control" rows="5" id="description" name="description"
                                   placeholder="Описание"></textarea>
 
+                        <label for="init_license_term">Начальное пользовательское соглашение</label>
+                        <textarea id="init_license_term" name="init_license_term" rows="5" cols="80"
+                                  id="init_license_term"
+                                  placeholder="Соглашение"></textarea>
+
                         <label for="license_term">Польательское соглашение</label>
-                        <!--<textarea class="form-control" rows="10" id="license_term" name="license_term"-->
-                                  <!--placeholder="Соглашение"></textarea>-->
                         <textarea id="license_term" name="license_term" rows="5" cols="80" id="license_term"
-                        placeholder="Соглашение"></textarea>
+                                  placeholder="Соглашение"></textarea>
                     </div>
                 </div>
             </section>
@@ -63,7 +66,8 @@
                                name="fb_id">
 
                         <label for="name">Идентификатор ссылки заказа</label>
-                        <input required class="form-control" type="text" placeholder="Введите идентификатор" id="order_tracking_source"
+                        <input required class="form-control" type="text" placeholder="Введите идентификатор"
+                               id="order_tracking_source"
                                name="order_tracking_source">
                     </div>
                 </div>
@@ -88,7 +92,28 @@
                     </div>
                 </div>
             </section>
+
+            <section class="col-md-6">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Вариант открытия офферов</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="use_open_selection">Задать вариант открытия офферов</label>
+                            <input type="checkbox" onClick="use_open_selection_handler()" name="use_open_selection" id="use_open_selection">
+                        </div>
+                        <div class="form-group">
+                            <input disabled type="radio" name="browser_type" id="internal_browser" value="internal"> Внутренний<br>
+                            <input disabled type="radio" name="browser_type" id="external_browser" value="external"> Внешний<br>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
+
+
+
         <div class="box box-info collapsed-box">
             <div class="box-header with-border" data-widget="collapse">
                 <h3 class="box-title">Пользовательское соглашение по странам</h3>
@@ -101,9 +126,17 @@
             <div class="box-body">
 
                 {% for country in countries %}
+                <label for="country_license_init_term_{{ country.id }}">Начальное соглашение для
+                    {{country.name}}</label>
+                <textarea id="country_license_init_term_{{ country.id }}"
+                          name="country_license_init_term_{{country.id }}" rows="5" cols="80"
+                          placeholder="Соглашение"></textarea>
+
+
                 <label for="country_license_term_{{ country.id }}">Соглашение для {{country.name}}</label>
-                <textarea id="country_license_term_{{ country.id }}" name="country_license_term_{{country.id }}" rows="5" cols="80"
-                                  placeholder="Соглашение"></textarea>
+                <textarea id="country_license_term_{{ country.id }}" name="country_license_term_{{country.id }}"
+                          rows="5" cols="80"
+                          placeholder="Соглашение"></textarea>
                 {% endfor %}
             </div>
         </div>
@@ -132,12 +165,27 @@
     $(function () {
         // Replace the <textarea id="editor1"> with a CKEditor
         // instance, using default configuration.
-        CKEDITOR.replace('license_term')
-        {% for country in countries %}
+        CKEDITOR.replace('license_term');
+        CKEDITOR.replace('init_license_term');
+        {%
+            for country in countries %}
         CKEDITOR.replace('country_license_term_{{ country.id }}');
-        {% endfor %}
+        CKEDITOR.replace('country_license_init_term_{{ country.id }}');
+        {%
+            endfor %}
         //bootstrap WYSIHTML5 - text editor
         $('.textarea').wysihtml5()
-    })
+    });
+
+    function use_open_selection_handler(){
+        useOpenSelectionCheckBox = document.getElementById("use_open_selection");
+        if(useOpenSelectionCheckBox.checked) {
+            document.getElementById("internal_browser").disabled = false;
+            document.getElementById("external_browser").disabled = false;
+        } else {
+            document.getElementById("internal_browser").disabled = true;
+            document.getElementById("external_browser").disabled = true;
+        }
+    }
 </script>
 {% endblock %}

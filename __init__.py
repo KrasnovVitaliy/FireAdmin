@@ -1,2 +1,2 @@
 name = "FireAdmin"
-version = "1.0.4"
+version = "1.0.30"
