@@ -34,10 +34,12 @@ class Applications(Base):
     creator = Column(Integer)
     deleted = Column(DateTime)
     browser_type = Column(String(20))
+    show_docs = Column(Boolean)
+    hide_init_agreement = Column(Boolean)
 
     def __init__(self, name=None, description=None, fb_id=None, fb_url=None, appmetrica_link=None, fabrica_link=None,
                  appsflyer_link=None, order_tracking_source=None, license_term=None, init_license_term=None,
-                 browser_type=None):
+                 browser_type=None, show_docs=None, hide_init_agreement=None):
         self.name = name
         self.description = description
         self.fb_id = fb_id
@@ -49,6 +51,8 @@ class Applications(Base):
         self.license_term = license_term
         self.init_license_term = init_license_term
         self.browser_type = browser_type
+        self.show_docs = show_docs
+        self.hide_init_agreement = hide_init_agreement
 
     def serialize(self, to_serialize):
         d = {}
@@ -62,7 +66,7 @@ class Applications(Base):
     def to_json(self):
         to_serialize = ['id', 'create_date', 'update_date', 'name', 'description', 'fb_id', 'fb_url', 'appmetrica_link',
                         'fabrica_link', 'appsflyer_link', 'order_tracking_source', 'license_term', 'init_license_term',
-                        'creator', 'deleted', 'browser_type']
+                        'creator', 'deleted', 'browser_type', 'show_docs', 'hide_init_agreement']
         return self.serialize(to_serialize)
 
 

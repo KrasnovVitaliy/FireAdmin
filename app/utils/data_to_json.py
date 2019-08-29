@@ -188,11 +188,14 @@ def get_offers_data(app, country_id=None):
                     offer_id=offer_data['id'], country_id=-1, app_id=app.id)
 
             # Updating offer browser type
+            offer_data['browserType'] = offer_data['browser_type']
             if int(offer_data['id']) in offers_apps_browser_types_data:
-                offer_data['browser_type'] = offers_apps_browser_types_data[int(offer_data['id'])]['browser_type']
-            if app.browser_type != "":
-                offer_data['browser_type'] = app.browser_type
-            # print("app_browser_type:", app.browser_type)
+                offer_data['browserType'] = offers_apps_browser_types_data[int(offer_data['id'])]['browser_type']
+            if app.browser_type and app.browser_type != "":
+                offer_data['browserType'] = app.browser_type
+
+            if 'browser_type' in offer_data:
+                del offer_data['browser_type']
 
     filters = {
         'app_id': app.id,
@@ -270,6 +273,9 @@ def get_offers_data(app, country_id=None):
         cards.extend(ret_data['cards_installment'])
 
     ret_data['cards'] = cards
+
+    ret_data['showDocs'] = "1" if app.show_docs else "0"
+    ret_data['hideInitAgreement'] = "1" if app.hide_init_agreement else "0"
 
     return ret_data
 

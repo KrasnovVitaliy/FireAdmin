@@ -84,6 +84,8 @@ class AppsOverviewView(web.View):
 
         app.browser_type = ""
         app_docs = {}
+        app.show_docs = False
+        app.hide_init_agreement = False
 
         for field in post_data:
             if "country_license_term_" in field:
@@ -118,6 +120,11 @@ class AppsOverviewView(web.View):
                     app_docs[num] = {}
 
                 app_docs[num][field.replace("_{}".format(num), '')] = post_data[field]
+            elif "show_docs" in field:
+                app.show_docs = True
+
+            elif "hide_init_agreement" in field:
+                app.hide_init_agreement = True
 
             else:
                 setattr(app, field, post_data[field])

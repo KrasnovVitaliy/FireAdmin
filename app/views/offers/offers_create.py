@@ -21,7 +21,11 @@ def get_max_position(app_id, offer_type):
             int(app_id), int(offer_type)
         ))
     for row in result:
-        return int(row[0])
+        print("row[0] {}".format(row[0]))
+        if row[0]:
+            return int(row[0])
+        else:
+            return 0
     return 0
 
 
