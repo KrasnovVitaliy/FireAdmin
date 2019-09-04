@@ -14,7 +14,7 @@
 
 {% block content %}
 
-<form role="form" action="/apps_overview?id={{app.id}}" method="post">
+<form role="form" action="/apps_overview?id={{app.id}}" method="post" enctype="multipart/form-data">
     <section class="content">
         <div class="box box-info">
             <div class="row">
@@ -35,6 +35,9 @@
                         <h3 class="box-title">Основная информация</h3>
                     </div>
                     <div class="box-body">
+                        <label for="icon">Иконка приложения</label>
+                        <input class="form-control" type="file" placeholder="Введите адрес" id="icon" name="icon">
+
                         <label for="name">Название приложения</label>
                         <input required class="form-control" type="text" placeholder="Введите имя" id="name"
                                name="name"

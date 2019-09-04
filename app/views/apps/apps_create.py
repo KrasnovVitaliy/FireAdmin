@@ -3,6 +3,7 @@ import aiohttp_jinja2
 import logging
 from config import Config
 import views.all_view_methods as avm
+import views.apps.utils as apps_utils
 import db
 
 logger = logging.getLogger(__name__)
@@ -26,16 +27,19 @@ class AppsCreateView(web.View):
         post_data = await self.request.post()
         logger.debug("Received post data: {}".format(post_data))
 
-        application = db.Applications()
+        app = db.Applications()
 
         for field in post_data:
-            if "country_license_term_" not in field:
-                setattr(application, field, post_data[field])
+            if ("country_license_term_" not in field and
+                    "country_license_init_term_" not in field):
+                setattr(app, field, post_data[field])
 
-            if "country_license_init_term_" not in field:
-                setattr(application, field, post_data[field])
+            if "icon" in field:
+                if post_data[field]:
+                    file_name = apps_utils.save_file(post_data[field])
+                    setattr(app, field, file_name)
 
-        db.session.add(application)
+        db.session.add(app)
         db.session.commit()
 
         for field in post_data:
@@ -44,7 +48,7 @@ class AppsCreateView(web.View):
                 country_id = int(field.replace("country_license_term_", ""))
 
                 app_country_term = db.AppsCountriesTerms(
-                    app_id=application.id,
+                    app_id=app.id,
                     country_id=int(country_id),
                     license_term=post_data[field]
                 )
@@ -54,7 +58,7 @@ class AppsCreateView(web.View):
                 country_id = int(field.replace("country_license_init_term_", ""))
 
                 app_country_term = db.AppsCountriesInitTerms(
-                    app_id=application.id,
+                    app_id=app.id,
                     country_id=int(country_id),
                     license_term=post_data[field]
                 )
@@ -62,7 +66,7 @@ class AppsCreateView(web.View):
             elif "country_" in field:
                 country_id = field.replace('country_', '')
                 app_country_relation = db.AppsCountriesRelations(
-                    country_id=country_id, app_id=application.id)
+                    country_id=country_id, app_id=app.id)
                 db.session.add(app_country_relation)
                 db.session.commit()
 

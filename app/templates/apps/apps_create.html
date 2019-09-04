@@ -14,7 +14,7 @@
 
 {% block content %}
 
-<form role="form" action="/apps_create" method="post">
+<form role="form" action="/apps_create" method="post" enctype="multipart/form-data">
     <section class="content">
         <div class="box box-info">
             <div class="row">
@@ -35,7 +35,11 @@
                         <h3 class="box-title">Основная информация</h3>
                     </div>
                     <div class="box-body">
-                        <label for="name">Название приложения</label>
+                        <label for="icon">Иконка приложения</label>
+                        <input class="form-control" type="file" placeholder="Введите адрес" id="icon" name="icon">
+
+
+                        <label for="name">Название причложения</label>
                         <input required class="form-control" type="text" placeholder="Введите имя" id="name"
                                name="name">
 
@@ -48,7 +52,7 @@
                                   id="init_license_term"
                                   placeholder="Соглашение"></textarea>
 
-                        <label for="license_term">Польательское соглашение</label>
+                        <label for="license_term">Пользовательское соглашение</label>
                         <textarea id="license_term" name="license_term" rows="5" cols="80" id="license_term"
                                   placeholder="Соглашение"></textarea>
                     </div>

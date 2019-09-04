@@ -19,17 +19,25 @@
     <div class="box-body">
         <table class="table table-bordered">
             <tr>
+                <th>Иконка</th>
                 <th>Название</th>
                 <th>Firebase</th>
                 <th>Действия с базой</th>
                 <th>Действия с офферами</th>
                 <th>Действия с новостями</th>
                 <th></th>
-                <!--<th>Fabrica</th>-->
             </tr>
 
             {% for app in applications %}
             <tr>
+                <td>
+                    {% if app.icon %}
+                    <img class="img-responsive" width="36px" src="/static/app_icons/{{ app.icon }}" alt="icon">
+                    {% else %}
+                    <img class="img-responsive" width="36px" src="/static/img/no_image.png" alt="icon">
+                    {% endif%}
+                </td>
+                
                 <td><a href="/apps_overview?id={{app.id}}"><h4>{{ app.name }}</h4></a></td>
                 <td><a href="{{app.fb_url}}/{{ app.fb_id }}/overview"><h4>{{ app.fb_id
                     }}</h4></a></td>

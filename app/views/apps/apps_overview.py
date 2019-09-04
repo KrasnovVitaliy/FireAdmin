@@ -4,6 +4,7 @@ import logging
 from config import Config
 import views.all_view_methods as avm
 import db
+import views.apps.utils as apps_utils
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -125,6 +126,11 @@ class AppsOverviewView(web.View):
 
             elif "hide_init_agreement" in field:
                 app.hide_init_agreement = True
+
+            elif "icon" in field:
+                if post_data[field]:
+                    file_name = apps_utils.save_file(post_data[field])
+                    setattr(app, field, file_name)
 
             else:
                 setattr(app, field, post_data[field])
