@@ -5,6 +5,8 @@ from config import Config
 import views.all_view_methods as avm
 import db
 import datetime
+from utils.check_permissions import is_permitted
+import views.journal as journal
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -38,6 +40,10 @@ def get_max_country_news_position(app_id, country_id):
 class NewsCreateView(web.View):
     @aiohttp_jinja2.template('news/news_create.html')
     async def get(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['news_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
         offer_data = {}
 
@@ -51,13 +57,18 @@ class NewsCreateView(web.View):
         countries_data = [obj.to_json() for obj in countries]
         return {
             'apps': apps_data,
+            "permissions": user_permissions,
             'offers_types': avm.offers_types(),
             'offer': offer_data,
             'countries': countries_data,
-            'auth_service_address': config.AUTH_SERVICE_ADDRESS
+            'auth_service_address': config.AUTH_SERVICE_EXTERNAL
         }
 
     async def post(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['news_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
 
         post_data = await self.request.post()
@@ -119,5 +130,10 @@ class NewsCreateView(web.View):
                     db.session.add(news_position)
 
         db.session.commit()
+
+        await journal.add_action(request=self.request, object_type=journal.CREATE_ACTION,
+                                 action=journal.DELETE_ACTION,
+                                 description=str(news_item.to_json()))
+
 
         return web.HTTPFound('/news')

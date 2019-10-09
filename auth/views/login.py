@@ -16,6 +16,8 @@ class LoginView(web.View, CorsViewMixin):
     async def post(self):
         data = await self.request.post()
         logger.debug("Received login request data: {}".format(data))
+        params = self.request.rel_url.query
+        logger.debug("Received login request params: {}".format(params))
         logger.debug("Is email and password fields present")
         if "email" not in data or "password" not in data:
             return web.json_response({"error": "No email or password field in request body"}, status=400)
@@ -41,4 +43,9 @@ class LoginView(web.View, CorsViewMixin):
         logger.debug("Encoded JWT: {}".format(jwt))
         session = await get_session(self.request)
         session['auth'] = jwt.decode("utf-8")
-        return web.HTTPFound(config.MAIN_SERVICE_EXTERNAL)
+
+        redirect_url = config.MAIN_SERVICE_EXTERNAL
+        if 'redirect_url' in params:
+            redirect_url = params['redirect_url']
+
+        return web.HTTPFound(redirect_url)

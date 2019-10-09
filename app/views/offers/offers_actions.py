@@ -4,6 +4,8 @@ import logging
 from config import Config
 import db
 import utils.firebase_client as fb_client
+import views.journal as journal
+from utils.check_permissions import is_permitted
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -11,6 +13,10 @@ config = Config()
 
 class OffersActionsView(web.View):
     async def get(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['offers_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
 
         filters = {
@@ -20,10 +26,19 @@ class OffersActionsView(web.View):
         offer = db.session.query(db.Offers).filter_by(**filters).first()
         if params['action'] == 'run':
             offer.isActive = 1
+            await journal.add_action(request=self.request, object_type=journal.OFFER_OBJECT,
+                                     action=journal.START_ACTION,
+                                     description=str(offer.to_json()))
         elif params['action'] == 'stop':
             offer.isActive = 0
+            await journal.add_action(request=self.request, object_type=journal.OFFER_OBJECT,
+                                     action=journal.STOP_ACTION,
+                                     description=str(offer.to_json()))
         elif params['action'] == 'delete':
             offer.deleted = datetime.datetime.now()
+            await journal.add_action(request=self.request, object_type=journal.OFFER_OBJECT,
+                                     action=journal.DELETE_ACTION,
+                                     description=str(offer.to_json()))
         db.session.commit()
 
         return web.HTTPFound('offers?offers_type={}&current_app={}'.format(params['offer_type'], params['app_id']))
@@ -31,6 +46,9 @@ class OffersActionsView(web.View):
 
 class OffersUpdateOrder(web.View):
     async def post(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['offers_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
         params = self.request.rel_url.query
         data = await self.request.json()
 
@@ -48,18 +66,26 @@ class OffersUpdateOrder(web.View):
 
         if country_id:
             for item in data:
-                offer = db.session.query(db.OffersAppsCountriesPositions) \
+                offer_position = db.session.query(db.OffersAppsCountriesPositions) \
                     .filter(db.OffersAppsCountriesPositions.app_id == app_id) \
                     .filter(db.OffersAppsCountriesPositions.offer_type_id == offers_type_id) \
                     .filter(db.OffersAppsCountriesPositions.offer_id == item['item_id']) \
                     .filter(db.OffersAppsCountriesPositions.country_id == country_id).first()
-                if offer:
-                    offer.position = item['position']
+                if offer_position:
+                    offer_position.position = item['position']
                 else:
-                    offer = db.OffersAppsCountriesPositions(app_id=app_id, offer_id=item['item_id'],
-                                                            offer_type_id=offers_type_id, country_id=country_id,
-                                                            position=item['position'])
-                    db.session.add(offer)
+                    offer_position = db.OffersAppsCountriesPositions(app_id=app_id, offer_id=item['item_id'],
+                                                                     offer_type_id=offers_type_id,
+                                                                     country_id=country_id,
+                                                                     position=item['position'])
+                    db.session.add(offer_position)
+
+                await journal.add_action(request=self.request, object_type=journal.OFFER_OBJECT,
+                                         action=journal.REORDER_ACTION,
+                                         description="app_id: {} offer_id: {} offer_type_id: {} country_id: {} position: {}".format(
+                                             offer_position.app_id, offer_position.offer_id,
+                                             offer_position.offer_type_id, offer_position.country_id,
+                                             offer_position.position))
 
         else:
             for item in data:
@@ -77,6 +103,13 @@ class OffersUpdateOrder(web.View):
                                                                      country_id=-1,
                                                                      position=item['position'])
                     db.session.add(offer_position)
+                print("CHANGE ORDER")
+                await journal.add_action(request=self.request, object_type=journal.OFFER_OBJECT,
+                                         action=journal.REORDER_ACTION,
+                                         description="app_id: {} offer_id: {} offer_type_id: {} country_id: {} position: {}".format(
+                                             offer_position.app_id, offer_position.offer_id,
+                                             offer_position.offer_type_id, offer_position.country_id,
+                                             offer_position.position))
 
         db.session.commit()
         return web.HTTPOk()
@@ -84,6 +117,10 @@ class OffersUpdateOrder(web.View):
 
 class OffersUpdateComment(web.View):
     async def post(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['offers_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         data = await self.request.json()
 
         logger.debug("Post data: {}".format(data))
@@ -91,11 +128,18 @@ class OffersUpdateComment(web.View):
         offer.comment = data['comment']
 
         db.session.commit()
+        await journal.add_action(request=self.request, object_type=journal.OFFER_OBJECT,
+                                 action=journal.UPDATE_COMMENT,
+                                 description=str(offer.to_json()))
         return web.HTTPOk()
 
 
 class OffersDynamicLink(web.View):
     async def get(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['offers_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
         try:
             if "app_id" not in params:
@@ -128,8 +172,10 @@ class OffersDynamicLink(web.View):
 
         country_offer_link = "Страна не задана"
         if country_code:
-            country_offer_link = "http://www.{}.ru/offer_item/{}/{}/{}".format(
-                app.fb_id, country_code, offer_type.name, offer_position)
+            # country_offer_link = "http://www.{}.ru/offer_item/{}/{}/{}".format(
+            #     app.fb_id, country_code, offer_type.name, offer_position)
+            country_offer_link = "http://www.{}.ru/offer_item/{}/{}".format(
+                app.fb_id, offer_type.name, offer_position)
 
         if "card" in offer_type.name:
             offer_position = 0

@@ -4,7 +4,7 @@
 
 {% block content_header %}
 <h1>
-    Редактировать приложения: {{app.name}}
+    Копировать приложения: {{app.name}}
 </h1>
 
 {% endblock %}
@@ -14,7 +14,7 @@
 
 {% block content %}
 
-<form role="form" action="/apps_overview?id={{app.id}}" method="post" enctype="multipart/form-data">
+<form role="form" action="/apps_duplicate?id={{app.id}}" method="post" enctype="multipart/form-data">
     <section class="content">
         <div class="box box-info">
             <div class="row">
@@ -27,6 +27,12 @@
             </div>
         </div>
 
+        <input style="display:none" class="form-control" type="text" placeholder="src_app_id" id="src_app_id"
+                   name="src_app_id"
+                   {% if app.id %}
+                   value="{{app.id}}"
+                   {% endif %}
+            >
         <div class="row">
             <!-- left column -->
             <section class="col-md-6">
@@ -155,78 +161,6 @@
                             <input type="checkbox" name="hide_init_agreement"
                                    id="hide_init_agreement"
                                    {%if app.hide_init_agreement and app.hide_init_agreement !="" %} checked {%endif%}
-                            >
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="col-md-6">
-                <div class="box box-info">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">Отображаемые офферы</h3>
-                    </div>
-                    <div class="box-body">
-                        <div class="form-group">
-                            <label for="use_open_selection">Займы</label>
-                            <input type="checkbox" name="loans_item"
-                                   id="loans_item"
-                                   {%if app.loans_item and app.loans_item !="" %} checked {%endif%}
-                            >
-                        </div>
-                        <div class="form-group">
-                        <label for="use_open_selection">Карты</label>
-                            <input type="checkbox" name="cards_item"
-                                   id="cards_item"
-                                   {%if app.cards_item and app.cards_item !="" %} checked {%endif%}
-                            >
-                        </div>
-
-                        <div class="form-group">
-                        <label for="use_open_selection">Карты кредитные</label>
-                            <input type="checkbox" name="cards_credit_item"
-                                   id="cards_credit_item"
-                                   {%if app.cards_credit_item and app.cards_credit_item !="" %} checked {%endif%}
-                            >
-                        </div>
-
-                        <div class="form-group">
-                        <label for="use_open_selection">Карты дебетовые</label>
-                            <input type="checkbox" name="cards_debit_item"
-                                   id="cards_debit_item"
-                                   {%if app.cards_debit_item and app.cards_debit_item !="" %} checked {%endif%}
-                            >
-                        </div>
-
-                        <div class="form-group">
-                        <label for="use_open_selection">Карты рассрочки</label>
-                            <input type="checkbox" name="cards_instalment_item"
-                                   id="cards_instalment_item"
-                                   {%if app.cards_instalment_item and app.cards_instalment_item !="" %} checked {%endif%}
-                            >
-                        </div>
-
-                        <div class="form-group">
-                        <label for="use_open_selection">Кредиты</label>
-                            <input type="checkbox" name="credits_item"
-                                   id="credits_item"
-                                   {%if app.credits_item and app.credits_item !="" %} checked {%endif%}
-                            >
-                        </div>
-
-                        <div class="form-group">
-                        <label for="use_open_selection">Новости</label>
-                            <input type="checkbox" name="news_item"
-                                   id="news_item"
-                                   {%if app.news_item and app.news_item !="" %} checked {%endif%}
-                            >
-                        </div>
-
-                        <div class="form-group">
-                        <label for="use_open_selection">Калькулятор</label>
-                            <input type="checkbox" name="calculator_item"
-                                   id="calculator_item"
-                                   {%if app.calculator_item and app.calculator_item !="" %} checked {%endif%}
                             >
                         </div>
                     </div>

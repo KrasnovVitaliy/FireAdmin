@@ -4,6 +4,7 @@ import logging
 from config import Config
 import views.all_view_methods as avm
 import db
+from utils.check_permissions import is_permitted
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -12,6 +13,10 @@ config = Config()
 class CountriesOverviewView(web.View):
     @aiohttp_jinja2.template('countries/countries_overview.html')
     async def get(self, *args, **kwargs):
+        user_permissions = await is_permitted(self.request, ['countries_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
 
         filters = {
@@ -22,11 +27,16 @@ class CountriesOverviewView(web.View):
         country_data = country.to_json()
 
         return {
+            "permissions": user_permissions,
             'country': country_data,
-            'auth_service_address': config.AUTH_SERVICE_ADDRESS
+            'auth_service_address': config.AUTH_SERVICE_EXTERNAL
         }
 
     async def post(self, *args, **kwargs):
+        user_permissions = await is_permitted(self.request, ['countries_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
         post_data = await self.request.post()
         logger.debug("Received post data: {}".format(post_data))

@@ -4,6 +4,8 @@ import logging
 from config import Config
 import views.all_view_methods as avm
 import db
+import views.journal as journal
+from utils.check_permissions import is_permitted
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -45,6 +47,10 @@ def get_max_country_offer_position(app_id, offer_type_id, country_id):
 class OffersCreateView(web.View):
     @aiohttp_jinja2.template('offers/offers_create.html')
     async def get(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['offers_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
         offer_data = {}
         if 'offers_type' in params:
@@ -61,12 +67,17 @@ class OffersCreateView(web.View):
         return {
             'apps': apps_data,
             'offers_types': avm.offers_types(),
+            "permissions": user_permissions,
             'offer': offer_data,
             'countries': countries_data,
-            'auth_service_address': config.AUTH_SERVICE_ADDRESS
+            'auth_service_address': config.AUTH_SERVICE_EXTERNAL
         }
 
     async def post(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['offers_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
 
         post_data = await self.request.post()
@@ -237,5 +248,8 @@ class OffersCreateView(web.View):
                                                                      position=position + 1)
                     db.session.add(offer_position)
         db.session.commit()
+
+        await journal.add_action(request=self.request, object_type=journal.OFFER_OBJECT, action=journal.CREATE_ACTION,
+                                 description=str(offer.to_json()))
 
         return web.HTTPFound('/offers?offers_type={}'.format(offer.offer_type))

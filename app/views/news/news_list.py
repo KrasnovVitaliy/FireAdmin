@@ -5,6 +5,7 @@ from config import Config
 import views.all_view_methods as avm
 import db
 from sqlalchemy import asc
+from utils.check_permissions import is_permitted
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -35,6 +36,10 @@ class NewsView(web.View):
 
     @aiohttp_jinja2.template('news/news.html')
     async def get(self, *args, **kwargs):
+        user_permissions = await is_permitted(self.request, ['news_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
 
         filters = {
@@ -141,6 +146,7 @@ class NewsView(web.View):
                     break
         return {
             'news': news_data,
+            "permissions": user_permissions,
             'offers_types': avm.offers_types(),
             'news_state': news_state,
             'active_menu_item': 'news',
@@ -148,5 +154,5 @@ class NewsView(web.View):
             'current_app': current_app,
             'countries': countries_data,
             'current_country': current_country,
-            'auth_service_address': config.AUTH_SERVICE_ADDRESS
+            'auth_service_address': config.AUTH_SERVICE_EXTERNAL
         }

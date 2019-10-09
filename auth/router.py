@@ -19,6 +19,7 @@ routes = [
 
     # Users
     web.view('/users', UsersView),
+    web.view('/signup', FormUsersView),
     web.view('/form_users', FormUsersView),
 
     # Roles

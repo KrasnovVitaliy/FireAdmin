@@ -5,6 +5,8 @@ from config import Config
 import views.all_view_methods as avm
 import db
 import datetime
+from utils.check_permissions import is_permitted
+import views.journal as journal
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -49,6 +51,10 @@ def get_news_app_country_position(news_id, app_id, country_id=-1):
 class NewsOverviewView(web.View):
     @aiohttp_jinja2.template('news/news_overview.html')
     async def get(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['news_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
 
         filters = {
@@ -91,6 +97,7 @@ class NewsOverviewView(web.View):
             current_country = params['current_country']
 
         return {
+            "permissions": user_permissions,
             'offers_types': avm.offers_types(),
             'news': news_data,
             'apps': apps_data,
@@ -101,10 +108,14 @@ class NewsOverviewView(web.View):
             'offers_state': news_state,
             'current_app': current_app,
             'current_country': current_country,
-            'auth_service_address': config.AUTH_SERVICE_ADDRESS
+            'auth_service_address': config.AUTH_SERVICE_EXTERNAL
         }
 
     async def post(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['news_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
 
         post_data = await self.request.post()
@@ -204,7 +215,9 @@ class NewsOverviewView(web.View):
         if 'current_country' in params:
             current_country = params['current_country']
 
-        print("!!!!!!!")
-        print(params)
+        await journal.add_action(request=self.request, object_type=journal.UPDATE_ACTION,
+                                 action=journal.DELETE_ACTION,
+                                 description=str(news_item.to_json()))
+
         return web.HTTPFound(
             '/news?state={}&current_app={}&current_country={}'.format(news_state, current_app, current_country))

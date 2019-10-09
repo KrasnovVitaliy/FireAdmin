@@ -22,10 +22,26 @@ class Roles(Base):
     create_date = Column(DateTime, default=func.now())
     update_date = Column(DateTime, default=func.now(), onupdate=func.now())
     name = Column(String(50))
+    apps_permission = Column(Boolean, default=False)
+    offers_permission = Column(Boolean, default=False)
+    offers_type_permission = Column(Boolean, default=False)
+    news_permission = Column(Boolean, default=False)
+    countries_permission = Column(Boolean, default=False)
+    users_permission = Column(Boolean, default=False)
+    journal_permission = Column(Boolean, default=False)
     deleted = Column(DateTime)
 
-    def __init__(self, name=None):
+    def __init__(self, name=None, apps_permission=None, offers_permission=None, offers_type_permission=None,
+                 news_permission=None,
+                 countries_permission=None, users_permission=None, journal_permission=None):
         self.name = name
+        self.apps_permission = apps_permission
+        self.offers_permission = offers_permission
+        self.offers_type_permission = offers_type_permission
+        self.news_permission = news_permission
+        self.countries_permission = countries_permission
+        self.users_permission = users_permission
+        self.journal_permission = journal_permission
 
     def serialize(self, to_serialize):
         d = {}
@@ -37,7 +53,9 @@ class Roles(Base):
         return d
 
     def to_json(self):
-        to_serialize = ['id', 'create_date', 'update_date', 'name', 'deleted']
+        to_serialize = ['id', 'create_date', 'update_date', 'name', 'apps_permission', 'offers_permission',
+                        'offers_type_permission', 'news_permission', 'countries_permission', 'users_permission',
+                        'journal_permission', 'deleted']
         return self.serialize(to_serialize)
 
 
@@ -72,7 +90,8 @@ class Users(Base):
         return d
 
     def to_json(self):
-        to_serialize = ['id', 'role', 'create_date', 'update_date', 'first_name', 'last_name', 'email', 'pass_hash', 'api_key',
+        to_serialize = ['id', 'role', 'create_date', 'update_date', 'first_name', 'last_name', 'email', 'pass_hash',
+                        'api_key',
                         'deleted']
         return self.serialize(to_serialize)
 
@@ -82,10 +101,42 @@ def prepare_db():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
-    for name in ['admin', 'user']:
-        role = Roles(name=name)
-        session.add(role)
-        session.commit()
+    role = Roles(
+        name='admin',
+        apps_permission=True,
+        offers_permission=True,
+        offers_type_permission=True,
+        news_permission=True,
+        countries_permission=True,
+        users_permission=True,
+        journal_permission=True
+    )
+    session.add(role)
+
+    role = Roles(
+        name='user',
+        apps_permission=True,
+        offers_permission=True,
+        offers_type_permission=False,
+        news_permission=True,
+        countries_permission=False,
+        users_permission=False,
+        journal_permission=False
+    )
+    session.add(role)
+
+    role = Roles(
+        name='manager',
+        apps_permission=False,
+        offers_permission=True,
+        offers_type_permission=False,
+        news_permission=True,
+        countries_permission=False,
+        users_permission=False,
+        journal_permission=False
+    )
+    session.add(role)
+    session.commit()
 
 
 # creates database

@@ -1,0 +1,128 @@
+{% extends 'lib/main.html' %}
+{% block header_nav %} {% endblock %}
+
+{% block content_header %}
+<h1>
+    Журнал
+</h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+<div class="box">
+    <div class="box-header with-border">
+        <h3 class="box-title">Действия</h3>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+        <table class="table table-bordered">
+            <tbody>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
+                            </div>
+                            <input type="text" class="form-control pull-right" id="reservation">
+                        </div>
+                        <!-- /.input group -->
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <select class="form-control" id="actionsSelect" name="action">
+                            <option value="">Все действия</option>
+                            {% for action in available_actions%}
+                            <option value="{{action}}">{{action}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <select class="form-control" id="objectsSelect" name="object_type">
+                            <option value="">Все объекты</option>
+                            {% for object in available_objects%}
+                            <option value="{{object}}">{{object}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <a href="#" type="button" class="btn btn-block btn-info" onclick="filterData()">Показать</a>
+                    </div>
+                </div>
+            </div>
+            <tr>
+                <th style="width: 10px">#</th>
+                <th style="width: 100px">Время</th>
+                <th style="width: 40px">Пользователь</th>
+                <th>Действие</th>
+                <th>Объект</th>
+                <th>Описание</th>
+            </tr>
+            {% for item in journal_items %}
+            <tr>
+                <th>{{item.id}}</th>
+                <th>{{item.create_date}}</th>
+                <th>{{item.user['email']}} : {{item.user['first_name']}} {{item.user['last_name']}}</th>
+                <th>
+                    {% if "создать" in item.action %}
+                    <span class="label label-success">{{item.action}}</span>
+                    {% else %}
+                    {% if "удалаить" in item.action or "остановить" in item.action %}
+                    <span class="label label-danger">{{item.action}}</span>
+                    {% else %}
+                    <span class="label label-info">{{item.action}}</span>
+                    {% endif %}
+                    {% endif %}
+                </th>
+
+                <th>{{item.object_type}}</th>
+                <th>{{item.description}}</th>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- /.box-body -->
+</div>
+<!-- /.box -->
+{% endblock %}
+
+{% block page_scripts %}
+<script src="/static/bower_components/moment/min/moment.min.js"></script>
+<script src="/static/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+<script src="/static/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+
+<script>
+    $(function () {
+        //Date range picker
+        $('#reservation').daterangepicker();
+        //Date range picker with time picker
+
+        //Date picker
+        $('#datepicker').datepicker({
+            autoclose: true
+        })
+    });
+
+    function filterData() {
+        let spletDates = document.getElementById("reservation").value.replace(" ", "").split("-");
+        let startDate = spletDates[0];
+        let endDate = spletDates[1];
+
+        let actionsSelect = document.getElementById("actionsSelect");
+        let selectedAction = actionsSelect.options[actionsSelect.selectedIndex].value;
+
+        let objectsSelect = document.getElementById("objectsSelect");
+        let selectedObject = objectsSelect.options[objectsSelect.selectedIndex].value;
+
+        document.location='?start_date='+startDate+'&end_date='+endDate+"&action="+selectedAction+'&object_type='+selectedObject;
+    }
+</script>
+{% endblock %}

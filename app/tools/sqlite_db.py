@@ -4,15 +4,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from config import Config
-
-config = Config()
-
 Base = declarative_base()
 
 Session = sessionmaker(autocommit=False,
                        autoflush=False,
-                       bind=create_engine(config.DB_URI))
+                       bind=create_engine('sqlite:////Users/vitaliykrasnov/PycharmProjects/FireAdmin/app/fireadmin2.db'))
 session = scoped_session(Session)
 
 
@@ -825,13 +821,3 @@ class Journal(Base):
     def to_json(self):
         to_serialize = ['id', 'user_id', 'object_type', 'action', 'description', 'create_date']
         return self.serialize(to_serialize)
-
-
-def prepare_db():
-    engine = create_engine(config.DB_URI)
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
-
-
-if __name__ == "__main__":
-    prepare_db()

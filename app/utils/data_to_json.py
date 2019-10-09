@@ -116,12 +116,12 @@ def get_offers_data(app, country_id=None):
                     offer_data['summPrefix'] = offer_apps_summs_data[int(offer_data['id'])]['summPrefix']
 
                 if offer_apps_summs_data[int(offer_data['id'])]['summMin'] != '':
-                    offer_data['summMin'] = offer_apps_summs_data[int(offer_data['id'])]['summMin']
+                    offer_data['summMin'] = str(offer_apps_summs_data[int(offer_data['id'])]['summMin'])
 
                 if offer_apps_summs_data[int(offer_data['id'])]['summMid'] != '':
-                    offer_data['summMid'] = offer_apps_summs_data[int(offer_data['id'])]['summMid']
+                    offer_data['summMid'] = str(offer_apps_summs_data[int(offer_data['id'])]['summMid'])
                 if offer_apps_summs_data[int(offer_data['id'])]['summMax'] != '':
-                    offer_data['summMax'] = offer_apps_summs_data[int(offer_data['id'])]['summMax']
+                    offer_data['summMax'] = str(offer_apps_summs_data[int(offer_data['id'])]['summMax'])
                 if offer_apps_summs_data[int(offer_data['id'])]['summPostfix'] != '':
                     offer_data['summPostfix'] = offer_apps_summs_data[int(offer_data['id'])]['summPostfix']
 

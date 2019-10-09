@@ -91,7 +91,7 @@ class SystemView(web.View):
         return {
             "offers_types": avm.offers_types(),
             'active_menu_item': 'system',
-            'auth_service_address': config.AUTH_SERVICE_ADDRESS
+            'auth_service_address': config.AUTH_SERVICE_EXTERNAL
         }
 
     async def post(self):

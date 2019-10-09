@@ -5,6 +5,8 @@ from config import Config
 import views.all_view_methods as avm
 import views.apps.utils as apps_utils
 import db
+import views.journal as journal
+from utils.check_permissions import is_permitted
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -13,17 +15,26 @@ config = Config()
 class AppsCreateView(web.View):
     @aiohttp_jinja2.template('apps/apps_create.html')
     async def get(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['apps_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
         countries = db.session.query(db.Countries).all()
         countries_data = [obj.to_json() for obj in countries]
 
         return {
+            "permissions": user_permissions,
             'offers_types': avm.offers_types(),
             'countries': countries_data,
-            'auth_service_address': config.AUTH_SERVICE_ADDRESS
+            'auth_service_address': config.AUTH_SERVICE_EXTERNAL
         }
 
     async def post(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['apps_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         post_data = await self.request.post()
         logger.debug("Received post data: {}".format(post_data))
 
@@ -71,5 +82,8 @@ class AppsCreateView(web.View):
                 db.session.commit()
 
         db.session.commit()
+
+        await journal.add_action(request=self.request, object_type=journal.APP_OBJECT, action=journal.CREATE_ACTION,
+                                 description=str(app.to_json()))
 
         return web.HTTPFound('/applications?')

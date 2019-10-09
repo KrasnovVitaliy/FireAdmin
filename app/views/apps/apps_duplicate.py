@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 config = Config()
 
 
-class AppsOverviewView(web.View):
-    @aiohttp_jinja2.template('apps/apps_overview.html')
+class AppsDuplicateView(web.View):
+    @aiohttp_jinja2.template('apps/apps_duplicate.html')
     async def get(self, *args, **kwargs):
-        user_permissions = await is_permitted(self.request, ['apps_permission'])
+        user_permissions = is_permitted(self.request, ['apps_permission'])
         if not user_permissions:
             return web.HTTPMethodNotAllowed("", [])
 
@@ -64,8 +64,8 @@ class AppsOverviewView(web.View):
         apps_documents_types_data = [obj.to_json() for obj in apps_documents_types]
 
         return {
-            'app': app_data,
             "permissions": user_permissions,
+            'app': app_data,
             'offers_types': avm.offers_types(),
             'countries': countries_data,
             'app_country_terms': app_country_data,
@@ -81,96 +81,84 @@ class AppsOverviewView(web.View):
         if not user_permissions:
             return web.HTTPMethodNotAllowed("", [])
 
-        params = self.request.rel_url.query
         post_data = await self.request.post()
         logger.debug("Received post data: {}".format(post_data))
 
-        filters = {
-            'id': params['id']
-        }
+        app = db.Applications()
 
-        app = db.session.query(db.Applications).filter_by(**filters).first()
-        db.session.query(db.AppsCountriesTerms).filter(db.AppsCountriesTerms.app_id == int(params['id'])).delete()
-        db.session.query(db.AppsCountriesRelations).filter(
-            db.AppsCountriesRelations.app_id == int(params['id'])).delete()
-
-        app.browser_type = ""
-        app_docs = {}
-        app.show_docs = False
-        app.hide_init_agreement = False
-
+        src_app_id = None
         for field in post_data:
-            print("FIELD: ", field)
-            if "country_license_term_" in field:
-                country_id = int(field.replace("country_license_term_", ""))
+            if ("country_license_term_" not in field and
+                    "country_license_init_term_" not in field and
+                    "icon" not in field and "src_app_id" not in field):
+                setattr(app, field, post_data[field])
 
-                app_country_term = db.AppsCountriesTerms(
-                    app_id=int(params['id']),
-                    country_id=int(country_id),
-                    license_term=post_data[field]
-                )
-                db.session.add(app_country_term)
-
-            elif "country_init_license_term_" in field:
-                country_id = int(field.replace("country_init_license_term_", ""))
-
-                app_country_term = db.AppsCountriesInitTerms(
-                    app_id=int(params['id']),
-                    country_id=int(country_id),
-                    license_term=post_data[field]
-                )
-                db.session.add(app_country_term)
-
-            elif "country_" in field:
-                country_id = field.replace('country_', '')
-                app_country_relation = db.AppsCountriesRelations(
-                    country_id=country_id, app_id=params['id'])
-                db.session.add(app_country_relation)
-                db.session.commit()
-            elif "apps_doc_" in field:
-                num = field.split("_")[-1]
-                if num not in app_docs:
-                    app_docs[num] = {}
-
-                app_docs[num][field.replace("_{}".format(num), '')] = post_data[field]
-            elif "show_docs" in field:
-                app.show_docs = True
-
-            elif "hide_init_agreement" in field:
-                app.hide_init_agreement = True
-
-            elif "icon" in field:
+            if "icon" in field:
                 if post_data[field]:
                     file_name = apps_utils.save_file(post_data[field])
                     setattr(app, field, file_name)
-            elif field in ["loans_item", "cards_item", "cards_credit_item", "cards_debit_item",
-                           "cards_instalment_item", "credits_item", "news_item", "calculator_item"]:
-                logger.debug("Set app attr: {}".format(field))
-                setattr(app, field, True)
-
-            else:
-                setattr(app, field, post_data[field])
+            if "src_app_id" in field:
+                src_app_id = int(post_data[field])
 
         db.session.add(app)
         db.session.commit()
 
-        documents_types = db.session.query(db.AppsDocumentsTypes).all()
-        documents_types_data = {}
-        for item in documents_types:
-            documents_types_data[item.name.lower()] = item.id
+        for field in post_data:
+            if "country_license_term_" in field:
+                country_id = int(field.replace("country_license_term_", ""))
 
-        db.session.query(db.AppsDocuments).filter(db.AppsDocuments.app_id == app.id).delete()
-        for key in app_docs.keys():
-            app_doc = db.AppsDocuments(
-                app_id=app.id,
-                name=app_docs[key]['apps_doc_name'],
-                url=app_docs[key]['apps_doc_url'],
-                type=documents_types_data[app_docs[key]['apps_doc_type'].lower()],
-            )
+                app_country_term = db.AppsCountriesTerms(
+                    app_id=app.id,
+                    country_id=int(country_id),
+                    license_term=post_data[field]
+                )
+                db.session.add(app_country_term)
 
-            db.session.add(app_doc)
-            db.session.commit()
+            if "country_license_init_term_" in field:
+                country_id = int(field.replace("country_license_init_term_", ""))
 
-        await journal.add_action(request=self.request, object_type=journal.APP_OBJECT, action=journal.UPDATE_ACTION,
+                app_country_term = db.AppsCountriesInitTerms(
+                    app_id=app.id,
+                    country_id=int(country_id),
+                    license_term=post_data[field]
+                )
+                db.session.add(app_country_term)
+            elif "country_" in field:
+                country_id = field.replace('country_', '')
+                app_country_relation = db.AppsCountriesRelations(
+                    country_id=country_id, app_id=app.id)
+                db.session.add(app_country_relation)
+                db.session.commit()
+
+        db.session.commit()
+
+        src_offers_relations = db.session.query(db.OffersAppsRelations).filter_by(app_id=src_app_id).all()
+        for item in src_offers_relations:
+            offer_app_relation = db.OffersAppsRelations(app_id=app.id, offer_id=item.offer_id, position=item.position)
+            db.session.add(offer_app_relation)
+        db.session.commit()
+
+        src_news_relations = db.session.query(db.NewsAppsRelations).filter_by(app_id=src_app_id).all()
+        for item in src_news_relations:
+            news_app_relation = db.OffersAppsRelations(app_id=app.id, news_id=item.news_id, position=item.position)
+            db.session.add(news_app_relation)
+        db.session.commit()
+
+        src_offers_position = db.session.query(db.OffersAppsCountriesPositions).filter_by(app_id=src_app_id).all()
+        for item in src_offers_position:
+            offers_app_position = db.OffersAppsCountriesPositions(app_id=app.id, offer_id=item.offer_id,
+                                                                  position=item.position, country_id=item.country_id,
+                                                                  offer_type_id=item.offer_type_id)
+            db.session.add(offers_app_position)
+        db.session.commit()
+
+        src_news_position = db.session.query(db.NewsAppsCountriesPositions).filter_by(app_id=src_app_id).all()
+        for item in src_news_position:
+            news_app_position = db.NewsAppsCountriesPositions(app_id=app.id, news_id=item.news_id,
+                                                                  position=item.position, country_id=item.country_id)
+            db.session.add(news_app_position)
+        db.session.commit()
+
+        await journal.add_action(request=self.request, object_type=journal.APP_OBJECT, action=journal.DUPLICATE_ACTION,
                                  description=str(app.to_json()))
         return web.HTTPFound('/applications?')

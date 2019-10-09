@@ -5,6 +5,7 @@ from config import Config
 import views.all_view_methods as avm
 import db
 from sqlalchemy import asc
+from utils.check_permissions import is_permitted
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -35,6 +36,10 @@ class OffersView(web.View):
 
     @aiohttp_jinja2.template('offers/offers.html')
     async def get(self, *args, **kwargs):
+        user_permissions = await is_permitted(self.request, ['offers_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
 
         filters = {
@@ -135,6 +140,7 @@ class OffersView(web.View):
         return {
             'offers': offers_data,
             'offers_types': avm.offers_types(),
+            "permissions": user_permissions,
             'offers_type_id': int(params['offers_type']),
             'offers_state': offers_state,
             'active_menu_item': 'offers',
@@ -142,5 +148,5 @@ class OffersView(web.View):
             'current_app': current_app,
             'countries': countries_data,
             'current_country': current_country,
-            'auth_service_address': config.AUTH_SERVICE_ADDRESS
+            'auth_service_address': config.AUTH_SERVICE_EXTERNAL
         }

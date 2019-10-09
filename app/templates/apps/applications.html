@@ -26,6 +26,7 @@
                 <th>Действия с офферами</th>
                 <th>Действия с новостями</th>
                 <th></th>
+                <th></th>
             </tr>
 
             {% for app in applications %}
@@ -101,6 +102,10 @@
                                                            data-app_name="{{app.name}}"
                                                            data-toggle="modal"
                                                            data-target="#deleteConfirmationModal"></i></h4></a>
+                </td>
+                <td>
+                    <a class="text-info" href="/apps_duplicate?id={{app.id}}"><h4><i
+                            class="fa fa-copy text-blue"></i></h4></a>
                 </td>
             </tr>
             {% endfor %}

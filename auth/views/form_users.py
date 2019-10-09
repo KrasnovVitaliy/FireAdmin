@@ -38,7 +38,7 @@ class FormUsersView(web.View, CorsViewMixin):
         logger.debug("Hashing password")
         hashed_password = tokens_db.get_hashed_password(data['password'])
 
-        user_role = db.session.query(db.Roles).filter(db.Roles.name == 'user').first()
+        user_role = db.session.query(db.Roles).filter(db.Roles.name == 'manager').first()
         users = db.Users()
         for key in ['first_name', 'last_name', 'email']:
             if key in data:
@@ -49,4 +49,10 @@ class FormUsersView(web.View, CorsViewMixin):
         users.role = user_role.id
         db.session.add(users)
         db.session.commit()
-        return web.HTTPFound("{}/login".format(config.MAIN_SERVICE_EXTERNAL))
+        # return web.HTTPFound("{}/login".format(config.MAIN_SERVICE_EXTERNAL))
+
+        params = self.request.rel_url.query
+        if 'redirect_url' in params:
+            return web.HTTPFound(params['redirect_url'])
+
+        return web.HTTPOk()

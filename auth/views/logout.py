@@ -9,4 +9,8 @@ class LogoutView(web.View, CorsViewMixin):
     async def get(self):
         session = await get_session(self.request)
         del session['auth']
-        return web.HTTPFound("{}/login".format(config.MAIN_SERVICE_EXTERNAL))
+
+        params = self.request.rel_url.query
+        if 'redirect_url' in params:
+            return web.HTTPFound(params['redirect_url'])
+        return web.HTTPOk()

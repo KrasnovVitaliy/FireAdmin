@@ -1,4 +1,6 @@
 import db
+from utils.user_getter import get_session_user_permissions
+
 
 def offers_types():
     offers_types = db.session.query(db.OffersTypes).filter(db.OffersTypes.deleted == None).all()

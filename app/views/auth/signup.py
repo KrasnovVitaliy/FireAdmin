@@ -8,8 +8,8 @@ logger = logging.getLogger(__name__)
 config = Config()
 
 
-class LoginView(web.View):
-    @aiohttp_jinja2.template('auth/login.html')
+class SignupView(web.View):
+    @aiohttp_jinja2.template('auth/signup.html')
     async def get(self, *args, **kwargs):
         params = self.request.rel_url.query
 

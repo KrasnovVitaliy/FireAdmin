@@ -1,18 +1,15 @@
 import datetime
-from sqlalchemy import create_engine, Column, DateTime, Integer, String, func, Float, ForeignKey, Boolean
+from sqlalchemy import create_engine, Column, DateTime, Integer, String, func, Float, ForeignKey, Boolean, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from config import Config
-
-config = Config()
-
+DB_URl = "postgresql://fireadmin:thoRIUM87@@51.159.27.4:58938/fireadmin"
 Base = declarative_base()
 
 Session = sessionmaker(autocommit=False,
                        autoflush=False,
-                       bind=create_engine(config.DB_URI))
+                       bind=create_engine(DB_URl))
 session = scoped_session(Session)
 
 
@@ -21,22 +18,22 @@ class Applications(Base):
     id = Column(Integer, primary_key=True)
     create_date = Column(DateTime, default=datetime.datetime.utcnow())
     update_date = Column(DateTime, default=datetime.datetime.utcnow(), onupdate=datetime.datetime.utcnow())
-    name = Column(String(50))
-    description = Column(String(100))
-    fb_id = Column(String(200))
-    fb_url = Column(String(200))
-    appmetrica_link = Column(String(200))
-    fabrica_link = Column(String(200))
-    appsflyer_link = Column(String(200))
-    order_tracking_source = Column(String(50))
-    license_term = Column(String(5000))
-    init_license_term = Column(String(5000))
+    name = Column(Text)
+    description = Column(Text)
+    fb_id = Column(Text)
+    fb_url = Column(Text)
+    appmetrica_link = Column(Text)
+    fabrica_link = Column(Text)
+    appsflyer_link = Column(Text)
+    order_tracking_source = Column(Text)
+    license_term = Column(Text)
+    init_license_term = Column(Text)
     creator = Column(Integer)
     deleted = Column(DateTime)
-    browser_type = Column(String(20))
+    browser_type = Column(Text)
     show_docs = Column(Boolean)
     hide_init_agreement = Column(Boolean)
-    icon = Column(String(200))
+    icon = Column(Text)
 
     # Application visible elements
     loans_item = Column(Boolean)
@@ -98,8 +95,8 @@ class Applications(Base):
 class OffersTypes(Base):
     __tablename__ = 'offers_types'
     id = Column(Integer, primary_key=True)
-    name = Column(String(200))
-    description = Column(String(200))
+    name = Column(Text)
+    description = Column(Text)
     deleted = Column(DateTime)
 
     def __init__(self, name=None, description=None, deleted=None):
@@ -126,34 +123,34 @@ class Offers(Base):
     id = Column(Integer, primary_key=True)
     create_date = Column(DateTime, default=datetime.datetime.utcnow())
     update_date = Column(DateTime, default=datetime.datetime.utcnow(), onupdate=datetime.datetime.utcnow())
-    offer_type = Column(Integer, ForeignKey("offers_types.id"))
+    offer_type = Column(Integer) #, ForeignKey("offers_types.id")
 
     isActive = Column(Integer)
-    itemId = Column(String(100))
-    name = Column(String(200))
-    description = Column(String(1000))
+    itemId = Column(Text)
+    name = Column(Text)
+    description = Column(Text)
 
-    order = Column(String(200))
-    orderButtonText = Column(String(50))
+    order = Column(Text)
+    orderButtonText = Column(Text)
 
-    percent = Column(String(50))
-    percentPostfix = Column(String(50))
-    percentPrefix = Column(String(50))
+    percent = Column(Text)
+    percentPostfix = Column(Text)
+    percentPrefix = Column(Text)
 
     score = Column(Integer)
-    screen = Column(String(200))
+    screen = Column(Text)
 
-    summPrefix = Column(String(50))
-    summMin = Column(String(50))
-    summMid = Column(String(50))
-    summMax = Column(String(50))
-    summPostfix = Column(String(50))
+    summPrefix = Column(Text)
+    summMin = Column(Text)
+    summMid = Column(Text)
+    summMax = Column(Text)
+    summPostfix = Column(Text)
 
-    termMin = Column(String(50))
-    termMax = Column(String(50))
-    termMid = Column(String(50))
-    termPrefix = Column(String(50))
-    termPostfix = Column(String(50))
+    termMin = Column(Text)
+    termMax = Column(Text)
+    termMid = Column(Text)
+    termPrefix = Column(Text)
+    termPostfix = Column(Text)
 
     mastercard = Column(Boolean)
     mir = Column(Boolean)
@@ -162,17 +159,17 @@ class Offers(Base):
     yandex = Column(Boolean)
     cash = Column(Boolean)
 
-    greenStickerText = Column(String(50))
-    blueStickerText = Column(String(50))
-    redStickerText = Column(String(50))
+    greenStickerText = Column(Text)
+    blueStickerText = Column(Text)
+    redStickerText = Column(Text)
 
     position = Column(Integer)
-    comment = Column(String(500))
+    comment = Column(Text)
 
     creator = Column(Integer)
     deleted = Column(DateTime)
 
-    browser_type = Column(String(20))
+    browser_type = Column(Text)
 
     def __init__(self, offer_type=None, isActive=None, itemId=None,
                  name=None, description=None, order=None, orderButtonText=None, percent=None, percentPostfix=None,
@@ -239,10 +236,10 @@ class Offers(Base):
 class OffersAppsCountriesPositions(Base):
     __tablename__ = 'offers_apps_countries_positions'
     id = Column(Integer, primary_key=True)
-    offer_id = Column(Integer, ForeignKey("offers.id"))
-    offer_type_id = Column(Integer, ForeignKey("offers_types.id"))
-    app_id = Column(Integer, ForeignKey("applications.id"))
-    country_id = Column(Integer, ForeignKey("countries.id"))
+    offer_id = Column(Integer) #, ForeignKey("offers.id")
+    offer_type_id = Column(Integer) # , ForeignKey("offers_types.id")
+    app_id = Column(Integer) # , ForeignKey("applications.id")
+    country_id = Column(Integer) #, ForeignKey("countries.id")
     position = Column(Integer)
 
     def __init__(self, offer_id=None, app_id=None, offer_type_id=None, country_id=None, position=None):
@@ -269,9 +266,9 @@ class OffersAppsCountriesPositions(Base):
 class NewsAppsCountriesPositions(Base):
     __tablename__ = 'news_apps_countries_positions'
     id = Column(Integer, primary_key=True)
-    news_id = Column(Integer, ForeignKey("news.id"))
-    app_id = Column(Integer, ForeignKey("applications.id"))
-    country_id = Column(Integer, ForeignKey("countries.id"))
+    news_id = Column(Integer) # , ForeignKey("news.id")
+    app_id = Column(Integer) # , ForeignKey("applications.id")
+    country_id = Column(Integer) # , ForeignKey("countries.id")
     position = Column(Integer)
 
     def __init__(self, news_id=None, app_id=None, country_id=None, position=None):
@@ -297,8 +294,8 @@ class NewsAppsCountriesPositions(Base):
 class OffersAppsRelations(Base):
     __tablename__ = 'offers_apps_relations'
     id = Column(Integer, primary_key=True)
-    offer_id = Column(Integer, ForeignKey("offers.id"))
-    app_id = Column(Integer, ForeignKey("applications.id"))
+    offer_id = Column(Integer) # , ForeignKey("offers.id")
+    app_id = Column(Integer) # , ForeignKey("applications.id")
     position = Column(Integer)
 
     def __init__(self, offer_id=None, app_id=None, position=None):
@@ -323,9 +320,9 @@ class OffersAppsRelations(Base):
 class OffersAppsOrderUrls(Base):
     __tablename__ = 'offers_apps_order_urls'
     id = Column(Integer, primary_key=True)
-    offer_id = Column(Integer, ForeignKey("offers.id"))
-    app_id = Column(Integer, ForeignKey("applications.id"))
-    order_url = Column(String(200))
+    offer_id = Column(Integer) #, ForeignKey("offers.id")
+    app_id = Column(Integer) # , ForeignKey("applications.id")
+    order_url = Column(Text)
 
     def __init__(self, offer_id=None, app_id=None, order_url=None):
         self.offer_id = offer_id
@@ -349,9 +346,9 @@ class OffersAppsOrderUrls(Base):
 class OffersAppsNames(Base):
     __tablename__ = 'offers_apps_order_names'
     id = Column(Integer, primary_key=True)
-    offer_id = Column(Integer, ForeignKey("offers.id"))
-    app_id = Column(Integer, ForeignKey("applications.id"))
-    name = Column(String(200))
+    offer_id = Column(Integer) # , ForeignKey("offers.id")
+    app_id = Column(Integer) #, ForeignKey("applications.id")
+    name = Column(Text)
 
     def __init__(self, offer_id=None, app_id=None, name=None):
         self.offer_id = offer_id
@@ -375,9 +372,9 @@ class OffersAppsNames(Base):
 class OffersAppsCreatives(Base):
     __tablename__ = 'offers_apps_creatives'
     id = Column(Integer, primary_key=True)
-    offer_id = Column(Integer, ForeignKey("offers.id"))
-    app_id = Column(Integer, ForeignKey("applications.id"))
-    creative_url = Column(String(200))
+    offer_id = Column(Integer) #, ForeignKey("offers.id")
+    app_id = Column(Integer) #, ForeignKey("applications.id")
+    creative_url = Column(Text)
 
     def __init__(self, offer_id=None, app_id=None, creative_url=None):
         self.offer_id = offer_id
@@ -401,13 +398,13 @@ class OffersAppsCreatives(Base):
 class OffersAppsTerms(Base):
     __tablename__ = 'offers_apps_terms'
     id = Column(Integer, primary_key=True)
-    offer_id = Column(Integer, ForeignKey("offers.id"))
-    app_id = Column(Integer, ForeignKey("applications.id"))
-    termPostfix = Column(String(50))
-    termMax = Column(String(50))
-    termMid = Column(String(50))
-    termMin = Column(String(50))
-    termPrefix = Column(String(50))
+    offer_id = Column(Integer) # , ForeignKey("offers.id")
+    app_id = Column(Integer) # , ForeignKey("applications.id")
+    termPostfix = Column(Text)
+    termMax = Column(Text)
+    termMid = Column(Text)
+    termMin = Column(Text)
+    termPrefix = Column(Text)
 
     def __init__(self, offer_id=None, app_id=None, termPostfix=None, termMax=None, termMid=None,
                  termMin=None, termPrefix=None):
@@ -437,13 +434,13 @@ class OffersAppsTerms(Base):
 class OffersAppsSumms(Base):
     __tablename__ = 'offers_apps_summs'
     id = Column(Integer, primary_key=True)
-    offer_id = Column(Integer, ForeignKey("offers.id"))
-    app_id = Column(Integer, ForeignKey("applications.id"))
-    summPostfix = Column(String(50))
-    summMax = Column(String(50))
-    summMid = Column(String(50))
-    summMin = Column(String(50))
-    summPrefix = Column(String(50))
+    offer_id = Column(Integer) #, ForeignKey("offers.id")
+    app_id = Column(Integer) #, ForeignKey("applications.id")
+    summPostfix = Column(Text)
+    summMax = Column(Text)
+    summMid = Column(Text)
+    summMin = Column(Text)
+    summPrefix = Column(Text)
 
     def __init__(self, offer_id=None, app_id=None, summPostfix=None, summMax=None, summMid=None,
                  summMin=None, summPrefix=None):
@@ -473,11 +470,11 @@ class OffersAppsSumms(Base):
 class OffersAppsPercents(Base):
     __tablename__ = 'offers_apps_percents'
     id = Column(Integer, primary_key=True)
-    offer_id = Column(Integer, ForeignKey("offers.id"))
-    app_id = Column(Integer, ForeignKey("applications.id"))
-    percent = Column(String(50))
-    percentPostfix = Column(String(50))
-    percentPrefix = Column(String(50))
+    offer_id = Column(Integer) #, ForeignKey("offers.id")
+    app_id = Column(Integer) #, ForeignKey("applications.id")
+    percent = Column(Text)
+    percentPostfix = Column(Text)
+    percentPrefix = Column(Text)
 
     def __init__(self, offer_id=None, app_id=None, percentPostfix=None, percent=None, percentPrefix=None):
         self.offer_id = offer_id
@@ -505,16 +502,16 @@ class News(Base):
     id = Column(Integer, primary_key=True)
     create_date = Column(DateTime, default=datetime.datetime.utcnow())
     update_date = Column(DateTime, default=datetime.datetime.utcnow(), onupdate=datetime.datetime.utcnow())
-    title = Column(String(200))
-    itemId = Column(String(100))
-    description = Column(String(200))
+    title = Column(Text)
+    itemId = Column(Text)
+    description = Column(Text)
     expireDate = Column(DateTime)
-    image = Column(String(200))
+    image = Column(Text)
     isActive = Column(Integer)
-    link = Column(String(500))
+    link = Column(Text)
     deleted = Column(DateTime)
     position = Column(Integer)
-    comment = Column(String(500))
+    comment = Column(Text)
 
     def __init__(self, title=None, description=None, expireDate=None, image=None, isActive=None, link=None,
                  itemId=None, position=None, comment=None):
@@ -549,8 +546,8 @@ class News(Base):
 class NewsAppsRelations(Base):
     __tablename__ = 'news_apps_relations'
     id = Column(Integer, primary_key=True)
-    news_id = Column(Integer, ForeignKey("news.id"))
-    app_id = Column(Integer, ForeignKey("applications.id"))
+    news_id = Column(Integer) #, ForeignKey("news.id")
+    app_id = Column(Integer) #, ForeignKey("applications.id")
     position = Column(Integer)
 
     def __init__(self, news_id=None, app_id=None, position=None):
@@ -575,9 +572,9 @@ class NewsAppsRelations(Base):
 class Countries(Base):
     __tablename__ = 'countries'
     id = Column(Integer, primary_key=True)
-    name = Column(String(100))
-    icon = Column(String(500))
-    code = Column(String(2))
+    name = Column(Text)
+    icon = Column(Text)
+    code = Column(Text)
 
     def __init__(self, name=None, icon=None, code=None):
         self.name = name
@@ -601,8 +598,8 @@ class Countries(Base):
 class OffersCountriesRelations(Base):
     __tablename__ = 'offers_countries_relations'
     id = Column(Integer, primary_key=True)
-    offer_id = Column(Integer, ForeignKey("offers.id"))
-    country_id = Column(Integer, ForeignKey("countries.id"))
+    offer_id = Column(Integer) #, ForeignKey("offers.id")
+    country_id = Column(Integer) #, ForeignKey("countries.id")
 
     def __init__(self, offer_id=None, country_id=None):
         self.offer_id = offer_id
@@ -625,8 +622,8 @@ class OffersCountriesRelations(Base):
 class NewsCountriesRelations(Base):
     __tablename__ = 'news_countries_relations'
     id = Column(Integer, primary_key=True)
-    news_id = Column(Integer, ForeignKey("news.id"))
-    country_id = Column(Integer, ForeignKey("countries.id"))
+    news_id = Column(Integer) #, ForeignKey("news.id")
+    country_id = Column(Integer) #, ForeignKey("countries.id")
 
     def __init__(self, news_id=None, country_id=None):
         self.news_id = news_id
@@ -649,9 +646,9 @@ class NewsCountriesRelations(Base):
 class AppsCountriesTerms(Base):
     __tablename__ = 'apps_countries_terms'
     id = Column(Integer, primary_key=True)
-    license_term = Column(String(5000))
-    app_id = Column(Integer, ForeignKey("applications.id"))
-    country_id = Column(Integer, ForeignKey("countries.id"))
+    license_term = Column(Text)
+    app_id = Column(Integer) #, ForeignKey("applications.id")
+    country_id = Column(Integer) #, ForeignKey("countries.id")
 
     def __init__(self, app_id=None, country_id=None, license_term=None):
         self.app_id = app_id
@@ -675,9 +672,9 @@ class AppsCountriesTerms(Base):
 class AppsCountriesInitTerms(Base):
     __tablename__ = 'apps_countries_init_terms'
     id = Column(Integer, primary_key=True)
-    license_term = Column(String(5000))
-    app_id = Column(Integer, ForeignKey("applications.id"))
-    country_id = Column(Integer, ForeignKey("countries.id"))
+    license_term = Column(Text)
+    app_id = Column(Integer) # , ForeignKey("applications.id")
+    country_id = Column(Integer) # , ForeignKey("countries.id")
 
     def __init__(self, app_id=None, country_id=None, license_term=None):
         self.app_id = app_id
@@ -701,8 +698,8 @@ class AppsCountriesInitTerms(Base):
 class AppsCountriesRelations(Base):
     __tablename__ = 'apps_countries_relations'
     id = Column(Integer, primary_key=True)
-    app_id = Column(Integer, ForeignKey("applications.id"))
-    country_id = Column(Integer, ForeignKey("countries.id"))
+    app_id = Column(Integer) #, ForeignKey("applications.id")
+    country_id = Column(Integer) #, ForeignKey("countries.id")
 
     def __init__(self, app_id=None, country_id=None, ):
         self.app_id = app_id
@@ -725,7 +722,7 @@ class AppsCountriesRelations(Base):
 class AppsDocumentsTypes(Base):
     __tablename__ = 'apps_documents_types'
     id = Column(Integer, primary_key=True)
-    name = Column(String(20))
+    name = Column(Text)
 
     def __init__(self, name=None):
         self.name = name
@@ -747,10 +744,10 @@ class AppsDocumentsTypes(Base):
 class AppsDocuments(Base):
     __tablename__ = 'apps_documents'
     id = Column(Integer, primary_key=True)
-    app_id = Column(Integer, ForeignKey("applications.id"))
-    name = Column(String(50))
-    url = Column(String(500))
-    type = Column(Integer, ForeignKey("apps_documents_types.id"))
+    app_id = Column(Integer) #, ForeignKey("applications.id")
+    name = Column(Text)
+    url = Column(Text)
+    type = Column(Integer) #, ForeignKey("apps_documents_types.id")
 
     def __init__(self, app_id=None, name=None, url=None, type=None, ):
         self.app_id = app_id
@@ -775,9 +772,9 @@ class AppsDocuments(Base):
 class OffersAppsBrowsersTypes(Base):
     __tablename__ = 'offers_apps_browsers_types'
     id = Column(Integer, primary_key=True)
-    offer_id = Column(Integer, ForeignKey("offers.id"))
-    app_id = Column(Integer, ForeignKey("applications.id"))
-    browser_type = Column(String(20))
+    offer_id = Column(Integer) #, ForeignKey("offers.id")
+    app_id = Column(Integer) #, ForeignKey("applications.id")
+    browser_type = Column(Text)
 
     def __init__(self, app_id=None, offer_id=None, browser_type=None):
         self.app_id = app_id
@@ -802,9 +799,9 @@ class Journal(Base):
     __tablename__ = 'journal'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer())
-    object_type = Column(String(100))
-    action = Column(String(100))
-    description = Column(String(500))
+    object_type = Column(Text)
+    action = Column(Text)
+    description = Column(Text)
     create_date = Column(DateTime, default=datetime.datetime.utcnow())
 
     def __init__(self, user_id=None, object_type=None, action=None, description=None):
@@ -828,7 +825,7 @@ class Journal(Base):
 
 
 def prepare_db():
-    engine = create_engine(config.DB_URI)
+    engine = create_engine(DB_URl)
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 

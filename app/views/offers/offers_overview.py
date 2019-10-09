@@ -4,6 +4,8 @@ import logging
 from config import Config
 import views.all_view_methods as avm
 import db
+from utils.check_permissions import is_permitted
+import views.journal as journal
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -56,6 +58,9 @@ def get_max_country_offer_position(app_id, offer_type_id, country_id=-1):
 class OffersOverviewView(web.View):
     @aiohttp_jinja2.template('offers/offers_overview.html')
     async def get(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['offers_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
         params = self.request.rel_url.query
 
         filters = {
@@ -137,6 +142,7 @@ class OffersOverviewView(web.View):
         print("offers_apps_browser_types_data", offers_apps_browser_types_data)
         return {
             'offers_types': avm.offers_types(),
+            "permissions": user_permissions,
             'offer': offer_data,
             'apps': apps_data,
             'offer_apps': offer_apps_data,
@@ -153,11 +159,15 @@ class OffersOverviewView(web.View):
             'offer_countries': offer_countries_data,
             'active_menu_item': 'offers',
             'offers_type_id': int(offer_data['offer_type']),
-            'auth_service_address': config.AUTH_SERVICE_ADDRESS,
+            'auth_service_address': config.AUTH_SERVICE_EXTERNAL,
             'offers_apps_browser_types': offers_apps_browser_types_data,
         }
 
     async def post(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['offers_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
 
         post_data = await self.request.post()
@@ -375,6 +385,10 @@ class OffersOverviewView(web.View):
         current_country = None
         if 'current_country' in params:
             current_country = params['current_country']
+
+        await journal.add_action(request=self.request, object_type=journal.OFFER_OBJECT,
+                                 action=journal.UPDATE_ACTION,
+                                 description=offer.to_json())
 
         return web.HTTPFound('/offers?offers_type={}&state={}&current_app={}&current_country={}'.format(
             offer.offer_type, offers_state, current_app, current_country))

@@ -5,6 +5,8 @@ from config import Config
 import views.all_view_methods as avm
 import db
 import utils.firebase_client as fb_client
+from utils.check_permissions import is_permitted
+import views.journal as journal
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -12,6 +14,10 @@ config = Config()
 
 class NewsActionsView(web.View):
     async def get(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['news_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
 
         filters = {
@@ -21,10 +27,19 @@ class NewsActionsView(web.View):
         news = db.session.query(db.News).filter_by(**filters).first()
         if params['action'] == 'run':
             news.isActive = 1
+            await journal.add_action(request=self.request, object_type=journal.NEWS_OBJECT,
+                                     action=journal.START_ACTION,
+                                     description=str(news.to_json()))
         elif params['action'] == 'stop':
             news.isActive = 0
+            await journal.add_action(request=self.request, object_type=journal.NEWS_OBJECT,
+                                     action=journal.STOP_ACTION,
+                                     description=str(news.to_json()))
         elif params['action'] == 'delete':
             news.deleted = datetime.datetime.now()
+            await journal.add_action(request=self.request, object_type=journal.NEWS_OBJECT,
+                                     action=journal.DELETE_ACTION,
+                                     description=str(news.to_json()))
         db.session.commit()
 
         return web.HTTPFound('news')
@@ -32,6 +47,10 @@ class NewsActionsView(web.View):
 
 class NewsUpdateOrder(web.View):
     async def post(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['news_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
         data = await self.request.json()
 
@@ -57,6 +76,10 @@ class NewsUpdateOrder(web.View):
                                                          position=item['position'])
                     db.session.add(news)
 
+                await journal.add_action(request=self.request, object_type=journal.NEWS_OBJECT,
+                                         action=journal.REORDER_ACTION,
+                                         description=str(news.to_json()))
+
         else:
             # for item in data:
             #     logger.debug("Post data: {}".format(item))
@@ -76,12 +99,20 @@ class NewsUpdateOrder(web.View):
                                                          position=item['position'])
                     db.session.add(news)
 
+                await journal.add_action(request=self.request, object_type=journal.NEWS_OBJECT,
+                                         action=journal.REORDER_ACTION,
+                                         description=str(news.to_json()))
+
         db.session.commit()
         return web.HTTPOk()
 
 
 class NewsUpdateComment(web.View):
     async def post(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['news_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         data = await self.request.json()
 
         logger.debug("Post data: {}".format(data))
@@ -94,6 +125,10 @@ class NewsUpdateComment(web.View):
 
 class NewsDynamicLink(web.View):
     async def get(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['news_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
 
         try:

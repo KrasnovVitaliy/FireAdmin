@@ -3,6 +3,7 @@ from config import Config
 import logging
 import json
 import db
+from utils.check_permissions import is_permitted
 
 import utils.firebase_client as fb_client
 from utils.data_to_json import gen_app_json
@@ -13,6 +14,10 @@ config = Config()
 
 class AppsFBDBGetView(web.View):
     async def get(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['apps_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
 
         app = db.session.query(db.Applications).filter_by(id=params['id']).first()
@@ -30,6 +35,10 @@ class AppsFBDBGetView(web.View):
 
 class AppsFBDBLoadView(web.View):
     async def get(self, *args, **kwargs):
+        user_permissions = is_permitted(self.request, ['apps_permission'])
+        if not user_permissions:
+            return web.HTTPMethodNotAllowed("", [])
+
         params = self.request.rel_url.query
 
         app = db.session.query(db.Applications).filter_by(id=params['id']).first()

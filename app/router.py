@@ -1,6 +1,7 @@
 from aiohttp import web
 from views.index import *
 from views.auth.login import *
+from views.auth.signup import *
 
 from views.offers.offers_types import *
 from views.offers.offers_list import *
@@ -12,6 +13,7 @@ from views.offers.offers_create import *
 from views.apps.applications import *
 from views.apps.apps_create import *
 from views.apps.apps_overview import *
+from views.apps.apps_duplicate import *
 from views.apps.apps_db_json import *
 from views.apps.apps_fb_db_json import *
 from views.apps.apps_add_all_offers import *
@@ -29,6 +31,7 @@ from views.countries.countries_create import *
 from views.countries.countries_actions import *
 
 from views.system import *
+from views.journal import *
 
 from views.config import *
 
@@ -40,6 +43,7 @@ routes = [
     web.view('/', IndexView),
 
     web.view('/login', LoginView),
+    web.view('/signup', SignupView),
 
     web.view('/offers_type', OffersTypesView),
     web.view('/offers', OffersView),
@@ -55,6 +59,7 @@ routes = [
     web.view('/applications_json', ApplicationsJsonView),
     web.view('/apps_create', AppsCreateView),
     web.view('/apps_overview', AppsOverviewView),
+    web.view('/apps_duplicate', AppsDuplicateView),
     web.view('/apps_actions', AppsActionsView),
 
     web.view('/app_db_json', AppsDBJsonView),
@@ -78,7 +83,7 @@ routes = [
     web.view('/countries_create', CountriesCreateView),
     web.view('/countries_actions', CountriesActionsView),
 
-    web.view('/system', SystemView),
+    web.view('/journal', JournalView),
 
     web.static('/static', path_to_static_folder, show_index=True),
     web.view('/config', ConfigsView),
