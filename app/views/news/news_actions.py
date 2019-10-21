@@ -40,7 +40,10 @@ class NewsActionsView(web.View):
             await journal.add_action(request=self.request, object_type=journal.NEWS_OBJECT,
                                      action=journal.DELETE_ACTION,
                                      description=str(news.to_json()))
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         return web.HTTPFound('news')
 
@@ -103,7 +106,10 @@ class NewsUpdateOrder(web.View):
                                          action=journal.REORDER_ACTION,
                                          description=str(news.to_json()))
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
         return web.HTTPOk()
 
 
@@ -119,7 +125,10 @@ class NewsUpdateComment(web.View):
         offer = db.session.query(db.News).filter_by(id=data['item_id']).first()
         offer.comment = data['comment']
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
         return web.HTTPOk()
 
 

@@ -22,5 +22,8 @@ class CountriesActionsView(web.View):
         }
 
         country = db.session.query(db.Countries).filter_by(**filters).delete()
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
         return web.HTTPFound('/countries')

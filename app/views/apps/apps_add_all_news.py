@@ -21,7 +21,10 @@ class AppsAddAllNewsView(web.View):
         for news_item in news:
             news_app_relation = db.NewsAppsRelations(app_id=params['id'], news_id=news_item.id)
             db.session.add(news_app_relation)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         return web.HTTPFound('/applications')
 

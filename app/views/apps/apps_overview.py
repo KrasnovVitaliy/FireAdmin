@@ -126,7 +126,10 @@ class AppsOverviewView(web.View):
                 app_country_relation = db.AppsCountriesRelations(
                     country_id=country_id, app_id=params['id'])
                 db.session.add(app_country_relation)
-                db.session.commit()
+                try:
+                    db.session.commit()
+                except Exception as e:
+                    db.session.rollback()
             elif "apps_doc_" in field:
                 num = field.split("_")[-1]
                 if num not in app_docs:
@@ -152,7 +155,10 @@ class AppsOverviewView(web.View):
                 setattr(app, field, post_data[field])
 
         db.session.add(app)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         documents_types = db.session.query(db.AppsDocumentsTypes).all()
         documents_types_data = {}
@@ -169,7 +175,10 @@ class AppsOverviewView(web.View):
             )
 
             db.session.add(app_doc)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
 
         await journal.add_action(request=self.request, object_type=journal.APP_OBJECT, action=journal.UPDATE_ACTION,
                                  description=str(app.to_json()))

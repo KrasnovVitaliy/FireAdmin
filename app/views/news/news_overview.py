@@ -144,7 +144,10 @@ class NewsOverviewView(web.View):
             setattr(news_item, 'isActive', 0)
 
         db.session.add(news_item)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         # Update news applications relation
         filters = {
@@ -184,7 +187,10 @@ class NewsOverviewView(web.View):
                 db.session.add(news_country_relation)
                 country_ids.append(country_id)
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         for app_id in app_ids:
             for country_id in country_ids:
@@ -201,7 +207,10 @@ class NewsOverviewView(web.View):
                                                                   position=position + 1)
                     db.session.add(news_position)
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         news_state = None
         if 'state' in params:
@@ -215,8 +224,8 @@ class NewsOverviewView(web.View):
         if 'current_country' in params:
             current_country = params['current_country']
 
-        await journal.add_action(request=self.request, object_type=journal.UPDATE_ACTION,
-                                 action=journal.DELETE_ACTION,
+        await journal.add_action(request=self.request, object_type=journal.NEWS_OBJECT,
+                                 action=journal.UPDATE_ACTION,
                                  description=str(news_item.to_json()))
 
         return web.HTTPFound(

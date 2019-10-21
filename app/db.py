@@ -805,7 +805,7 @@ class Journal(Base):
     object_type = Column(String(100))
     action = Column(String(100))
     description = Column(String(500))
-    create_date = Column(DateTime, default=datetime.datetime.utcnow())
+    create_date = Column(DateTime, default=func.now())
 
     def __init__(self, user_id=None, object_type=None, action=None, description=None):
         self.user_id = user_id

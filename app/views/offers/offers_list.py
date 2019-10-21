@@ -36,9 +36,11 @@ class OffersView(web.View):
 
     @aiohttp_jinja2.template('offers/offers.html')
     async def get(self, *args, **kwargs):
+        logger.debug("Check user permissions")
         user_permissions = await is_permitted(self.request, ['offers_permission'])
         if not user_permissions:
             return web.HTTPMethodNotAllowed("", [])
+        logger.debug("Permissions are ok")
 
         params = self.request.rel_url.query
 
@@ -65,6 +67,7 @@ class OffersView(web.View):
         except Exception as e:
             current_country = None
 
+
         if current_app:
             results = db.session.query(db.OffersAppsRelations, db.Offers) \
                 .filter(db.OffersAppsRelations.app_id == current_app) \
@@ -87,20 +90,24 @@ class OffersView(web.View):
 
         offers_data = [obj.to_json() for obj in offers]
 
+
         apps = db.session.query(db.Applications).all()
         app_data = {}
         for app in apps:
             app_data[app.id] = app.to_json()
 
+        # TODO: This loop very slow! V
         for offer in offers_data:
             if 'related_apps' not in offer:
                 offer['related_apps'] = []
             if 'app_position' not in offer:
                 offer['app_position'] = 0
 
+
             offer_apps = db.session.query(db.OffersAppsRelations).filter_by(offer_id=offer['id']).all()
             for offer_app in offer_apps:
-                offer['related_apps'].append(app_data[offer_app.app_id])
+                if offer['related_apps']:
+                    offer['related_apps'].append(app_data[offer_app.app_id])
 
                 if current_app:
                     if current_country:
@@ -115,6 +122,7 @@ class OffersView(web.View):
                 else:
                     offer['app_position'] = 0
 
+        # TODO: This loop very slow! ^
         offers_data = sorted(offers_data, key=lambda k: k['app_position'])
         filters = {
             'deleted': None,

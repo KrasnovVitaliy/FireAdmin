@@ -22,7 +22,10 @@ class AppsAddAllOffersView(web.View):
         for offer in offers:
             offer_app_relation = db.OffersAppsRelations(app_id=params['id'], offer_id=offer.id)
             db.session.add(offer_app_relation)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         return web.HTTPFound('/applications')
 

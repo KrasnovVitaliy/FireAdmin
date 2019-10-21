@@ -136,7 +136,10 @@ class OffersDuplicateView(web.View):
             setattr(offer, 'isActive', 0)
 
         db.session.add(offer)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         percent_app_data = {}
         terms_app_data = {}
@@ -252,7 +255,10 @@ class OffersDuplicateView(web.View):
                 summPrefix=summs_app_data[app_id]['summPrefix'])
             db.session.add(offer_app_summ)
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         offers_state = None
         if 'state' in params:

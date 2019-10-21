@@ -26,7 +26,8 @@
                             <div class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                             </div>
-                            <input type="text" class="form-control pull-right" id="reservation">
+                            <input type="text" class="form-control pull-right" id="reservation"
+                            value="{{selected_start_date}} - {{selected_end_date}}">
                         </div>
                         <!-- /.input group -->
                     </div>
@@ -36,7 +37,13 @@
                         <select class="form-control" id="actionsSelect" name="action">
                             <option value="">Все действия</option>
                             {% for action in available_actions%}
-                            <option value="{{action}}">{{action}}</option>
+                            <option value="{{action}}"
+                            {%if selected_action %}
+                                {% if selected_action == action %}
+                                selected
+                                {% endif %}
+                            {% endif %}
+                            >{{action}}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -46,7 +53,13 @@
                         <select class="form-control" id="objectsSelect" name="object_type">
                             <option value="">Все объекты</option>
                             {% for object in available_objects%}
-                            <option value="{{object}}">{{object}}</option>
+                            <option value="{{object}}"
+                            {%if selected_object_type %}
+                                {% if selected_object_type == object %}
+                                selected
+                                {% endif %}
+                            {% endif %}
+                            >{{object}}</option>
                             {% endfor %}
                         </select>
                     </div>

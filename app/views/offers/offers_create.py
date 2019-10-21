@@ -95,7 +95,10 @@ class OffersCreateView(web.View):
             setattr(offer, 'isActive', 0)
 
         db.session.add(offer)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         percent_app_data = {}
         terms_app_data = {}
@@ -229,7 +232,10 @@ class OffersCreateView(web.View):
                 summPrefix=summs_app_data[app_id]['summPrefix'])
             db.session.add(offer_app_summ)
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         for app_id in app_ids:
             for country_id in country_ids:
@@ -247,7 +253,10 @@ class OffersCreateView(web.View):
                                                                      country_id=country_id,
                                                                      position=position + 1)
                     db.session.add(offer_position)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         await journal.add_action(request=self.request, object_type=journal.OFFER_OBJECT, action=journal.CREATE_ACTION,
                                  description=str(offer.to_json()))

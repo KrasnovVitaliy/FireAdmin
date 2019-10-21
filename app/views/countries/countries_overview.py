@@ -49,5 +49,8 @@ class CountriesOverviewView(web.View):
         for field in post_data:
             setattr(country, field, post_data[field])
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
         return web.HTTPFound('/countries')

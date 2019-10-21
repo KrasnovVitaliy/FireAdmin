@@ -51,10 +51,15 @@ class AppsCreateView(web.View):
                     setattr(app, field, file_name)
 
         db.session.add(app)
-        db.session.commit()
+
+        try:
+            db.session.commit()
+        except Exception as e:
+            logger.error("Can not create app record in db: {}".format(e.__str__()))
+            db.session.rollback()
+            return web.HTTPInternalServerError()
 
         for field in post_data:
-            print("field", field)
             if "country_license_term_" in field:
                 country_id = int(field.replace("country_license_term_", ""))
 
@@ -79,9 +84,17 @@ class AppsCreateView(web.View):
                 app_country_relation = db.AppsCountriesRelations(
                     country_id=country_id, app_id=app.id)
                 db.session.add(app_country_relation)
-                db.session.commit()
+                try:
+                    db.session.commit()
+                except Exception as e:
+                    db.session.rollback()
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            logger.error("Can not create app related records in db: {}".format(e.__str__()))
+            db.session.rollback()
+            return web.HTTPInternalServerError()
 
         await journal.add_action(request=self.request, object_type=journal.APP_OBJECT, action=journal.CREATE_ACTION,
                                  description=str(app.to_json()))

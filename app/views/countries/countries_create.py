@@ -35,5 +35,8 @@ class CountriesCreateView(web.View):
             setattr(country, field, post_data[field])
 
         db.session.add(country)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
         return web.HTTPFound('/countries')

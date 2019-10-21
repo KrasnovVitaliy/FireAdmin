@@ -25,6 +25,11 @@ class AppsActionsView(web.View):
         offer = db.session.query(db.Applications).filter_by(**filters).first()
         if params['action'] == 'delete':
             offer.deleted = datetime.datetime.now()
-            db.session.commit()
+            try:
+                db.session.commit()
+
+            except Exception as e:
+                logger.error("Can not create delete app record in db: {}".format(e.__str__()))
+                db.session.rollback()
 
         return web.HTTPFound('/applications')

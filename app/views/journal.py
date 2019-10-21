@@ -29,9 +29,15 @@ TIMEZONE_OFFSET = 3
 
 async def add_action(object_type, action, description, request):
     user = await get_session_user(request)
-    news_app_position = db.Journal(user_id=user['id'], object_type=object_type, action=action, description=description)
+    news_app_position = db.Journal(user_id=user['id'], object_type=object_type, action=action,
+                                   description=str(description))
     db.session.add(news_app_position)
-    db.session.commit()
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        logger.error("Can not create journal record: {}".format(e.__str__()))
     pass
 
 
@@ -53,7 +59,7 @@ class JournalView(web.View):
             if item in params and params[item] != '':
                 date_filters[item] = datetime.datetime.strptime(params[item].replace(" ", ""), '%m/%d/%Y')
 
-        journal_sample = db.session.query(db.Journal).filter_by(**filters).order_by(db.Journal.create_date.desc())
+        journal_sample = db.session.query(db.Journal).filter_by(**filters).order_by(db.Journal.id.desc())
 
         if 'start_date' in date_filters:
             journal_sample = journal_sample.filter(
@@ -80,5 +86,11 @@ class JournalView(web.View):
             'auth_service_address': config.AUTH_SERVICE_EXTERNAL,
             'available_actions': [CREATE_ACTION, DUPLICATE_ACTION, UPDATE_ACTION, DELETE_ACTION, STOP_ACTION,
                                   START_ACTION, REORDER_ACTION, UPDATE_COMMENT],
-            'available_objects': [NEWS_OBJECT, OFFER_OBJECT, APP_OBJECT]
+            'available_objects': [NEWS_OBJECT, OFFER_OBJECT, APP_OBJECT],
+            'selected_start_date': params["start_date"] if "start_date" in params else (
+                    datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%m/%d/%Y'),
+            'selected_end_date': params["end_date"] if "end_date" in params else (
+                datetime.datetime.now().strftime('%m/%d/%Y')),
+            'selected_action': params["action"] if "action" in params else "",
+            'selected_object_type': params["object_type"] if "object_type" in params else "",
         }

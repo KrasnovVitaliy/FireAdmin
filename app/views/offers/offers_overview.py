@@ -353,7 +353,10 @@ class OffersOverviewView(web.View):
             )
             db.session.add(offer_app_browser_type)
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         for app_id in app_ids:
             for country_id in country_ids:
@@ -372,7 +375,10 @@ class OffersOverviewView(web.View):
                                                                      position=position + 1)
                     db.session.add(offer_position)
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         offers_state = None
         if 'state' in params:

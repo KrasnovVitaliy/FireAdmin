@@ -101,7 +101,10 @@ class AppsDuplicateView(web.View):
                 src_app_id = int(post_data[field])
 
         db.session.add(app)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         for field in post_data:
             if "country_license_term_" in field:
@@ -128,21 +131,33 @@ class AppsDuplicateView(web.View):
                 app_country_relation = db.AppsCountriesRelations(
                     country_id=country_id, app_id=app.id)
                 db.session.add(app_country_relation)
-                db.session.commit()
+                try:
+                    db.session.commit()
+                except Exception as e:
+                    db.session.rollback()
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         src_offers_relations = db.session.query(db.OffersAppsRelations).filter_by(app_id=src_app_id).all()
         for item in src_offers_relations:
             offer_app_relation = db.OffersAppsRelations(app_id=app.id, offer_id=item.offer_id, position=item.position)
             db.session.add(offer_app_relation)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         src_news_relations = db.session.query(db.NewsAppsRelations).filter_by(app_id=src_app_id).all()
         for item in src_news_relations:
-            news_app_relation = db.OffersAppsRelations(app_id=app.id, news_id=item.news_id, position=item.position)
+            news_app_relation = db.NewsAppsRelations(app_id=app.id, news_id=item.news_id, position=item.position)
             db.session.add(news_app_relation)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         src_offers_position = db.session.query(db.OffersAppsCountriesPositions).filter_by(app_id=src_app_id).all()
         for item in src_offers_position:
@@ -150,14 +165,20 @@ class AppsDuplicateView(web.View):
                                                                   position=item.position, country_id=item.country_id,
                                                                   offer_type_id=item.offer_type_id)
             db.session.add(offers_app_position)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         src_news_position = db.session.query(db.NewsAppsCountriesPositions).filter_by(app_id=src_app_id).all()
         for item in src_news_position:
             news_app_position = db.NewsAppsCountriesPositions(app_id=app.id, news_id=item.news_id,
                                                                   position=item.position, country_id=item.country_id)
             db.session.add(news_app_position)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         await journal.add_action(request=self.request, object_type=journal.APP_OBJECT, action=journal.DUPLICATE_ACTION,
                                  description=str(app.to_json()))

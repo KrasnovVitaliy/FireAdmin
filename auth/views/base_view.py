@@ -61,8 +61,10 @@ class BaseView(web.View, CorsViewMixin):
         return db_object
 
     async def get(self):
+        logger.debug("Check user data")
         self.check_user_data()
 
+        logger.debug("Get request params")
         get_params = self.request.rel_url.query
         if 'id' in get_params:
             db_object = await self.__process_get_id_request(object_id=get_params['id'])

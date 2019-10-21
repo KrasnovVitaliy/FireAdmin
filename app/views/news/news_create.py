@@ -94,7 +94,10 @@ class NewsCreateView(web.View):
             setattr(news_item, 'isActive', 0)
 
         db.session.add(news_item)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         # Update news applications relation
         db.session.query(db.NewsAppsRelations).filter_by(news_id=news_item.id).delete()
@@ -112,7 +115,10 @@ class NewsCreateView(web.View):
                 db.session.add(news_country_relation)
                 country_ids.append(country_id)
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         for app_id in app_ids:
             for country_id in country_ids:
@@ -129,7 +135,10 @@ class NewsCreateView(web.View):
                                                                   position=position + 1)
                     db.session.add(news_position)
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         await journal.add_action(request=self.request, object_type=journal.CREATE_ACTION,
                                  action=journal.DELETE_ACTION,

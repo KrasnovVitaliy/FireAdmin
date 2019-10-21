@@ -7,13 +7,16 @@ import os
 class Config(ConfigBase):
     VERSION = "1.0.0"
     IS_DEBUG = False
-    IS_LOCAL = True
+    IS_LOCAL = False
 
     PORT = 8070
     HOST = "0.0.0.0"
 
-    # DB_URI = 'sqlite:////root/fireadmin2.db'
-    DB_URI = "postgresql://fireadmin:thoRIUM87@@51.159.27.4:58938/fireadmin"
+    if IS_LOCAL:
+        DB_URI = 'sqlite:///./fireadmin2.db'
+    else:
+        DB_URI = 'sqlite:////root/fireadmin2.db'
+    # DB_URI = "postgresql://fireadmin:thoRIUM87@@51.159.27.4:58938/fireadmin"
 
     # Logging
     LOG_FORMAT = '%(asctime)-15s | %(levelname)s | %(filename)s | %(lineno)d: %(message)s'

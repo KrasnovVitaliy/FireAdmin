@@ -3,6 +3,8 @@ from aiohttp import web
 import db
 from views.base_view import BaseView
 
+import logging
+logger = logging.getLogger(__name__)
 
 class RolesView(BaseView):
     def __init__(self, request):
@@ -26,6 +28,7 @@ class RolesView(BaseView):
             ret: deleted:datetime:project deleted datetime
         """
         await super(RolesView, self).get()
+        logger.debug("Get role done")
         return web.json_response(self.ret_data)
 
     async def post(self):

@@ -21,13 +21,15 @@ class SingletonDecorator:
 class Config(ConfigBase):
     VERSION = "1.0.0"
     IS_DEBUG = False
-    IS_LOCAL = True
+    IS_LOCAL = False
 
     PORT = 8071
     HOST = "0.0.0.0"
 
-    # DB_URI = 'sqlite:////root/fireadmin_auth2.db'
-    DB_URI = 'sqlite:///./fireadmin_auth2.db'
+    if IS_LOCAL:
+        DB_URI = 'sqlite:///./fireadmin_auth2.db'
+    else:
+        DB_URI = 'sqlite:////root/fireadmin_auth2.db'
 
     # Logging
     LOG_FORMAT = '%(asctime)-15s | %(levelname)s | %(filename)s | %(lineno)d: %(message)s'

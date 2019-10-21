@@ -39,5 +39,6 @@ async def auth_middleware(request, handler):
         logger.warning("Incorrect JWT token")
         return web.HTTPFound('/login')
 
+    logger.debug("Auth ok, handle request")
     response = await handler(request)
     return response

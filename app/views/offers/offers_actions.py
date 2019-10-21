@@ -39,7 +39,10 @@ class OffersActionsView(web.View):
             await journal.add_action(request=self.request, object_type=journal.OFFER_OBJECT,
                                      action=journal.DELETE_ACTION,
                                      description=str(offer.to_json()))
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
 
         return web.HTTPFound('offers?offers_type={}&current_app={}'.format(params['offer_type'], params['app_id']))
 
@@ -111,7 +114,10 @@ class OffersUpdateOrder(web.View):
                                              offer_position.offer_type_id, offer_position.country_id,
                                              offer_position.position))
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
         return web.HTTPOk()
 
 
@@ -127,7 +133,10 @@ class OffersUpdateComment(web.View):
         offer = db.session.query(db.Offers).filter_by(id=data['item_id']).first()
         offer.comment = data['comment']
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
         await journal.add_action(request=self.request, object_type=journal.OFFER_OBJECT,
                                  action=journal.UPDATE_COMMENT,
                                  description=str(offer.to_json()))

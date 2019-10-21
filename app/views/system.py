@@ -31,7 +31,10 @@ def process_offer(offer_type, offer_data):
         setattr(offer, 'isActive', 0)
 
     db.session.add(offer)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
     pass
 
 
@@ -53,7 +56,10 @@ def process_news(news_data):
         setattr(news, 'isActive', 0)
 
     db.session.add(news)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
     pass
 
 
@@ -62,7 +68,10 @@ def process_offer_type(offer_type_name):
     if not offer_type:
         offer_type = db.OffersTypes(name=offer_type_name, description=offer_type_name)
         db.session.add(offer_type)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
     return offer_type
 
 

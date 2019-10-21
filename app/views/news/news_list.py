@@ -112,7 +112,8 @@ class NewsView(web.View):
 
             news_apps = db.session.query(db.NewsAppsRelations).filter_by(news_id=news['id']).all()
             for news_app in news_apps:
-                news['related_apps'].append(app_data[news_app.app_id])
+                if news['related_apps']:
+                    news['related_apps'].append(app_data[news_app.app_id])
                 # news['app_position'][news_app.app_id] = news_app.position
 
                 if current_app:

@@ -137,7 +137,7 @@ class Offers(Base):
     percentPostfix = Column(Text)
     percentPrefix = Column(Text)
 
-    score = Column(Integer)
+    score = Column(Text)
     screen = Column(Text)
 
     summPrefix = Column(Text)
@@ -242,7 +242,8 @@ class OffersAppsCountriesPositions(Base):
     country_id = Column(Integer) #, ForeignKey("countries.id")
     position = Column(Integer)
 
-    def __init__(self, offer_id=None, app_id=None, offer_type_id=None, country_id=None, position=None):
+    def __init__(self, id=None, offer_id=None, app_id=None, offer_type_id=None, country_id=None, position=None):
+        self.id = id
         self.offer_id = offer_id
         self.app_id = app_id
         self.offer_type_id = offer_type_id
