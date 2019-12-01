@@ -4,3 +4,26 @@ CREATE TABLE apps_countries_relations(
 	country_id INTEGER,
 	FOREIGN KEY(app_id) REFERENCES applications(id),
 	FOREIGN KEY(country_id) REFERENCES countries(id));
+
+CREATE TABLE apps_countries_visible_offers(
+	id INTEGER PRIMARY KEY,
+	app_id INTEGER,
+	country_id INTEGER,
+
+	loans_item BOOLEAN,
+    item BOOLEAN,
+    cards_item BOOLEAN,
+    cards_credit_item BOOLEAN,
+    cards_debit_item BOOLEAN,
+    cards_instalment_item BOOLEAN,
+    credits_item BOOLEAN,
+    news_item BOOLEAN,
+    calculator_item BOOLEAN,
+    hide_order_offer BOOLEAN,
+
+	FOREIGN KEY(app_id) REFERENCES applications(id),
+	FOREIGN KEY(country_id) REFERENCES countries(id));
+
+
+ALTER TABLE applications ADD COLUMN history_item BOOLEAN;
+ALTER TABLE apps_countries_visible_offers ADD COLUMN history_item BOOLEAN;

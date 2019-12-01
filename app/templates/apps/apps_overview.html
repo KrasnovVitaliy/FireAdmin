@@ -20,7 +20,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="box-footer">
-                        <button class="btn btn-default" onclick="goBack()">Отмена</button>
+                        <a href="#" class="btn btn-default" onclick="goBack()">Отмена</a>
                         <button type="submit" class="btn btn-info pull-right">Сохранить</button>
                     </div>
                 </div>
@@ -39,12 +39,8 @@
                         <input class="form-control" type="file" placeholder="Введите адрес" id="icon" name="icon">
 
                         <label for="name">Название приложения</label>
-                        <input required class="form-control" type="text" placeholder="Введите имя" id="name"
-                               name="name"
-                               {% if app.name %}
-                               value="{{app.name}}"
-                               {% endif %}
-                        >
+                        <input required class="form-control" type="text" placeholder="Введите имя" id="name" name="name"
+                               {% if app.name %} value="{{app.name}}" {% endif %}>
 
                         <label for="description">Описание</label>
                         <textarea class="form-control" rows="5" id="description" name="description"
@@ -70,20 +66,13 @@
                     <div class="box-body">
                         <label for="name">Firebase ID</label>
                         <input required class="form-control" type="text" placeholder="Введите ID" id="fb_id"
-                               name="fb_id"
-                               {% if app.fb_id %}
-                               value="{{app.fb_id}}"
-                               {% endif %}
-                        >
+                               name="fb_id" {% if app.fb_id %} value="{{app.fb_id}}" {% endif %}>
 
                         <label for="name">Идентификатор ссылки заказа</label>
                         <input required class="form-control" type="text" placeholder="Введите идентификатор"
-                               id="order_tracking_source"
-                               name="order_tracking_source"
-                               {% if app.order_tracking_source %}
-                               value="{{app.order_tracking_source}}"
-                               {% endif %}
-                        >
+                               id="order_tracking_source" name="order_tracking_source" {% if app.order_tracking_source
+                               %}
+                               value="{{app.order_tracking_source}}" {% endif %}>
                     </div>
                 </div>
             </section>
@@ -99,10 +88,7 @@
                             <div class="checkbox">
                                 <label>
                                     <input type="checkbox" name="country_{{country.id}}"
-                                           {% if country.id in app_countries_relation %}
-                                           checked
-                                           {% endif %}
-                                    >
+                                           {% if country.id in app_countries_relation %} checked {% endif %}>
                                     {{country.name}}
                                 </label>
                             </div>
@@ -120,18 +106,19 @@
                         <div class="form-group">
                             <label for="use_open_selection">Задать вариант открытия офферов</label>
                             <input type="checkbox" onClick="use_open_selection_handler()" name="use_open_selection"
-                                   id="use_open_selection"
-                                   {%if app.browser_type and app.browser_type !="" %} checked {%endif%}
-                            >
+                                   id="use_open_selection" {%if app.browser_type and app.browser_type !="" %} checked
+                                   {%endif%}>
                         </div>
                         <div class="form-group">
                             <input {%if app.browser_type and app.browser_type=="" %} disabled {%endif%}
-                                   {%if app.browser_type=="internal" %} checked {%endif%}
-                                   type="radio" name="browser_type" id="internal_browser" value="internal">
+                                   {%if app.browser_type=="internal" %} checked {%endif%} type="radio"
+                                   name="browser_type"
+                                   id="internal_browser" value="internal">
                             Внутренний<br>
                             <input {%if app.browser_type and app.browser_type=="" %} disabled {%endif%}
-                                   {%if app.browser_type=="external" %} checked {%endif%}
-                                   type="radio" name="browser_type" id="external_browser" value="external"> Внешний<br>
+                                   {%if app.browser_type=="external" %} checked {%endif%} type="radio"
+                                   name="browser_type"
+                                   id="external_browser" value="external"> Внешний<br>
                         </div>
                     </div>
                 </div>
@@ -139,23 +126,24 @@
             <section class="col-md-6">
                 <div class="box box-info">
                     <div class="box-header with-border">
-                        <h3 class="box-title">Документы и соглашения</h3>
+                        <h3 class="box-title">Модуль модерации</h3>
                     </div>
                     <div class="box-body">
                         <div class="form-group">
                             <label for="use_open_selection">Показывать документы</label>
-                            <input type="checkbox" name="show_docs"
-                                   id="show_docs"
-                                   {%if app.show_docs and app.show_docs !="" %} checked {%endif%}
-                            >
+                            <input type="checkbox" name="show_docs" id="show_docs"
+                                   {%if app.show_docs and app.show_docs !="" %} checked {%endif%}>
                         </div>
 
                         <div class="form-group">
                             <label for="hide_init_agreement">Скрывать начальное соглашение</label>
-                            <input type="checkbox" name="hide_init_agreement"
-                                   id="hide_init_agreement"
-                                   {%if app.hide_init_agreement and app.hide_init_agreement !="" %} checked {%endif%}
-                            >
+                            <input type="checkbox" name="hide_init_agreement" id="hide_init_agreement"
+                                   {%if app.hide_init_agreement and app.hide_init_agreement !="" %} checked {%endif%}>
+                        </div>
+                        <div class="form-group">
+                            <label for="hide_init_agreement">Скрывать кнопку оформить</label>
+                            <input type="checkbox" name="hide_order_offer" id="hide_order_offer"
+                                   {%if app.hide_order_offer and app.hide_order_offer !="" %} checked {%endif%}>
                         </div>
                     </div>
                 </div>
@@ -169,65 +157,68 @@
                     <div class="box-body">
                         <div class="form-group">
                             <label for="use_open_selection">Займы</label>
-                            <input type="checkbox" name="loans_item"
-                                   id="loans_item"
-                                   {%if app.loans_item and app.loans_item !="" %} checked {%endif%}
-                            >
-                        </div>
-                        <div class="form-group">
-                        <label for="use_open_selection">Карты</label>
-                            <input type="checkbox" name="cards_item"
-                                   id="cards_item"
-                                   {%if app.cards_item and app.cards_item !="" %} checked {%endif%}
-                            >
+                            <input class="offer_type_check_box" type="checkbox" name="loans_item" id="loans_item"
+                                   onclick="on_offer_type_check()"
+                                   {%if app.loans_item and app.loans_item !="" %} checked {%endif%}>
                         </div>
 
                         <div class="form-group">
-                        <label for="use_open_selection">Карты кредитные</label>
-                            <input type="checkbox" name="cards_credit_item"
-                                   id="cards_credit_item"
-                                   {%if app.cards_credit_item and app.cards_credit_item !="" %} checked {%endif%}
-                            >
+                            <label for="use_open_selection">Кредиты</label>
+                            <input class="offer_type_check_box" type="checkbox" name="credits_item" id="credits_item"
+                                   onclick="on_offer_type_check()"
+                                   {%if app.credits_item and app.credits_item !="" %} checked {%endif%}>
                         </div>
 
                         <div class="form-group">
-                        <label for="use_open_selection">Карты дебетовые</label>
-                            <input type="checkbox" name="cards_debit_item"
-                                   id="cards_debit_item"
-                                   {%if app.cards_debit_item and app.cards_debit_item !="" %} checked {%endif%}
-                            >
+                            <label for="use_open_selection">Новости</label>
+                            <input class="offer_type_check_box" type="checkbox" name="news_item" id="news_item"
+                                   onclick="on_offer_type_check()"
+                                   {%if app.news_item and app.news_item !="" %} checked {%endif%}>
                         </div>
 
                         <div class="form-group">
-                        <label for="use_open_selection">Карты рассрочки</label>
-                            <input type="checkbox" name="cards_instalment_item"
-                                   id="cards_instalment_item"
-                                   {%if app.cards_instalment_item and app.cards_instalment_item !="" %} checked {%endif%}
-                            >
+                            <label for="use_open_selection">Калькулятор</label>
+                            <input class="offer_type_check_box" type="checkbox" name="calculator_item"
+                                   id="calculator_item" onclick="on_offer_type_check()"
+                                   {%if app.calculator_item and app.calculator_item !="" %} checked {%endif%}>
                         </div>
 
                         <div class="form-group">
-                        <label for="use_open_selection">Кредиты</label>
-                            <input type="checkbox" name="credits_item"
-                                   id="credits_item"
-                                   {%if app.credits_item and app.credits_item !="" %} checked {%endif%}
-                            >
+                            <label for="use_open_selection">История</label>
+                            <input class="offer_type_check_box" type="checkbox" name="history_item"
+                                   id="history_item" onclick="on_offer_type_check()"
+                                   {%if app.history_item and app.history_item !="" %} checked {%endif%}>
                         </div>
 
                         <div class="form-group">
-                        <label for="use_open_selection">Новости</label>
-                            <input type="checkbox" name="news_item"
-                                   id="news_item"
-                                   {%if app.news_item and app.news_item !="" %} checked {%endif%}
-                            >
+                            <label for="use_open_selection">Карты</label>
+                            <input class="offer_type_check_box" type="checkbox" name="cards_item" id="cards_item"
+                                   onclick="on_offer_type_check()"
+                                   {%if app.cards_item and app.cards_item !="" %} checked {%endif%}>
                         </div>
 
-                        <div class="form-group">
-                        <label for="use_open_selection">Калькулятор</label>
-                            <input type="checkbox" name="calculator_item"
-                                   id="calculator_item"
-                                   {%if app.calculator_item and app.calculator_item !="" %} checked {%endif%}
-                            >
+                        <div class="container">
+                            <div class="form-group">
+                                <label for="use_open_selection">Карты кредитные</label>
+                                <input class="cards_type_check_box" type="checkbox" name="cards_credit_item"
+                                       id="cards_credit_item" onclick="on_cards_type_check()"
+                                       {%if app.cards_credit_item and app.cards_credit_item !="" %} checked {%endif%}>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="use_open_selection">Карты дебетовые</label>
+                                <input class="cards_type_check_box" type="checkbox" name="cards_debit_item"
+                                       id="cards_debit_item" onclick="on_cards_type_check()"
+                                       {%if app.cards_debit_item and app.cards_debit_item !="" %} checked {%endif%}>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="use_open_selection">Карты рассрочки</label>
+                                <input class="cards_type_check_box" type="checkbox" name="cards_instalment_item"
+                                       id="cards_instalment_item" onclick="on_cards_type_check()"
+                                       {%if app.cards_instalment_item and app.cards_instalment_item !="" %} checked
+                                       {%endif%}>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -244,20 +235,23 @@
                     <div class="row" id="apps_documents_row_{{document.position}}">
                         <div class="col-md-4">
                             <label for="apps_doc_name_{{document.position}}">Название</label>
-                            <input class="form-control" name="apps_doc_name_{{document.position}}" id="apps_doc_name_{{document.position}}"
-                            value="{{document.name}}">
+                            <input class="form-control" name="apps_doc_name_{{document.position}}"
+                                   id="apps_doc_name_{{document.position}}" value="{{document.name}}">
                         </div>
 
                         <div class="col-md-4">
                             <label for="apps_doc_url_{{document.position}}">Ссылка</label>
-                            <input class="form-control" name="apps_doc_url_{{document.position}}" id="apps_doc_url_{{document.position}}"
-                            value="{{document.url}}">
+                            <input class="form-control" name="apps_doc_url_{{document.position}}"
+                                   id="apps_doc_url_{{document.position}}" value="{{document.url}}">
                         </div>
                         <div class="col-md-2">
                             <label for="apps_doc_type_{{document.position}}">Тип</label>
-                            <select class="form-control" name="apps_doc_type_{{document.position}}" id="apps_doc_type_{{document.position}}">
+                            <select class="form-control" name="apps_doc_type_{{document.position}}"
+                                    id="apps_doc_type_{{document.position}}">
                                 {% for doc_type in apps_documents_types %}
-                                    <option value="{{doc_type.name}}" {% if document.type==doc_type.id %} selected {% endif %}>{{doc_type.name}}</option>
+                                <option value="{{doc_type.name}}" {% if document.type==doc_type.id %} selected
+                                        {% endif %}>{{doc_type.name}}
+                                </option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -265,8 +259,9 @@
                         <div class="col-md-2">
                             <label for="apps_doc_remove_{{document.position}}"></label>
                             <a class="text-danger" id="apps_doc_remove_{{document.position}}"
-                               onclick="document.getElementById('apps_documents_row_{{document.position}}').remove()"><h4><i
-                                    class="fa fa-remove text-red"></i></h4></a>
+                               onclick="document.getElementById('apps_documents_row_{{document.position}}').remove()">
+                                <h4><i class="fa fa-remove text-red"></i></h4>
+                            </a>
                         </div>
                     </div>
 
@@ -304,11 +299,161 @@
             </div>
         </div>
 
+        <div class="box box-info collapsed-box">
+            <div class="box-header with-border" data-widget="collapse">
+                <h3 class="box-title">Отображаемые офферы по странам</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+
+                {% for country in countries %}
+                <div class="box-body">
+                    <label for="country_init_license_term_{{ country.id }}">Отоброжаемые элементы для страны
+                        {{country.name}}</label>
+
+                    <div class="form-group">
+                        <label for="use_open_selection">Скрывать кнопку оформить</label>
+                        <input class="offer_type_check_box" type="checkbox"
+                               name="country_offer_hide_order_offer_{{country.id}}"
+                               id="country_offer_hide_order_offer_{{country.id}}"
+                               onclick="on_offer_type_check()"
+                               {% if country.id in app_countries_visible_offers %}
+                               {% if app_countries_visible_offers[country.id].hide_order_offer == True %}
+                               checked
+                               {%endif%}
+                               {% endif %}>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="use_open_selection">Займы</label>
+                        <input class="offer_type_check_box" type="checkbox"
+                               name="country_offer_loans_item_{{country.id}}"
+                               id="country_offer_loans_item_{{country.id}}"
+                               onclick="on_offer_type_check()"
+                               {% if country.id in app_countries_visible_offers %}
+                               {% if app_countries_visible_offers[country.id].loans_item == True %}
+                               checked
+                               {%endif%}
+                               {% endif %}>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="use_open_selection">Кредиты</label>
+                        <input class="offer_type_check_box" type="checkbox"
+                               name="country_offer_credits_item_{{country.id}}"
+                               id="country_offer_credits_item_{{country.id}}"
+                               onclick="on_offer_type_check()"
+                               {% if country.id in app_countries_visible_offers %}
+                               {% if app_countries_visible_offers[country.id].credits_item == True %}
+                               checked
+                               {%endif%}
+                               {% endif %}>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="use_open_selection">Новости</label>
+                        <input class="offer_type_check_box" type="checkbox"
+                               name="country_offer_news_item_{{country.id}}" id="country_offer_news_item_{{country.id}}"
+                               onclick="on_offer_type_check()"
+                               {% if country.id in app_countries_visible_offers %}
+                               {% if app_countries_visible_offers[country.id].news_item == True %}
+                               checked
+                               {%endif%}
+                               {% endif %}>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="use_open_selection">Калькулятор</label>
+                        <input class="offer_type_check_box" type="checkbox"
+                               name="country_offer_calculator_item_{{country.id}}"
+                               id="country_offer_calculator_item_{{country.id}}"
+                               onclick="on_offer_type_check()"
+                               {% if country.id in app_countries_visible_offers %}
+                               {% if app_countries_visible_offers[country.id].calculator_item == True %}
+                               checked
+                               {%endif%}
+                               {% endif %}>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="use_open_selection">История</label>
+                        <input class="offer_type_check_box" type="checkbox"
+                               name="country_offer_history_item_{{country.id}}"
+                               id="country_offer_history_item_{{country.id}}"
+                               onclick="on_offer_type_check()"
+                               {% if country.id in app_countries_visible_offers %}
+                               {% if app_countries_visible_offers[country.id].history_item == True %}
+                               checked
+                               {%endif%}
+                               {% endif %}>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="use_open_selection">Карты</label>
+                        <input class="offer_type_check_box" type="checkbox"
+                               name="country_offer_cards_item_{{country.id}}"
+                               id="country_offer_cards_item_{{country.id}}"
+                               onclick="on_offer_type_check()"
+                               {% if country.id in app_countries_visible_offers %}
+                               {% if app_countries_visible_offers[country.id].cards_item == True %}
+                               checked
+                               {%endif%}
+                               {% endif %}>
+                    </div>
+
+                    <div class="container">
+                        <div class="form-group">
+                            <label for="use_open_selection">Карты кредитные</label>
+                            <input class="cards_type_check_box" type="checkbox"
+                                   name="country_offer_cards_credit_item_{{country.id}}"
+                                   id="country_offer_cards_credit_item_{{country.id}}" onclick="on_cards_type_check()"
+                                   {% if country.id in app_countries_visible_offers %}
+                                   {% if app_countries_visible_offers[country.id].cards_credit_item == True %}
+                                   checked
+                                   {%endif%}
+                                   {% endif %}>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="use_open_selection">Карты дебетовые</label>
+                            <input class="cards_type_check_box" type="checkbox"
+                                   name="country_offer_cards_debit_item_{{country.id}}"
+                                   id="country_offer_cards_debit_item_{{country.id}}" onclick="on_cards_type_check()"
+                                   {% if country.id in app_countries_visible_offers %}
+                                   {% if app_countries_visible_offers[country.id].cards_debit_item == True %}
+                                   checked
+                                   {%endif%}
+                                   {% endif %}>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="use_open_selection">Карты рассрочки</label>
+                            <input class="cards_type_check_box" type="checkbox"
+                                   name="country_offer_cards_instalment_item_{{country.id}}"
+                                   id="country_offer_cards_instalment_item_{{country.id}}"
+                                   onclick="on_cards_type_check()"
+                                   {% if country.id in app_countries_visible_offers %}
+                                   {% if app_countries_visible_offers[country.id].cards_instalment_item == True %}
+                                   checked
+                                   {%endif%}
+                                   {% endif %}>
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+        </div>
+
         <div class="box box-info">
             <div class="row">
                 <div class="col-md-12">
                     <div class="box-footer">
-                        <button class="btn btn-default" onclick="goBack()">Отмена</button>
+                        <a href="#" class="btn btn-default" onclick="goBack()">Отмена</a>
                         <button type="submit" class="btn btn-info pull-right">Сохранить</button>
                     </div>
                 </div>
@@ -406,10 +551,10 @@
         colTypeElement.appendChild(selectTypeElement);
 
         {% for doc_type in apps_documents_types %}
-            optionImgElement = document.createElement("option");
-            optionImgElement.setAttribute("value", "{{doc_type.name}}");
-            optionImgElement.innerText = "{{doc_type.name}}";
-            selectTypeElement.appendChild(optionImgElement);
+        optionImgElement = document.createElement("option");
+        optionImgElement.setAttribute("value", "{{doc_type.name}}");
+        optionImgElement.innerText = "{{doc_type.name}}";
+        selectTypeElement.appendChild(optionImgElement);
         {% endfor %}
 
 
@@ -453,5 +598,22 @@
             document.getElementById("external_browser").disabled = true;
         }
     }
+
+    function on_offer_type_check() {
+        checked_offer_items = $("input:checkbox[class=offer_type_check_box]:checked");
+        if(checked_offer_items.length < 2) {
+            alert("Должно быть выбрано минимум 2 типа офферов")
+        }
+    }
+
+    function on_cards_type_check() {
+        checked_offer_items = $("input:checkbox[class=cards_type_check_box]:checked");
+        if(checked_offer_items.length < 1) {
+            alert("Должно быть выбрано минимум 1 тип карт")
+        }
+    }
+
+
+
 </script>
 {% endblock %}
