@@ -1,1 +1,3 @@
 ALTER TABLE applications ADD COLUMN hide_init_agreement Boolean;
+
+ALTER TABLE news ADD COLUMN content String(10000);

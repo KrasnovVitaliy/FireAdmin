@@ -160,7 +160,7 @@ class NewsOverviewView(web.View):
                 news_app_relation_old_data[int(item.app_id)] = int(item.position)
 
         app_ids = []
-        country_ids = []item.position
+        country_ids = []
 
         db.session.query(db.NewsAppsRelations).filter_by(news_id=news_item.id).delete()
         db.session.query(db.NewsCountriesRelations).filter_by(**filters).delete()

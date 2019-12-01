@@ -41,19 +41,20 @@ class Applications(Base):
     # Application visible elements
     loans_item = Column(Boolean)
     cards_item = Column(Boolean)
-    cards_credit_item = Column(Boolean)
-    cards_debit_item = Column(Boolean)
-    cards_instalment_item = Column(Boolean)
     credits_item = Column(Boolean)
     news_item = Column(Boolean)
     calculator_item = Column(Boolean)
+    history_item = Column(Boolean)
+    cards_credit_item = Column(Boolean)
+    cards_debit_item = Column(Boolean)
+    cards_instalment_item = Column(Boolean)
+    hide_order_offer = Column(Boolean)
 
     def __init__(self, name=None, description=None, fb_id=None, fb_url=None, appmetrica_link=None, fabrica_link=None,
                  appsflyer_link=None, order_tracking_source=None, license_term=None, init_license_term=None,
                  browser_type=None, show_docs=None, hide_init_agreement=None, icon=None, loans_item=None,
                  cards_item=None, cards_credit_item=None, cards_debit_item=None, cards_instalment_item=None,
-                 credits_item=None,
-                 news_item=None, calculator_item=None):
+                 credits_item=None, news_item=None, calculator_item=None, history_item=None, hide_order_offer=None):
         self.name = name
         self.description = description
         self.fb_id = fb_id
@@ -76,6 +77,8 @@ class Applications(Base):
         self.credits_item = credits_item
         self.news_item = news_item
         self.calculator_item = calculator_item
+        self.history_item = history_item
+        self.hide_order_offer = hide_order_offer
 
     def serialize(self, to_serialize):
         d = {}
@@ -91,9 +94,58 @@ class Applications(Base):
                         'fabrica_link', 'appsflyer_link', 'order_tracking_source', 'license_term', 'init_license_term',
                         'creator', 'deleted', 'browser_type', 'show_docs', 'hide_init_agreement', 'icon', "loans_item",
                         "cards_item", "cards_credit_item", "cards_debit_item", "cards_instalment_item", "credits_item",
-                        "news_item", "calculator_item"]
+                        "news_item", "calculator_item", "history_item", "hide_order_offer"]
         return self.serialize(to_serialize)
 
+class AppsCountriesVisibleOffers(Base):
+    __tablename__ = 'apps_countries_visible_offers'
+    id = Column(Integer, primary_key=True)
+    app_id = Column(Integer, ForeignKey("applications.id"))
+    country_id = Column(Integer, ForeignKey("countries.id"))
+
+    # Application visible elements
+    loans_item = Column(Boolean)
+    cards_item = Column(Boolean)
+    credits_item = Column(Boolean)
+    news_item = Column(Boolean)
+    calculator_item = Column(Boolean)
+    history_item = Column(Boolean)
+    cards_credit_item = Column(Boolean)
+    cards_debit_item = Column(Boolean)
+    cards_instalment_item = Column(Boolean)
+    hide_order_offer = Column(Boolean)
+
+    def __init__(self, app_id=None, country_id=None, loans_item=None,
+             cards_item=None, cards_credit_item=None, cards_debit_item=None, cards_instalment_item=None,
+             credits_item=None, news_item=None, calculator_item=None, history_item=None, hide_order_offer=None):
+        self.app_id = app_id
+        self.country_id = country_id
+        self.loans_item = loans_item
+        self.item = cards_item
+        self.cards_item = self.item
+        self.cards_credit_item = cards_credit_item
+        self.cards_debit_item = cards_debit_item
+        self.cards_instalment_item = cards_instalment_item
+        self.credits_item = credits_item
+        self.news_item = news_item
+        self.calculator_item = calculator_item
+        self.history_item = history_item
+        self.hide_order_offer = hide_order_offer
+
+    def serialize(self, to_serialize):
+        d = {}
+        for attr_name in to_serialize:
+            attr_value = getattr(self, attr_name)
+            if isinstance(attr_value, datetime.datetime):
+                attr_value = str(attr_value)
+            d[attr_name] = attr_value
+        return d
+
+    def to_json(self):
+        to_serialize = ['id', 'app_id', 'country_id', "loans_item",
+                    "cards_item", "cards_credit_item", "cards_debit_item", "cards_instalment_item", "credits_item",
+                    "news_item", "calculator_item", "history_item", "hide_order_offer"]
+        return self.serialize(to_serialize)
 
 class OffersTypes(Base):
     __tablename__ = 'offers_types'
@@ -515,9 +567,10 @@ class News(Base):
     deleted = Column(DateTime)
     position = Column(Integer)
     comment = Column(String(500))
+    content = Column(String(1000))
 
     def __init__(self, title=None, description=None, expireDate=None, image=None, isActive=None, link=None,
-                 itemId=None, position=None, comment=None):
+                 itemId=None, position=None, comment=None, content=None):
         self.title = title
         self.description = description
         self.expireDate = expireDate
@@ -527,6 +580,7 @@ class News(Base):
         self.itemId = itemId
         self.position = position
         self.comment = comment
+        self.content = content
 
     def serialize(self, to_serialize):
         d = {}
@@ -542,7 +596,7 @@ class News(Base):
 
     def to_json(self):
         to_serialize = ['id', 'create_date', 'update_date', 'title', 'description', 'expireDate', 'image', 'isActive',
-                        'link', 'deleted', 'itemId', 'position', 'comment']
+                        'link', 'deleted', 'itemId', 'position', 'comment', 'content']
         return self.serialize(to_serialize)
 
 
@@ -796,6 +850,8 @@ class OffersAppsBrowsersTypes(Base):
     def to_json(self):
         to_serialize = ['id', 'offer_id', 'app_id', 'browser_type']
         return self.serialize(to_serialize)
+
+
 
 
 class Journal(Base):

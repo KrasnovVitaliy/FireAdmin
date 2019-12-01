@@ -82,8 +82,6 @@ class AppsDuplicateView(web.View):
             return web.HTTPMethodNotAllowed("", [])
 
         post_data = await self.request.post()
-        logger.debug("Received post data: {}".format(post_data))
-
         app = db.Applications()
 
         src_app_id = None
@@ -100,10 +98,17 @@ class AppsDuplicateView(web.View):
             if "src_app_id" in field:
                 src_app_id = int(post_data[field])
 
+            if "show_docs" in field:
+                app.show_docs = True
+
+            if "hide_init_agreement" in field:
+                app.hide_init_agreement = True
+
         db.session.add(app)
         try:
             db.session.commit()
         except Exception as e:
+            logger.error(e)
             db.session.rollback()
 
         for field in post_data:
@@ -139,6 +144,7 @@ class AppsDuplicateView(web.View):
         try:
             db.session.commit()
         except Exception as e:
+            logger.error(e)
             db.session.rollback()
 
         src_offers_relations = db.session.query(db.OffersAppsRelations).filter_by(app_id=src_app_id).all()
@@ -148,6 +154,7 @@ class AppsDuplicateView(web.View):
         try:
             db.session.commit()
         except Exception as e:
+            logger.error(e)
             db.session.rollback()
 
         src_news_relations = db.session.query(db.NewsAppsRelations).filter_by(app_id=src_app_id).all()
@@ -157,6 +164,7 @@ class AppsDuplicateView(web.View):
         try:
             db.session.commit()
         except Exception as e:
+            logger.error(e)
             db.session.rollback()
 
         src_offers_position = db.session.query(db.OffersAppsCountriesPositions).filter_by(app_id=src_app_id).all()
@@ -168,6 +176,7 @@ class AppsDuplicateView(web.View):
         try:
             db.session.commit()
         except Exception as e:
+            logger.error(e)
             db.session.rollback()
 
         src_news_position = db.session.query(db.NewsAppsCountriesPositions).filter_by(app_id=src_app_id).all()
@@ -178,6 +187,7 @@ class AppsDuplicateView(web.View):
         try:
             db.session.commit()
         except Exception as e:
+            logger.error(e)
             db.session.rollback()
 
         await journal.add_action(request=self.request, object_type=journal.APP_OBJECT, action=journal.DUPLICATE_ACTION,

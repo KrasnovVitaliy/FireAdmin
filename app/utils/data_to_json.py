@@ -51,37 +51,44 @@ def get_offers_data(app, country_id=None):
             .filter(db.Offers.isActive == 1) \
             .order_by(asc(db.OffersAppsRelations.position)).all()
 
-    offer_apps_creatives = db.session.query(db.OffersAppsCreatives).filter_by(**filters).all()
+    offer_apps_creatives = db.session.query(
+        db.OffersAppsCreatives).filter_by(**filters).all()
     offer_apps_creatives_data = {}
     for item in offer_apps_creatives:
         offer_apps_creatives_data[item.offer_id] = item.creative_url
 
-    offer_apps_orders = db.session.query(db.OffersAppsOrderUrls).filter_by(**filters).all()
+    offer_apps_orders = db.session.query(
+        db.OffersAppsOrderUrls).filter_by(**filters).all()
     offer_apps_orders_data = {}
     for item in offer_apps_orders:
         offer_apps_orders_data[item.offer_id] = item.order_url
 
-    offer_apps_names = db.session.query(db.OffersAppsNames).filter_by(**filters).all()
+    offer_apps_names = db.session.query(
+        db.OffersAppsNames).filter_by(**filters).all()
     offer_apps_names_data = {}
     for item in offer_apps_names:
         offer_apps_names_data[item.offer_id] = item.name
 
-    offer_apps_summs = db.session.query(db.OffersAppsSumms).filter_by(**filters).all()
+    offer_apps_summs = db.session.query(
+        db.OffersAppsSumms).filter_by(**filters).all()
     offer_apps_summs_data = {}
     for item in offer_apps_summs:
         offer_apps_summs_data[item.offer_id] = item.to_json()
 
-    offer_apps_terms = db.session.query(db.OffersAppsTerms).filter_by(**filters).all()
+    offer_apps_terms = db.session.query(
+        db.OffersAppsTerms).filter_by(**filters).all()
     offer_apps_terms_data = {}
     for item in offer_apps_terms:
         offer_apps_terms_data[item.offer_id] = item.to_json()
 
-    offer_apps_percents = db.session.query(db.OffersAppsPercents).filter_by(**filters).all()
+    offer_apps_percents = db.session.query(
+        db.OffersAppsPercents).filter_by(**filters).all()
     offer_apps_percents_data = {}
     for item in offer_apps_percents:
         offer_apps_percents_data[item.offer_id] = item.to_json()
 
-    offers_apps_browser_types = db.session.query(db.OffersAppsBrowsersTypes).filter_by(**filters).all()
+    offers_apps_browser_types = db.session.query(
+        db.OffersAppsBrowsersTypes).filter_by(**filters).all()
     offers_apps_browser_types_data = {}
     for item in offers_apps_browser_types:
         offers_apps_browser_types_data[item.offer_id] = item.to_json()
@@ -89,64 +96,83 @@ def get_offers_data(app, country_id=None):
     ret_data = {}
     for result in results:
         if result[1].isActive:
-            offer_data = prepare_object_data(result[1].to_json())  # fields_to_str(trim_fields(result[1].to_json()))
-            offer_data['order'] = offer_data['order'] + "?source={}".format(app.order_tracking_source)
+            # fields_to_str(trim_fields(result[1].to_json()))
+            offer_data = prepare_object_data(result[1].to_json())
+            offer_data['order'] = offer_data['order'] + \
+                                  "?source={}".format(app.order_tracking_source)
 
-            offer_type = db.session.query(db.OffersTypes).filter_by(id=result[1].offer_type).first()
+            offer_type = db.session.query(db.OffersTypes).filter_by(
+                id=result[1].offer_type).first()
 
             if offer_type.name not in ret_data:
                 ret_data[offer_type.name] = []
 
             if ((int(offer_data['id']) in offer_apps_creatives_data) and
                     (offer_apps_creatives_data[int(offer_data['id'])] != '')):
-                offer_data['screen'] = offer_apps_creatives_data[int(offer_data['id'])]
+                offer_data['screen'] = offer_apps_creatives_data[int(
+                    offer_data['id'])]
 
             if ((int(offer_data['id']) in offer_apps_names_data) and
                     (offer_apps_names_data[int(offer_data['id'])] != '')):
-                offer_data['name'] = offer_apps_names_data[int(offer_data['id'])]
+                offer_data['name'] = offer_apps_names_data[int(
+                    offer_data['id'])]
 
             if ((int(offer_data['id']) in offer_apps_orders_data) and
                     (offer_apps_orders_data[int(offer_data['id'])] != '')):
-                offer_data['order'] = offer_apps_orders_data[int(offer_data['id'])]
+                offer_data['order'] = offer_apps_orders_data[int(
+                    offer_data['id'])]
 
             if ((int(offer_data['id']) in offer_apps_summs_data) and
                     (offer_apps_summs_data[int(offer_data['id'])] != '')):
 
                 if offer_apps_summs_data[int(offer_data['id'])]['summPrefix'] != '':
-                    offer_data['summPrefix'] = offer_apps_summs_data[int(offer_data['id'])]['summPrefix']
+                    offer_data['summPrefix'] = offer_apps_summs_data[int(
+                        offer_data['id'])]['summPrefix']
 
                 if offer_apps_summs_data[int(offer_data['id'])]['summMin'] != '':
-                    offer_data['summMin'] = str(offer_apps_summs_data[int(offer_data['id'])]['summMin'])
+                    offer_data['summMin'] = str(
+                        offer_apps_summs_data[int(offer_data['id'])]['summMin'])
 
                 if offer_apps_summs_data[int(offer_data['id'])]['summMid'] != '':
-                    offer_data['summMid'] = str(offer_apps_summs_data[int(offer_data['id'])]['summMid'])
+                    offer_data['summMid'] = str(
+                        offer_apps_summs_data[int(offer_data['id'])]['summMid'])
                 if offer_apps_summs_data[int(offer_data['id'])]['summMax'] != '':
-                    offer_data['summMax'] = str(offer_apps_summs_data[int(offer_data['id'])]['summMax'])
+                    offer_data['summMax'] = str(
+                        offer_apps_summs_data[int(offer_data['id'])]['summMax'])
                 if offer_apps_summs_data[int(offer_data['id'])]['summPostfix'] != '':
-                    offer_data['summPostfix'] = offer_apps_summs_data[int(offer_data['id'])]['summPostfix']
+                    offer_data['summPostfix'] = offer_apps_summs_data[int(
+                        offer_data['id'])]['summPostfix']
 
             if ((int(offer_data['id']) in offer_apps_terms_data) and
                     (offer_apps_terms_data[int(offer_data['id'])] != '')):
 
                 if offer_apps_terms_data[int(offer_data['id'])]['termPrefix'] != '':
-                    offer_data['termPrefix'] = offer_apps_terms_data[int(offer_data['id'])]['termPrefix']
+                    offer_data['termPrefix'] = offer_apps_terms_data[int(
+                        offer_data['id'])]['termPrefix']
                 if offer_apps_terms_data[int(offer_data['id'])]['termMin'] != '':
-                    offer_data['termMin'] = offer_apps_terms_data[int(offer_data['id'])]['termMin']
+                    offer_data['termMin'] = offer_apps_terms_data[int(
+                        offer_data['id'])]['termMin']
                 if offer_apps_terms_data[int(offer_data['id'])]['termMid'] != '':
-                    offer_data['termMid'] = offer_apps_terms_data[int(offer_data['id'])]['termMid']
+                    offer_data['termMid'] = offer_apps_terms_data[int(
+                        offer_data['id'])]['termMid']
                 if offer_apps_terms_data[int(offer_data['id'])]['termMax'] != '':
-                    offer_data['termMax'] = offer_apps_terms_data[int(offer_data['id'])]['termMax']
+                    offer_data['termMax'] = offer_apps_terms_data[int(
+                        offer_data['id'])]['termMax']
                 if offer_apps_terms_data[int(offer_data['id'])]['termPostfix'] != '':
-                    offer_data['termPostfix'] = offer_apps_terms_data[int(offer_data['id'])]['termPostfix']
+                    offer_data['termPostfix'] = offer_apps_terms_data[int(
+                        offer_data['id'])]['termPostfix']
 
             if ((int(offer_data['id']) in offer_apps_percents_data) and
                     (offer_apps_percents_data[int(offer_data['id'])] != '')):
                 if offer_apps_percents_data[int(offer_data['id'])]['percentPrefix']:
-                    offer_data['percentPrefix'] = offer_apps_percents_data[int(offer_data['id'])]['percentPrefix']
+                    offer_data['percentPrefix'] = offer_apps_percents_data[int(
+                        offer_data['id'])]['percentPrefix']
                 if offer_apps_percents_data[int(offer_data['id'])]['percent']:
-                    offer_data['percent'] = offer_apps_percents_data[int(offer_data['id'])]['percent']
+                    offer_data['percent'] = offer_apps_percents_data[int(
+                        offer_data['id'])]['percent']
                 if offer_apps_percents_data[int(offer_data['id'])]['percentPostfix']:
-                    offer_data['percentPostfix'] = offer_apps_percents_data[int(offer_data['id'])]['percentPostfix']
+                    offer_data['percentPostfix'] = offer_apps_percents_data[int(
+                        offer_data['id'])]['percentPostfix']
 
             # Adding additional fields for backward compatibility
             offer_data['summ'] = ""
@@ -190,7 +216,8 @@ def get_offers_data(app, country_id=None):
             # Updating offer browser type
             offer_data['browserType'] = offer_data['browser_type']
             if int(offer_data['id']) in offers_apps_browser_types_data:
-                offer_data['browserType'] = offers_apps_browser_types_data[int(offer_data['id'])]['browser_type']
+                offer_data['browserType'] = offers_apps_browser_types_data[int(
+                    offer_data['id'])]['browser_type']
             if app.browser_type and app.browser_type != "":
                 offer_data['browserType'] = app.browser_type
 
@@ -297,6 +324,44 @@ def get_app_countrie(app):
     return countries
 
 
+def get_app_config(app, country_id=None):
+    result = db.session.query(db.Applications) \
+        .filter(db.Applications.id == app.id).first()
+
+    configs = {
+        'loans_item': "1" if result.loans_item else "0",
+        'credits_item': "1" if result.credits_item else "0",
+        'news_item': "1" if result.news_item else "0",
+        'cards_item': "1" if result.cards_item else "0",
+        'cards_credit_item': "1" if result.cards_credit_item else "0",
+        'cards_debit_item': "1" if result.cards_debit_item else "0",
+        'cards_installment_item': "1" if result.cards_instalment_item else "0",
+        'calculator_item': "1" if result.calculator_item else "0",
+        'history_item': "1" if result.history_item else "0",
+        'hide_order_offer': "1" if result.hide_order_offer else "0"
+    }
+
+    results = db.session.query(db.AppsCountriesVisibleOffers, db.Countries).filter(
+        db.AppsCountriesVisibleOffers.app_id == app.id).filter(
+        db.AppsCountriesVisibleOffers.country_id == db.Countries.id
+    ).all()
+
+    for result in results:
+        configs[result[1].code] = {
+            'loans_item': "1" if result[0].loans_item else "0",
+            'credits_item': "1" if result[0].credits_item else "0",
+            'news_item': "1" if result[0].news_item else "0",
+            'cards_item': "1" if result[0].cards_item else "0",
+            'cards_credit_item': "1" if result[0].cards_credit_item else "0",
+            'cards_debit_item': "1" if result[0].cards_debit_item else "0",
+            'cards_installment_item': "1" if result[0].cards_instalment_item else "0",
+            'calculator_item': "1" if result[0].calculator_item else "0",
+            'history_item': "1" if result[0].history_item else "0",
+            'hide_order_offer': "1" if result[0].hide_order_offer else "0"
+        }
+    return configs
+
+
 def gen_app_json(app):
     ret_data = get_offers_data(app)
 
@@ -305,4 +370,5 @@ def gen_app_json(app):
         ret_data[country.code] = get_offers_data(app, country_id=country.id)
 
     ret_data['countries'] = get_app_countrie(app)
+    ret_data['app_config'] = get_app_config(app)
     return ret_data

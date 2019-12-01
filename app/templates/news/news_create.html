@@ -71,10 +71,6 @@
 
                         <label for="image">Ссылка на картинку</label>
                         <input class="form-control" type="text" placeholder="Введите адрес" id="image" name="image">
-
-                        <label for="description">Описание</label>
-                        <textarea class="form-control" rows="5" id="description" name="description"
-                                  placeholder="Описание"></textarea>
                     </div>
                 </div>
             </section>
@@ -112,6 +108,18 @@
                     </div>
                 </div>
             </section>
+
+            <section class="col-md-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Содержание новости</h3>
+                    </div>
+                    <div class="box-body">
+                        <textarea rows="5" cols="80" id="content" name="content"
+                                  placeholder="HTML содержимое новости">{% if news.content %}{{news.content}}{% endif %}</textarea>
+                    </div>
+                </div>
+            </section>
         </div>
         <div class="box box-info">
             <div class="row">
@@ -131,7 +139,18 @@
 {% endblock %}
 
 {% block page_scripts %}
+<script src="/static/bower_components/ckeditor/ckeditor.js"></script>
+<script src="/static/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
 <script type="text/javascript">
+$(function () {
+        // Replace the <textarea id="description"> with a CKEditor
+        // instance, using default configuration.
+        CKEDITOR.replace('content');
+        //bootstrap WYSIHTML5 - text editor
+        $('.textarea').wysihtml5();
+        use_open_selection_handler();
+    });
+
     $('#expireDate').datepicker({
         autoclose: true
     })
