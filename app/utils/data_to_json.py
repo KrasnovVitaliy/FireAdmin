@@ -224,6 +224,21 @@ def get_offers_data(app, country_id=None):
             if 'browser_type' in offer_data:
                 del offer_data['browser_type']
 
+            # Clear term fields
+            if offer_data['hideTermFields'] or app.hideTermFields:
+                offer_data['term'] = ""
+                offer_data['termPrefix'] = ""
+                offer_data['termMin'] = ""
+                offer_data['termMid'] = ""
+                offer_data['termMax'] = ""
+                offer_data['termPostfix'] = ""
+
+            # Clear percent fields
+            if offer_data['hidePercentFields'] or app.hidePercentFields:
+                offer_data['percent'] = ""
+                offer_data['percentPrefix'] = ""
+                offer_data['percentPostfix'] = ""
+
     filters = {
         'app_id': app.id,
     }

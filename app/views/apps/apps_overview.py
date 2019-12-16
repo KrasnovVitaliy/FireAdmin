@@ -121,7 +121,6 @@ class AppsOverviewView(web.View):
 
         app_country_visible_offers = {}
         for field in post_data:
-            print("FIELD: ", field)
             if "country_license_term_" in field:
                 country_id = int(field.replace("country_license_term_", ""))
 
@@ -177,12 +176,17 @@ class AppsOverviewView(web.View):
                     file_name = apps_utils.save_file(post_data[field])
                     setattr(app, field, file_name)
             elif field in ["loans_item", "cards_item", "cards_credit_item", "cards_debit_item",
-                           "cards_instalment_item", "credits_item", "news_item", "calculator_item", "hide_order_offer", "history_item"]:
+                           "cards_instalment_item", "credits_item", "news_item", "calculator_item", "hide_order_offer",
+                           "history_item", 'hideTermFields', 'hidePercentFields']:
                 logger.debug("Set app attr: {}".format(field))
                 setattr(app, field, True)
 
             else:
                 setattr(app, field, post_data[field])
+
+        for field in ['hideTermFields', 'hidePercentFields']:
+            if field not in post_data:
+                setattr(app, field, False)
 
         db.session.add(app)
         try:

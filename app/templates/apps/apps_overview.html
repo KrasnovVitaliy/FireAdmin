@@ -222,6 +222,37 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Скрытие сроков и процентов</h3>
+                    </div>
+                    <div class="box-body">
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="hideTermFields"
+                                       {% if app.hideTermFields %}
+                                       checked
+                                       {% endif %}
+                                >
+                                Скрывать сроки
+                            </label>
+                        </div>
+
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="hidePercentFields"
+                                       {% if app.hidePercentFields %}
+                                       checked
+                                       {% endif %}
+                                >
+                                Скрывать проценты
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
             </section>
         </div>
 
@@ -322,7 +353,7 @@
                                id="country_offer_hide_order_offer_{{country.id}}"
                                onclick="on_offer_type_check()"
                                {% if country.id in app_countries_visible_offers %}
-                               {% if app_countries_visible_offers[country.id].hide_order_offer == True %}
+                               {% if app_countries_visible_offers[country.id].hide_order_offer== True %}
                                checked
                                {%endif%}
                                {% endif %}>
@@ -335,7 +366,7 @@
                                id="country_offer_loans_item_{{country.id}}"
                                onclick="on_offer_type_check()"
                                {% if country.id in app_countries_visible_offers %}
-                               {% if app_countries_visible_offers[country.id].loans_item == True %}
+                               {% if app_countries_visible_offers[country.id].loans_item== True %}
                                checked
                                {%endif%}
                                {% endif %}>
@@ -348,7 +379,7 @@
                                id="country_offer_credits_item_{{country.id}}"
                                onclick="on_offer_type_check()"
                                {% if country.id in app_countries_visible_offers %}
-                               {% if app_countries_visible_offers[country.id].credits_item == True %}
+                               {% if app_countries_visible_offers[country.id].credits_item== True %}
                                checked
                                {%endif%}
                                {% endif %}>
@@ -360,7 +391,7 @@
                                name="country_offer_news_item_{{country.id}}" id="country_offer_news_item_{{country.id}}"
                                onclick="on_offer_type_check()"
                                {% if country.id in app_countries_visible_offers %}
-                               {% if app_countries_visible_offers[country.id].news_item == True %}
+                               {% if app_countries_visible_offers[country.id].news_item== True %}
                                checked
                                {%endif%}
                                {% endif %}>
@@ -373,7 +404,7 @@
                                id="country_offer_calculator_item_{{country.id}}"
                                onclick="on_offer_type_check()"
                                {% if country.id in app_countries_visible_offers %}
-                               {% if app_countries_visible_offers[country.id].calculator_item == True %}
+                               {% if app_countries_visible_offers[country.id].calculator_item== True %}
                                checked
                                {%endif%}
                                {% endif %}>
@@ -386,7 +417,7 @@
                                id="country_offer_history_item_{{country.id}}"
                                onclick="on_offer_type_check()"
                                {% if country.id in app_countries_visible_offers %}
-                               {% if app_countries_visible_offers[country.id].history_item == True %}
+                               {% if app_countries_visible_offers[country.id].history_item== True %}
                                checked
                                {%endif%}
                                {% endif %}>
@@ -399,7 +430,7 @@
                                id="country_offer_cards_item_{{country.id}}"
                                onclick="on_offer_type_check()"
                                {% if country.id in app_countries_visible_offers %}
-                               {% if app_countries_visible_offers[country.id].cards_item == True %}
+                               {% if app_countries_visible_offers[country.id].cards_item== True %}
                                checked
                                {%endif%}
                                {% endif %}>
@@ -412,7 +443,7 @@
                                    name="country_offer_cards_credit_item_{{country.id}}"
                                    id="country_offer_cards_credit_item_{{country.id}}" onclick="on_cards_type_check()"
                                    {% if country.id in app_countries_visible_offers %}
-                                   {% if app_countries_visible_offers[country.id].cards_credit_item == True %}
+                                   {% if app_countries_visible_offers[country.id].cards_credit_item== True %}
                                    checked
                                    {%endif%}
                                    {% endif %}>
@@ -424,7 +455,7 @@
                                    name="country_offer_cards_debit_item_{{country.id}}"
                                    id="country_offer_cards_debit_item_{{country.id}}" onclick="on_cards_type_check()"
                                    {% if country.id in app_countries_visible_offers %}
-                                   {% if app_countries_visible_offers[country.id].cards_debit_item == True %}
+                                   {% if app_countries_visible_offers[country.id].cards_debit_item== True %}
                                    checked
                                    {%endif%}
                                    {% endif %}>
@@ -437,7 +468,7 @@
                                    id="country_offer_cards_instalment_item_{{country.id}}"
                                    onclick="on_cards_type_check()"
                                    {% if country.id in app_countries_visible_offers %}
-                                   {% if app_countries_visible_offers[country.id].cards_instalment_item == True %}
+                                   {% if app_countries_visible_offers[country.id].cards_instalment_item== True %}
                                    checked
                                    {%endif%}
                                    {% endif %}>
@@ -612,6 +643,8 @@
             alert("Должно быть выбрано минимум 1 тип карт")
         }
     }
+
+
 
 
 

@@ -138,8 +138,6 @@ class OffersOverviewView(web.View):
         for item in offers_apps_browser_types:
             offers_apps_browser_types_data[item.app_id] = item.to_json()
 
-        print("offers_apps_browser_types", offers_apps_browser_types)
-        print("offers_apps_browser_types_data", offers_apps_browser_types_data)
         return {
             'offers_types': avm.offers_types(),
             "permissions": user_permissions,
@@ -183,13 +181,16 @@ class OffersOverviewView(web.View):
             if "app_" in field or "screen_app_" in field:
                 continue
 
-            if field in ['isActive', 'mir', 'visa', 'mastercard', 'qiwi', 'yandex', 'cash']:
+            if field in ['isActive', 'mir', 'visa', 'mastercard', 'qiwi', 'yandex', 'cash', 'hideTermFields',
+                         'hidePercentFields']:
                 setattr(offer, field, 1)
             else:
                 setattr(offer, field, post_data[field])
 
-        if 'isActive' not in post_data:
-            setattr(offer, 'isActive', 0)
+        for field in ['isActive', 'mir', 'visa', 'mastercard', 'qiwi', 'yandex', 'cash', 'hideTermFields',
+                      'hidePercentFields']:
+            if field not in post_data:
+                setattr(offer, field, 0)
 
         filters = {
             'offer_id': params['id']
@@ -293,8 +294,7 @@ class OffersOverviewView(web.View):
             elif "browser_type_app_" in field:
                 apps_browser_types_data[field.replace('browser_type_app_', '')] = post_data[field]
             elif "browser_type" in field:
-                print("!!!!!!!!")
-                print(post_data[field])
+                pass
 
             elif "app_" in field:
                 app_id = field.replace('app_', '')
