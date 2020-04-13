@@ -182,6 +182,7 @@ class AppsOverviewView(web.View):
                 setattr(app, field, True)
 
             else:
+                logger.debug("Updating field: {} with value: {}".format(field, post_data[field]))
                 setattr(app, field, post_data[field])
 
         for field in ['hideTermFields', 'hidePercentFields']:

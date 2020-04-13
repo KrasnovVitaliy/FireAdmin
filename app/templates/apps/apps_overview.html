@@ -84,6 +84,31 @@
             <section class="col-md-6">
                 <div class="box box-info">
                     <div class="box-header with-border">
+                        <h3 class="box-title">FTP доступ</h3>
+                    </div>
+                    <div class="box-body">
+                        <label for="name">Адрес</label>
+                        <input class="form-control" type="text" placeholder="Ввести адрес FTP сервера"
+                               id="ftp_path" name="ftp_path" {% if app.ftp_path %}
+                               value="{{app.ftp_path}}" {% endif %}>
+
+                        <label for="name">Пользователь</label>
+                        <input class="form-control" type="text" placeholder="Ввести имя пользователя FTP сервера"
+                               id="ftp_username" name="ftp_username" {% if app.ftp_path %}
+                               value="{{app.ftp_username}}" {% endif %}>
+
+                        <label for="name">Пароль</label>
+                        <input class="form-control" type="text" placeholder="Ввести пароль FTP сервера"
+                               id="ftp_password" name="ftp_password" {% if app.ftp_path %}
+                               value="{{app.ftp_password}}" {% endif %}>
+
+                    </div>
+                </div>
+            </section>
+
+            <section class="col-md-6">
+                <div class="box box-info">
+                    <div class="box-header with-border">
                         <h3 class="box-title">Доступные страны</h3>
                     </div>
                     <div class="box-body">
@@ -647,6 +672,8 @@
             alert("Должно быть выбрано минимум 1 тип карт")
         }
     }
+
+
 
 
 

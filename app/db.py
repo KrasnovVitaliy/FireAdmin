@@ -26,6 +26,9 @@ class Applications(Base):
     fb_id = Column(String(200))
     fb_url = Column(String(200))
     fb_key = Column(String(100))
+    ftp_path = Column(String(500))
+    ftp_username = Column(String(50))
+    ftp_password = Column(String(50))
     appmetrica_link = Column(String(200))
     fabrica_link = Column(String(200))
     appsflyer_link = Column(String(200))
@@ -60,12 +63,16 @@ class Applications(Base):
                  browser_type=None, show_docs=None, hide_init_agreement=None, icon=None, loans_item=None,
                  cards_item=None, cards_credit_item=None, cards_debit_item=None, cards_instalment_item=None,
                  credits_item=None, news_item=None, calculator_item=None, history_item=None, hide_order_offer=None,
-                 hideTermFields=None, hidePercentFields=None):
+                 hideTermFields=None, hidePercentFields=None, ftp_path=None, ftp_username=None, ftp_password=None):
         self.name = name
         self.description = description
         self.fb_id = fb_id
         self.fb_url = fb_url
         self.fb_key = fb_key
+        self.ftp_path = ftp_path
+        self.ftp_username = ftp_username
+        self.ftp_password = ftp_password
+
         self.appmetrica_link = appmetrica_link
         self.fabrica_link = fabrica_link
         self.appsflyer_link = appsflyer_link
@@ -104,7 +111,8 @@ class Applications(Base):
                         'init_license_term', 'creator', 'deleted', 'browser_type', 'show_docs', 'hide_init_agreement',
                         'icon', "loans_item", "cards_item", "cards_credit_item", "cards_debit_item",
                         "cards_instalment_item", "credits_item", "news_item", "calculator_item", "history_item",
-                        "hide_order_offer", 'hideTermFields', 'hidePercentFields']
+                        "hide_order_offer", 'hideTermFields', 'hidePercentFields',
+                        'ftp_path', 'ftp_username', 'ftp_password']
         return self.serialize(to_serialize)
 
 

@@ -19,6 +19,7 @@ from views.apps.apps_fb_db_json import *
 from views.apps.apps_add_all_offers import *
 from views.apps.apps_add_all_news import *
 from views.apps.apps_actions import *
+from views.apps.apps_ftp_update import *
 
 from views.news.news_list import *
 from views.news.news_create import *
@@ -61,6 +62,7 @@ routes = [
     web.view('/apps_overview', AppsOverviewView),
     web.view('/apps_duplicate', AppsDuplicateView),
     web.view('/apps_actions', AppsActionsView),
+    web.view('/ftp_update', AppsFTPUpdate),
 
     web.view('/app_db_json', AppsDBJsonView),
     web.view('/app_fb_db_get', AppsFBDBGetView),
