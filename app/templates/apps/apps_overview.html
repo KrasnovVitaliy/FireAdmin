@@ -68,6 +68,10 @@
                         <input required class="form-control" type="text" placeholder="Введите ID" id="fb_id"
                                name="fb_id" {% if app.fb_id %} value="{{app.fb_id}}" {% endif %}>
 
+                        <label for="name">Firebase Key</label>
+                        <input class="form-control" type="text" placeholder="Введите Key" id="fb_key"
+                               name="fb_key" {% if app.fb_key %} value="{{app.fb_key}}" {% endif %}>
+
                         <label for="name">Идентификатор ссылки заказа</label>
                         <input required class="form-control" type="text" placeholder="Введите идентификатор"
                                id="order_tracking_source" name="order_tracking_source" {% if app.order_tracking_source
@@ -643,6 +647,7 @@
             alert("Должно быть выбрано минимум 1 тип карт")
         }
     }
+
 
 
 

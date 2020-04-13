@@ -22,7 +22,7 @@ class AppsFBDBGetView(web.View):
 
         app = db.session.query(db.Applications).filter_by(id=params['id']).first()
 
-        data = fb_client.get_all(app.fb_id)
+        data = fb_client.get_all(app)
         if not data:
             return web.HTTPError(body=data)
 
@@ -44,7 +44,7 @@ class AppsFBDBLoadView(web.View):
         app = db.session.query(db.Applications).filter_by(id=params['id']).first()
         data = gen_app_json(app)
 
-        data = fb_client.load_all_data(app.fb_id, data)
+        data = fb_client.load_all_data(app, data)
         if not data:
             return web.HTTPError(body=data)
 

@@ -170,21 +170,21 @@ class OffersDynamicLink(web.View):
         offer = db.session.query(db.Offers).filter(db.Offers.id == offer_id).first()
         offer_type = db.session.query(db.OffersTypes).filter(db.OffersTypes.id == offer.offer_type).first()
 
-        app_offers = fb_client.get_all(app.fb_id)
+        app_offers = fb_client.get_all(app)
 
         offer_position = 0
         for item in app_offers[offer_type.name]:
             if int(offer.id) == int(item['id']):
                 break
             offer_position += 1
-        offer_link = "www.{}.ru/{}?id={}".format(app.fb_id, offer_type.name, offer_position)
+        offer_link = "www.{}.ru/{}?id={}".format(app, offer_type.name, offer_position)
 
         country_offer_link = "Страна не задана"
         if country_code:
             # country_offer_link = "http://www.{}.ru/offer_item/{}/{}/{}".format(
-            #     app.fb_id, country_code, offer_type.name, offer_position)
+            #     app, country_code, offer_type.name, offer_position)
             country_offer_link = "http://www.{}.ru/offer_item/{}/{}".format(
-                app.fb_id, offer_type.name, offer_position)
+                app, offer_type.name, offer_position)
 
         if "card" in offer_type.name:
             offer_position = 0
@@ -192,7 +192,7 @@ class OffersDynamicLink(web.View):
                 if int(offer.id) == int(item['id']):
                     break
                 offer_position += 1
-            old_link = "www.{}.ru/cards?id={}".format(app.fb_id, offer_position)
+            old_link = "www.{}.ru/cards?id={}".format(app, offer_position)
         else:
             old_link = offer_link
 

@@ -5,23 +5,34 @@ import concurrent.futures
 logger = logging.getLogger(__name__)
 
 
-def get_all(project_id):
-    fb = firebase.FirebaseApplication('https://{}.firebaseio.com'.format(project_id), None)
+def get_all(app):
+    authentication = None
+    if app.fb_key:
+        authentication = firebase.FirebaseAuthentication(app.fb_key, 'admin@gmail.com', True, True)
+
+    fb = firebase.FirebaseApplication('https://{}.firebaseio.com'.format(app.fb_id), authentication)
     result = fb.get('/', None)
     return result
 
 
-def delete(project_id, url, name):
-    fb = firebase.FirebaseApplication('https://{}.firebaseio.com'.format(project_id), None)
+def delete(app, url, name):
+    authentication = None
+    if app.fb_key:
+        authentication = firebase.FirebaseAuthentication(app.fb_key, 'admin@gmail.com', True, True)
+    fb = firebase.FirebaseApplication('https://{}.firebaseio.com'.format(app.fb_id), authentication)
     result = fb.delete(url, name)
     return result
 
 
-def load_all_data(project_id, data):
-    fb = firebase.FirebaseApplication('https://{}.firebaseio.com'.format(project_id), None)
-    if get_all(project_id):
+def load_all_data(app, data):
+    authentication = None
+    if app.fb_key:
+        authentication = firebase.FirebaseAuthentication(app.fb_key, 'admin@gmail.com', True, True)
+
+    fb = firebase.FirebaseApplication('https://{}.firebaseio.com'.format(app.fb_id), authentication)
+    if get_all(app):
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-            for key in get_all(project_id).keys():
+            for key in get_all(app).keys():
                 if key != "users":
                     executor.submit(fb.delete, "/", '/{}'.format(key))
                     # fb.delete("/", '/{}'.format(key))

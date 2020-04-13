@@ -1,1 +1,2 @@
-ALTER TABLE applications ADD COLUMN show_docs Boolean();
+# ALTER TABLE applications ADD COLUMN show_docs Boolean();
+ALTER TABLE applications ADD COLUMN fb_key String(100);

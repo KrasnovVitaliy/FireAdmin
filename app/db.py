@@ -25,6 +25,7 @@ class Applications(Base):
     description = Column(String(100))
     fb_id = Column(String(200))
     fb_url = Column(String(200))
+    fb_key = Column(String(100))
     appmetrica_link = Column(String(200))
     fabrica_link = Column(String(200))
     appsflyer_link = Column(String(200))
@@ -53,7 +54,8 @@ class Applications(Base):
     hideTermFields = Column(Boolean)
     hidePercentFields = Column(Boolean)
 
-    def __init__(self, name=None, description=None, fb_id=None, fb_url=None, appmetrica_link=None, fabrica_link=None,
+    def __init__(self, name=None, description=None, fb_id=None, fb_url=None, fb_key=None, appmetrica_link=None,
+                 fabrica_link=None,
                  appsflyer_link=None, order_tracking_source=None, license_term=None, init_license_term=None,
                  browser_type=None, show_docs=None, hide_init_agreement=None, icon=None, loans_item=None,
                  cards_item=None, cards_credit_item=None, cards_debit_item=None, cards_instalment_item=None,
@@ -63,6 +65,7 @@ class Applications(Base):
         self.description = description
         self.fb_id = fb_id
         self.fb_url = fb_url
+        self.fb_key = fb_key
         self.appmetrica_link = appmetrica_link
         self.fabrica_link = fabrica_link
         self.appsflyer_link = appsflyer_link
@@ -96,12 +99,12 @@ class Applications(Base):
         return d
 
     def to_json(self):
-        to_serialize = ['id', 'create_date', 'update_date', 'name', 'description', 'fb_id', 'fb_url', 'appmetrica_link',
-                        'fabrica_link', 'appsflyer_link', 'order_tracking_source', 'license_term', 'init_license_term',
-                        'creator', 'deleted', 'browser_type', 'show_docs', 'hide_init_agreement', 'icon', "loans_item",
-                        "cards_item", "cards_credit_item", "cards_debit_item", "cards_instalment_item", "credits_item",
-                        "news_item", "calculator_item", "history_item", "hide_order_offer", 'hideTermFields',
-                        'hidePercentFields']
+        to_serialize = ['id', 'create_date', 'update_date', 'name', 'description', 'fb_id', 'fb_url', 'fb_key',
+                        'appmetrica_link', 'fabrica_link', 'appsflyer_link', 'order_tracking_source', 'license_term',
+                        'init_license_term', 'creator', 'deleted', 'browser_type', 'show_docs', 'hide_init_agreement',
+                        'icon', "loans_item", "cards_item", "cards_credit_item", "cards_debit_item",
+                        "cards_instalment_item", "credits_item", "news_item", "calculator_item", "history_item",
+                        "hide_order_offer", 'hideTermFields', 'hidePercentFields']
         return self.serialize(to_serialize)
 
 
