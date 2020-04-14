@@ -89,6 +89,11 @@
                     <div class="box-body">
                         <label for="name">Адрес</label>
                         <input class="form-control" type="text" placeholder="Ввести адрес FTP сервера"
+                               id="ftp_host" name="ftp_host" {% if app.ftp_host %}
+                               value="{{app.ftp_host}}" {% endif %}>
+
+                        <label for="name">Каталог</label>
+                        <input class="form-control" type="text" placeholder="Ввести каталог на FTP сервера"
                                id="ftp_path" name="ftp_path" {% if app.ftp_path %}
                                value="{{app.ftp_path}}" {% endif %}>
 
