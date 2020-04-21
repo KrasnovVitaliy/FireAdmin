@@ -23,4 +23,6 @@ def upload_to_ftp(ftp_host, ftp_path, path_to_local_file, ftp_username=None, ftp
     cd_tree(ftp, ftp_path)
 
     with open(path_to_local_file, 'rb') as fobj:
-        ftp.storbinary('STOR ' + path_to_local_file, fobj, 1024)
+        logger.debug("Uploading local file {} file to FTP: {}".format(path_to_local_file, ftp_path))
+        res = ftp.storbinary('STOR ' + path_to_local_file, fobj, 1024)
+        logger.debug("Upload res: {}".format(res))

@@ -21,7 +21,11 @@
                 <div class="col-md-12">
                     <div class="box-footer">
                         <a href="#" class="btn btn-default" onclick="goBack()">Отмена</a>
-                        <button type="submit" class="btn btn-info pull-right">Сохранить</button>
+                        <div class="btn-group pull-right">
+                            <button type="submit" class="btn btn-info">Сохранить</button>
+                            <a href="/ftp_update?id={{app.id}}" type="button"
+                               class="btn btn-warning ">Обновить FTP</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -519,7 +523,11 @@
                 <div class="col-md-12">
                     <div class="box-footer">
                         <a href="#" class="btn btn-default" onclick="goBack()">Отмена</a>
-                        <button type="submit" class="btn btn-info pull-right">Сохранить</button>
+                        <div class="btn-group pull-right">
+                            <button type="submit" class="btn btn-info">Сохранить</button>
+                            <a href="/ftp_update?id={{app.id}}" type="button"
+                               class="btn btn-warning ">Обновить FTP</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -677,6 +685,8 @@
             alert("Должно быть выбрано минимум 1 тип карт")
         }
     }
+
+
 
 
 

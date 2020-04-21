@@ -71,6 +71,7 @@ class Users(Base):
     pass_hash = Column(String(100))
     api_key = Column(String(50))
     deleted = Column(DateTime)
+    is_active = Column(Boolean, default=False)
 
     def __init__(self, role=None, first_name='', last_name='', email='', pass_hash='', api_key=''):
         self.role = role
@@ -91,8 +92,7 @@ class Users(Base):
 
     def to_json(self):
         to_serialize = ['id', 'role', 'create_date', 'update_date', 'first_name', 'last_name', 'email', 'pass_hash',
-                        'api_key',
-                        'deleted']
+                        'api_key', 'is_active', 'deleted']
         return self.serialize(to_serialize)
 
 

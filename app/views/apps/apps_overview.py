@@ -231,4 +231,4 @@ class AppsOverviewView(web.View):
 
         await journal.add_action(request=self.request, object_type=journal.APP_OBJECT, action=journal.UPDATE_ACTION,
                                  description=str(app.to_json()))
-        return web.HTTPFound('/applications?')
+        return web.HTTPFound("/apps_overview?id={}".format(params['id']))

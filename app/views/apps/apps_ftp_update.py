@@ -45,4 +45,4 @@ class AppsFTPUpdate(web.View):
         upload_to_ftp(ftp_host=app.ftp_host, ftp_path=app.ftp_path, path_to_local_file="./date.json",
                       ftp_username=app.ftp_username, ftp_password=app.ftp_password)
 
-        return web.HTTPFound('/applications')
+        return web.HTTPFound("/apps_overview?id={}".format(params['id']))

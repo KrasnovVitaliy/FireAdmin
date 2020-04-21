@@ -69,7 +69,14 @@ class JournalView(web.View):
             journal_sample = journal_sample.filter(
                 db.Journal.create_date < (date_filters['end_date'] + datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
 
-        journal_data = journal_sample.all()
+        limit = 10
+        try:
+            if 'limit' in params and params['limit'] != '':
+                limit = int(params['limit'])
+        except Exception as e:
+            logger.error("Can not get limit argument: {}".format(e))
+
+        journal_data = journal_sample.limit(limit).all()
 
         journal_items = []
         for obj in journal_data:
@@ -93,4 +100,5 @@ class JournalView(web.View):
                 datetime.datetime.now().strftime('%m/%d/%Y')),
             'selected_action': params["action"] if "action" in params else "",
             'selected_object_type': params["object_type"] if "object_type" in params else "",
+            'limit': limit,
         }

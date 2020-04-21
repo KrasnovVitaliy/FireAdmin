@@ -40,7 +40,10 @@ class UsersView(BaseView):
             ret: deleted:datetime:project deleted datetime
         """
         await super(UsersView, self).get()
-        return web.json_response(self.ret_data)
+        logger.debug("Received user from DB: {}".format(self.ret_data))
+        if self.ret_data['is_active']:
+            return web.json_response(self.ret_data)
+        return web.json_response({})
 
     async def post(self):
         self.check_user_data()

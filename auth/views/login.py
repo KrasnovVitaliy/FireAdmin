@@ -24,7 +24,8 @@ class LoginView(web.View, CorsViewMixin):
 
         logger.debug("Get user from db")
         user = db.session.query(db.Users).filter(db.Users.email == data['email']).filter(
-            db.Users.deleted == None).first()
+            db.Users.deleted == None).filter(
+            db.Users.is_active == True).first()
         if not user:
             return web.json_response({"error": "User not found"}, status=404)
         logger.debug("User found: {}".format(user.to_json()))

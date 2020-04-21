@@ -20,7 +20,7 @@
         <table class="table table-bordered">
             <tbody>
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-addon">
@@ -45,6 +45,15 @@
                             {% endif %}
                             >{{action}}</option>
                             {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <div class="input-group">
+                        <select class="form-control" id="limitSelect" name="limit">
+                            <option value="10">10</option>
+                            <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
+                            <option value="30" {% if limit == 30 %}selected{% endif %}>30</option>
                         </select>
                     </div>
                 </div>
@@ -135,7 +144,10 @@
         let objectsSelect = document.getElementById("objectsSelect");
         let selectedObject = objectsSelect.options[objectsSelect.selectedIndex].value;
 
-        document.location='?start_date='+startDate+'&end_date='+endDate+"&action="+selectedAction+'&object_type='+selectedObject;
+        let limitSelect = document.getElementById("limitSelect");
+        let selectedLimit = limitSelect.options[limitSelect.selectedIndex].value;
+
+        document.location='?start_date='+startDate+'&end_date='+endDate+"&action="+selectedAction+'&object_type='+selectedObject+'&limit='+selectedLimit;
     }
 </script>
 {% endblock %}
