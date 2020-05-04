@@ -3,9 +3,11 @@ import datetime
 import logging
 from config import Config
 import db
+import json
 import utils.firebase_client as fb_client
 import views.journal as journal
 from utils.check_permissions import is_permitted
+from utils.ftp_client import download_from_ftp
 
 logger = logging.getLogger(__name__)
 config = Config()
@@ -170,7 +172,16 @@ class OffersDynamicLink(web.View):
         offer = db.session.query(db.Offers).filter(db.Offers.id == offer_id).first()
         offer_type = db.session.query(db.OffersTypes).filter(db.OffersTypes.id == offer.offer_type).first()
 
-        app_offers = fb_client.get_all(app)
+        app_offers = {}
+        try:
+            app_offers = fb_client.get_all(app)
+        except Exception as e:
+            logger.error("e")
+            download_from_ftp(ftp_host=app.ftp_host, ftp_path=f"{app.ftp_path}/db.json",
+                              path_to_local_file="./local_db.json",
+                              ftp_username=app.ftp_username, ftp_password=app.ftp_password)
+            with open("./local_db.json", "r") as local_db_file:
+                app_offers = json.loads(local_db_file.read())
 
         offer_position = 0
         for item in app_offers[offer_type.name]:
