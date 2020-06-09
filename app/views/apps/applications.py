@@ -13,16 +13,31 @@ config = Config()
 class ApplicationsView(web.View):
     @aiohttp_jinja2.template('apps/applications.html')
     async def get(self, *args, **kwargs):
+        # TODO: Updated
+        # user_permissions = {
+        #     'apps_permission': True,
+        #     'offers_permission': True,
+        #     'offers_type_permission': True,
+        #     'news_permission': True,
+        #     'countries_permission': True,
+        #     'users_permission': True,
+        #     'journal_permission': True,
+        # }
         user_permissions = await is_permitted(self.request, ['apps_permission'])
         if not user_permissions:
             return web.HTTPMethodNotAllowed("", [])
 
+        # TODO: Updated
         params = self.request.rel_url.query
 
-        filters = {
-            'deleted': None,
-        }
-        apps = db.session.query(db.Applications).filter_by(**filters).all()
+        is_deleted = False
+        if "is_deleted" in params and params["is_deleted"] == "true":
+            is_deleted = True
+
+        if is_deleted:
+            apps = db.session.query(db.Applications).filter(db.Applications.deleted.isnot(None)).all()
+        else:
+            apps = db.session.query(db.Applications).filter(db.Applications.deleted.is_(None)).all()
         apps_data = [obj.to_json() for obj in apps]
 
         return {
@@ -30,7 +45,8 @@ class ApplicationsView(web.View):
             "permissions": user_permissions,
             "offers_types": avm.offers_types(),
             'active_menu_item': 'applications',
-            'auth_service_address': config.AUTH_SERVICE_EXTERNAL
+            'auth_service_address': config.AUTH_SERVICE_EXTERNAL,
+            'is_deleted': is_deleted,
         }
 
 

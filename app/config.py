@@ -7,7 +7,7 @@ import os
 class Config(ConfigBase):
     VERSION = "1.0.0"
     IS_DEBUG = False
-    IS_LOCAL = False
+    IS_LOCAL = True
 
     PORT = 8070
     HOST = "0.0.0.0"

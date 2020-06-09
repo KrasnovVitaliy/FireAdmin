@@ -41,10 +41,19 @@ class OffersActionsView(web.View):
             await journal.add_action(request=self.request, object_type=journal.OFFER_OBJECT,
                                      action=journal.DELETE_ACTION,
                                      description=str(offer.to_json()))
+        elif params['action'] == 'restore':
+            print("Restore")
+            offer.deleted = None
+            await journal.add_action(request=self.request, object_type=journal.OFFER_OBJECT,
+                                     action=journal.RESTORE_ACTION,
+                                     description=str(offer.to_json()))
         try:
             db.session.commit()
         except Exception as e:
             db.session.rollback()
+
+        if params['action'] == 'restore':
+            return web.HTTPFound('offers?offers_type={}&current_app={}&state=deleted'.format(params['offer_type'], params['app_id']))
 
         return web.HTTPFound('offers?offers_type={}&current_app={}'.format(params['offer_type'], params['app_id']))
 
@@ -176,7 +185,7 @@ class OffersDynamicLink(web.View):
         try:
             app_offers = fb_client.get_all(app)
         except Exception as e:
-            logger.error("e")
+            logger.error(e)
             download_from_ftp(ftp_host=app.ftp_host, ftp_path=f"{app.ftp_path}/db.json",
                               path_to_local_file="./local_db.json",
                               ftp_username=app.ftp_username, ftp_password=app.ftp_password)
@@ -188,14 +197,14 @@ class OffersDynamicLink(web.View):
             if int(offer.id) == int(item['id']):
                 break
             offer_position += 1
-        offer_link = "www.{}.ru/{}?id={}".format(app, offer_type.name, offer_position)
+        offer_link = "www.application.ru/{}?id={}".format(offer_type.name, offer_position)
 
         country_offer_link = "Страна не задана"
         if country_code:
             # country_offer_link = "http://www.{}.ru/offer_item/{}/{}/{}".format(
             #     app, country_code, offer_type.name, offer_position)
-            country_offer_link = "http://www.{}.ru/offer_item/{}/{}".format(
-                app, offer_type.name, offer_position)
+            country_offer_link = "http://www.application.ru/offer_item/{}/{}".format(
+                offer_type.name, offer_position)
 
         if "card" in offer_type.name:
             offer_position = 0

@@ -45,15 +45,17 @@ class OffersView(web.View):
         params = self.request.rel_url.query
 
         filters = {
-            'deleted': None,
             'offer_type': params['offers_type']
         }
+        is_deleted = False
         if 'state' in params:
             offers_state = params['state'].lower()
             if offers_state == 'active':
                 filters['isActive'] = 1
             elif offers_state == 'inactive':
                 filters['isActive'] = 0
+            elif offers_state == 'deleted':
+                is_deleted = True
         else:
             offers_state = 'all'
 
@@ -67,7 +69,6 @@ class OffersView(web.View):
         except Exception as e:
             current_country = None
 
-
         if current_app:
             results = db.session.query(db.OffersAppsRelations, db.Offers) \
                 .filter(db.OffersAppsRelations.app_id == current_app) \
@@ -77,19 +78,27 @@ class OffersView(web.View):
             if 'isActive' in filters:
                 results = results.filter(db.Offers.isActive == filters['isActive'])
 
+            if is_deleted:
+                results = results.filter(db.Offers.deleted.isnot(None))
+            else:
+                results = results.filter(db.Offers.deleted.is_(None))
+
             results = results.order_by(asc(db.OffersAppsRelations.position)).all()
 
             # Building offers list from results
             offers = [result[1] for result in results]
 
         else:
-            offers = db.session.query(db.Offers).filter_by(**filters).order_by(asc(db.Offers.position)).all()
+            if is_deleted:
+                offers = db.session.query(db.Offers).filter_by(**filters).order_by(asc(db.Offers.position)).filter(db.Offers.deleted.isnot(None)).all()
+            else:
+                offers = db.session.query(db.Offers).filter_by(**filters).order_by(asc(db.Offers.position)).filter(db.Offers.deleted.is_(None)).all()
+            # offers = db.session.query(db.Offers).filter_by(**filters).order_by(asc(db.Offers.position)).all()
 
         if current_country:
             offers = self.filter_offers_by_countries(offers, current_country)
 
         offers_data = [obj.to_json() for obj in offers]
-
 
         apps = db.session.query(db.Applications).all()
         app_data = {}
@@ -102,7 +111,6 @@ class OffersView(web.View):
                 offer['related_apps'] = []
             if 'app_position' not in offer:
                 offer['app_position'] = 0
-
 
             offer_apps = db.session.query(db.OffersAppsRelations).filter_by(offer_id=offer['id']).all()
             for offer_app in offer_apps:

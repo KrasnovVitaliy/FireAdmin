@@ -13,6 +13,22 @@
 {% block content %}
 <div class="box">
     <div class="box-header">
+        <div class="btn-group">
+            <a href="/applications"
+               {% if not is_deleted %}
+               class="btn btn-success"
+               {% else %}
+               class="btn btn-default"
+               {% endif %}
+               type="button">Активные</a>
+            <a href="/applications?is_deleted=true"
+               {% if is_deleted %}
+               class="btn btn-danger"
+               {% else %}
+               class="btn btn-default"
+               {% endif %}
+               type="button">Удаленные</a>
+        </div>
         <a href="/apps_create" class="btn btn-info pull-right" type="button">Создать</a>
     </div>
 
@@ -58,8 +74,8 @@
                         <a href="/app_db_json?id={{app.id}}" type="button"
                            class="btn btn-default">Скачать JSON</a>
 
-<!--                        <a href="/ftp_update?id={{app.id}}" type="button"-->
-<!--                           class="btn btn-info">Обновить FTP</a>-->
+                        <!--                        <a href="/ftp_update?id={{app.id}}" type="button"-->
+                        <!--                           class="btn btn-info">Обновить FTP</a>-->
 
                     </div>
                 <td>
@@ -100,11 +116,21 @@
                 </td>
                 </td>
                 <td>
-                    <a class="text-danger" href="#"><h4><i class="fa fa-remove text-red"
-                                                           data-app_id={{app.id}}
-                                                           data-app_name="{{app.name}}"
-                                                           data-toggle="modal"
-                                                           data-target="#deleteConfirmationModal"></i></h4></a>
+                    <a class="text-danger" href="#"><h4>
+                        {% if is_deleted %}
+                        <i class="fa fa-undo text-green"
+                           data-app_id={{app.id}}
+                           data-app_name="{{app.name}}"
+                           data-toggle="modal"
+                           data-target="#restoreConfirmationModal"></i></h4>
+                        {% else %}
+                        <i class="fa fa-remove text-red"
+                           data-app_id={{app.id}}
+                           data-app_name="{{app.name}}"
+                           data-toggle="modal"
+                           data-target="#deleteConfirmationModal"></i></h4>
+                        {% endif %}
+                    </a>
                 </td>
                 <td>
                     <a class="text-info" href="/apps_duplicate?id={{app.id}}"><h4><i
@@ -117,7 +143,25 @@
     <!-- /.box-body -->
 </div>
 <!-- /.box -->
-
+{% if is_deleted %}
+<div class="modal fade" id="restoreConfirmationModal" tabindex="-1" role="dialog"
+     aria-labelledby="restoreConfirmationModal"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h3>Восстановить приложение <b><span id="modal-app_name"></span></b>?</h3>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal" id="cancel-button">Отмена
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirm-button">Восстановить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
 <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog"
      aria-labelledby="deleteConfirmationModal"
      aria-hidden="true">
@@ -135,7 +179,7 @@
         </div>
     </div>
 </div>
-
+{% endif %}
 <div class="modal fade" id="uploadFirebaseConfirmationModal" tabindex="-1" role="dialog"
      aria-labelledby="uploadFirebaseConfirmationModal"
      aria-hidden="true">
@@ -260,6 +304,16 @@
     }
 
     function set_confirmation_modal_handlers() {
+        $('#restoreConfirmationModal .modal-footer button').on('click', function (event) {
+            var $button = $(event.target); // The clicked button
+
+            $(this).closest('.modal').one('hidden.bs.modal', function () {
+                if ($button.attr("id") == 'confirm-button') {
+                    window.location.href = '/apps_actions?&action=restore&id=' + window.removing_id;
+                }
+            });
+        });
+
         $('#deleteConfirmationModal .modal-footer button').on('click', function (event) {
             var $button = $(event.target); // The clicked button
 
@@ -320,6 +374,10 @@
             });
         });
     }
+
+
+
+
 
 </script>
 {% endblock %}

@@ -32,4 +32,15 @@ class AppsActionsView(web.View):
                 logger.error("Can not create delete app record in db: {}".format(e.__str__()))
                 db.session.rollback()
 
-        return web.HTTPFound('/applications')
+            return web.HTTPFound('/applications')
+
+        if params['action'] == 'restore':
+            offer.deleted = None
+            try:
+                db.session.commit()
+
+            except Exception as e:
+                logger.error("Can not restore deleted app record in db: {}".format(e.__str__()))
+                db.session.rollback()
+
+            return web.HTTPFound('/applications?is_deleted=true')
