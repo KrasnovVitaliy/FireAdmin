@@ -22,8 +22,10 @@ def get_max_position(app_id, offer_type):
         "SELECT max(offers_apps_relations.position)from offers_apps_relations inner join offers on offers_apps_relations.offer_id==offers.id where offers_apps_relations.app_id={} and offers.offer_type={} and offers.deleted is null;".format(
             int(app_id), int(offer_type)
         ))
+    logger.debug("Result: {}".format(result))
     for row in result:
-        return int(row[0])
+        if row[0]:
+            return int(row[0])
     return 0
 
 

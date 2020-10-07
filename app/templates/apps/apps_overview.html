@@ -179,7 +179,7 @@
                                    {%if app.hide_init_agreement and app.hide_init_agreement !="" %} checked {%endif%}>
                         </div>
                         <div class="form-group">
-                            <label for="hide_init_agreement">Скрывать кнопку оформить</label>
+                            <label for="hide_init_agreement">Показывать пин код</label>
                             <input type="checkbox" name="hide_order_offer" id="hide_order_offer"
                                    {%if app.hide_order_offer and app.hide_order_offer !="" %} checked {%endif%}>
                         </div>
@@ -385,7 +385,7 @@
                         {{country.name}}</label>
 
                     <div class="form-group">
-                        <label for="use_open_selection">Скрывать кнопку оформить</label>
+                        <label for="use_open_selection">Показывать пин код</label>
                         <input class="offer_type_check_box" type="checkbox"
                                name="country_offer_hide_order_offer_{{country.id}}"
                                id="country_offer_hide_order_offer_{{country.id}}"
