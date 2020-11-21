@@ -27,7 +27,7 @@ class Config(ConfigBase):
     if IS_LOCAL:
         AUTH_SERVICE_EXTERNAL = "http://127.0.0.1:8071"
     else:
-        AUTH_SERVICE_EXTERNAL = "http://51.158.176.243:8071"
+        AUTH_SERVICE_EXTERNAL = "http://151.236.217.166:8071"
 
     TOKENS_SECRET = "fdad66f77d284d18bf9381eb406f334f"  # uuid.uuid4().hex
     COOKIE_SECRET = "NmIzYjI5N2I2OWJjNGM0Nzk3MzY1ZTdlMTM0NWRkNTY="  # base64.b64encode(uuid.uuid4().hex.encode())  #
@@ -45,4 +45,4 @@ class Config(ConfigBase):
     PROJECT_DIR = os.getcwd()
     sys.path.append(PROJECT_DIR)
 
-    # AUTH_SERVICE_ADDRESS = "http://51.158.176.243:8081"
+    # AUTH_SERVICE_ADDRESS = "http://151.236.217.166:8081"
