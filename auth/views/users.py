@@ -88,9 +88,10 @@ class UsersView(BaseView):
         params = self.request.rel_url.query
         logger.debug("Updating new user with data: {} and params: {}".format(data, params))
 
-        user = db.session.query(db.Users).filter(db.Users.email == data['email']).first()
-        if user:
-            return web.json_response({"error": "Email already in used"}, status=400)
+        if 'email' in  data:
+            user = db.session.query(db.Users).filter(db.Users.email == data['email']).first()
+            if user:
+                return web.json_response({"error": "Email already in used"}, status=400)
 
         user = db.session.query(db.Users).filter(db.Users.id == params['id']).first()
         if not user:

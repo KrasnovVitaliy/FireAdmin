@@ -43,7 +43,7 @@ class Config(ConfigBase):
     if IS_LOCAL:
         MAIN_SERVICE_EXTERNAL = 'http://127.0.0.1:8070'
     else:
-        MAIN_SERVICE_EXTERNAL = 'http://51.158.176.243:8070'
+        MAIN_SERVICE_EXTERNAL = 'http://151.236.217.166:8070'
 
     os.chdir(os.path.dirname(__file__))
     PROJECT_DIR = os.getcwd()
