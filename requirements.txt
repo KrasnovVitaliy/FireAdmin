@@ -7,6 +7,6 @@ aiohttp_cors
 PyJWT
 cryptography
 psycopg2-binary
-requests==2.22.0
+requests==2.31.0
 py-bcrypt
 yadisk
